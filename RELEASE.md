@@ -6,7 +6,7 @@ Initial private technical handoff for the COLT AI – COLLBRAI PPE pipeline.
 
 - `COLT-AI-PPE-RUNTIME-GITHUB-20260819.tar.zst`: portable source and model
   archive; contains no videos, private media or TensorRT `.engine` files.
-- `COLT-AI-PPE-TEKNIK-DEVIR-20260818.zip`: standalone Turkish installation
+- `COLT-AI-PPE-TEKNIK-DEVIR-GITHUB-20260819.zip`: standalone Turkish installation
   and handoff documentation.
 - `COLT-AI-PPE-GITHUB-RELEASE-20260819.sha256`: SHA-256 verification file for both
   assets.

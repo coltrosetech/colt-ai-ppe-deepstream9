@@ -4,7 +4,7 @@
 
 1. Private GitHub reposu: `coltrosetech/colt-ai-ppe-deepstream9`
 2. Release: `COLT-AI-PPE-RUNTIME-GITHUB-20260819.tar.zst`
-3. Release: `COLT-AI-PPE-TEKNIK-DEVIR-20260818.zip`
+3. Release: `COLT-AI-PPE-TEKNIK-DEVIR-GITHUB-20260819.zip`
 4. Container: `ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725`
 5. Ekip tarafından ayrıca sağlanacak, kullanma yetkili PPE videosu
 
