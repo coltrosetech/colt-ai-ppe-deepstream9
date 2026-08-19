@@ -1,6 +1,6 @@
 # v2026.08.19-handoff
 
-Initial private technical handoff for the COLT AI – COLLBRAI PPE pipeline.
+Initial public technical handoff for the COLT AI – COLLBRAI PPE pipeline.
 
 ## Release assets
 

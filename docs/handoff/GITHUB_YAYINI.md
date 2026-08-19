@@ -1,6 +1,6 @@
 # GitHub teslim notu
 
-Bu private GitHub teslimi, ekip arkadaşına kaynak kodu ve model artefaktlarını
+Bu public GitHub teslimi, ekip arkadaşına kaynak kodu ve model artefaktlarını
 taşımak için hazırlanmıştır.
 
 ## Release ile gelenler
