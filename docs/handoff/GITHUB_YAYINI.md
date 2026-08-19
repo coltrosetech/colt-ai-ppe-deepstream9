@@ -17,6 +17,8 @@ taşımak için hazırlanmıştır.
 - GPU/TensorRT'ye özgü `.engine` dosyaları
 - Hosta sabitlenmiş deneysel DeepStream 9.1 engine-builder kanıtları
 - Yerel `.env`, sanal ortamlar, cache ve üretilmiş çalışma sonuçları
+- 26.3 GB sanal boyutlu NVIDIA DeepStream tabanlı Docker image; hedefte NGC
+  tabanından yeniden kurulur veya workstation'dan doğrudan save/load ile taşınır
 
 Bu nedenle eski teknik belgelerde örnek olarak geçen `S01`–`S04` veya
 `data/samples/ppe-construction-2025-h264.mp4` yolları GitHub arşivinde hazır

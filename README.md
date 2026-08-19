@@ -26,7 +26,7 @@ Hızlı kurulum: [docs/handoff/HIZLI_KURULUM.md](docs/handoff/HIZLI_KURULUM.md)
 | CUDA / TensorRT | 13.1 / 10.14.1.48 |
 | GPU | RTX A5000 Laptop, 16 GiB, compute capability 8.6 |
 | Profiller | 640×640 ve 960×960, FP16, dinamik batch 1–12 |
-| Container | `ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725` |
+| Container | Hedefte NGC tabanından yerel build; tag `deepsafe-deepstream:9.0-control-refresh-20260725` |
 
 Farklı GPU mimarisinde parser ve TensorRT engine'leri hedef sistemde yeniden
 üretilmeli ve canlı smoke testi yapılmalıdır. Mevcut `.engine` dosyalarını başka
@@ -46,18 +46,21 @@ tar --zstd -xf COLT-AI-PPE-RUNTIME-GITHUB-20260819.tar.zst
 cd COLT-AI-PPE-RUNTIME-GITHUB-20260819
 ```
 
-Container yayınlandıktan sonra:
+DeepStream image'ı GitHub'da dağıtılmaz. Hedef bilgisayarda NVIDIA NGC tabanı
+çekilip repo Dockerfile'ı ile yerel olarak üretilir. Exact komut ve pinler için
+[teknik devir belgesindeki 7.2 bölümünü](docs/handoff/README.md#72-alternatif-imageı-yeniden-kurma)
+izleyin. Aynı workstation image'ını birebir taşımak istenirse 7.1'deki
+`docker save` / `docker load` yolu kullanılabilir.
+
+Yerel build/load sonrasında doğrulama:
 
 ```bash
-docker login ghcr.io
-docker pull ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725
-docker tag \
-  ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725 \
-  deepsafe-deepstream:9.0-control-refresh-20260725
+docker image inspect deepsafe-deepstream:9.0-control-refresh-20260725 \
+  --format '{{.Id}}'
 ```
 
-Runner sabit yerel image adını ve `--pull=never` davranışını kullandığı için
-ikinci `docker tag` adımı gereklidir.
+Runner sabit yerel image adını ve `--pull=never` davranışını kullanır; build/load
+sonunda tag'in yukarıdaki adla mevcut olması gerekir.
 
 ## Host kontrolü
 

@@ -5,18 +5,14 @@
 1. Public GitHub reposu: `coltrosetech/colt-ai-ppe-deepstream9`
 2. Release: `COLT-AI-PPE-RUNTIME-GITHUB-20260819.tar.zst`
 3. Release: `COLT-AI-PPE-TEKNIK-DEVIR-GITHUB-20260819.zip`
-4. Container: `ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725`
+4. NVIDIA NGC erişimi veya aynı workstation'dan doğrudan `docker save/load`
 5. Ekip tarafından ayrıca sağlanacak, kullanma yetkili PPE videosu
 
-Container'ı hedefte yükleme:
+Önerilen hedef kurulumu:
 
-```bash
-docker login ghcr.io
-docker pull ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725
-docker tag \
-  ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725 \
-  deepsafe-deepstream:9.0-control-refresh-20260725
-```
+1. NGC tabanını çekin.
+2. Teknik README'nin 7.2 bölümündeki exact komutla image'ı yerelde kurun.
+3. Alternatif olarak 7.1'deki `docker save/load` yoluyla workstation'dan taşıyın.
 
 Image'ın Docker'daki sanal boyutu yaklaşık 26.3 GB'dir.
 

@@ -16,13 +16,15 @@ Referans GPU compute capability `8.6` ve VRAM `16384 MiB`'dir.
 
 ## 2. DeepStream image'ını yükle
 
-```bash
-docker login ghcr.io
-docker pull ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725
-docker tag \
-  ghcr.io/coltrosetech/colt-ai-deepstream9-ppe:9.0-control-refresh-20260725 \
-  deepsafe-deepstream:9.0-control-refresh-20260725
+26.3 GB sanal boyutlu NVIDIA tabanını GitHub üzerinden tekrar dağıtmıyoruz.
+Hedefte NGC tabanından yerel build için teknik devir belgesinin **7.2**
+bölümündeki exact digest ve build-arg komutunu kullanın. Aynı workstation
+image'ını ağ/USB ile doğrudan taşıyacaksanız **7.1** bölümündeki `docker save`
+ve `docker load` yolunu kullanın.
 
+Build/load tamamlanınca:
+
+```bash
 docker image inspect deepsafe-deepstream:9.0-control-refresh-20260725 \
   --format '{{.Id}}'
 
@@ -30,7 +32,7 @@ docker run --rm --gpus all --pull=never \
   deepsafe-deepstream:9.0-control-refresh-20260725 nvidia-smi
 ```
 
-Beklenen image ID:
+Save/load yolunda beklenen image ID:
 
 ```text
 sha256:c0be08184405fff2161d7ca65e31601c309da7845e4e74453fc6b13fc328bf27

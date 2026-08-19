@@ -38,8 +38,8 @@ distribution and deployment before commercial release.
 ## NVIDIA runtime
 
 DeepStream, CUDA, TensorRT and NVIDIA Container Toolkit are NVIDIA products and
-are governed by NVIDIA's respective license terms. The GHCR image is a runtime
-delivery artefact; access to it does not replace acceptance of those terms.
+are governed by NVIDIA's respective license terms. The target machine obtains
+the NVIDIA base image directly from NGC and builds the project layer locally.
 
 ## Sample media
 
