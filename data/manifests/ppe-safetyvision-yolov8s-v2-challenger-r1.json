@@ -1,0 +1,137 @@
+{
+  "schema_version": "deepsafe.ppe-model-challenger-quarantine/v1",
+  "status": "acquired_static_verified_not_executed_not_accepted",
+  "observed_at": "2026-07-18",
+  "source": {
+    "repository": "ayushgupta7777/safetyvision-yolov8",
+    "provider": "huggingface",
+    "commit": "56a71758b55f0e9f2b4b2d6b51a779a1f882da10",
+    "model_family": "Ultralytics YOLOv8s",
+    "reported_framework_version": "8.4.51",
+    "license_id": "AGPL-3.0",
+    "model_card_url": "https://huggingface.co/ayushgupta7777/safetyvision-yolov8",
+    "model_card": {
+      "path": "data/raw/ppe/models/safetyvision-yolov8-v2-56a7175/README.md",
+      "bytes": 15629,
+      "sha256": "da35935f220c0e348f9c4d770c4d2c78b7c6a1482fb7cdf51b5243d9444b2533"
+    }
+  },
+  "artifacts": {
+    "640": {
+      "path": "data/raw/ppe/models/safetyvision-yolov8-v2-56a7175/best_640.onnx",
+      "resolve_url": "https://huggingface.co/ayushgupta7777/safetyvision-yolov8/resolve/56a71758b55f0e9f2b4b2d6b51a779a1f882da10/v2/best_640.onnx",
+      "bytes": 44764727,
+      "sha256": "ea18ae903a566e8fa76f3ee1c503075522dca269269315e9c862efa170430b35",
+      "input": {
+        "name": "images",
+        "dtype": "float32",
+        "shape": [1, 3, 640, 640]
+      },
+      "output": {
+        "name": "output0",
+        "dtype": "float32",
+        "shape": [1, 17, 8400]
+      }
+    },
+    "896": {
+      "path": "data/raw/ppe/models/safetyvision-yolov8-v2-56a7175/best_896.onnx",
+      "resolve_url": "https://huggingface.co/ayushgupta7777/safetyvision-yolov8/resolve/56a71758b55f0e9f2b4b2d6b51a779a1f882da10/v2/best_896.onnx",
+      "bytes": 44926046,
+      "sha256": "b250353639e01800f9cbe79c6002b8b041bdae7560328b8e18ad4a42dc3844e1",
+      "input": {
+        "name": "images",
+        "dtype": "float32",
+        "shape": [1, 3, 896, 896]
+      },
+      "output": {
+        "name": "output0",
+        "dtype": "float32",
+        "shape": [1, 17, 16464]
+      }
+    }
+  },
+  "static_onnx_audit": {
+    "checker": "onnx.checker.check_model",
+    "checker_version": "1.22.0",
+    "passed_artifact_count": 2,
+    "ir_version": 9,
+    "opset": 20,
+    "producer": "pytorch",
+    "producer_version": "2.12.0",
+    "node_count": 231,
+    "initializer_count": 144,
+    "external_data_initializer_count": 0,
+    "dynamic_batch": false,
+    "end_to_end_nms": false,
+    "inference_executed": false
+  },
+  "class_mapping": {
+    "all": {
+      "0": "Fall-Detected",
+      "1": "Gloves",
+      "2": "Goggles",
+      "3": "Hardhat",
+      "4": "Mask",
+      "5": "NO-Gloves",
+      "6": "NO-Goggles",
+      "7": "NO-Hardhat",
+      "8": "NO-Mask",
+      "9": "NO-Safety Vest",
+      "10": "No_Harness",
+      "11": "Person",
+      "12": "Safety Vest"
+    },
+    "deepsafe_runtime_projection": {
+      "helmet": 3,
+      "no_helmet": 7,
+      "hi_vis": 12,
+      "no_hi_vis": 9
+    }
+  },
+  "author_reported_metrics_not_locally_reproduced": {
+    "held_out_test_images": 4026,
+    "held_out_test_instances": 12080,
+    "pt_640_map50": 0.754,
+    "pt_640_map50_95": 0.485,
+    "onnx_640_map50": 0.738,
+    "onnx_640_map50_95": 0.463,
+    "onnx_640_precision": 0.723,
+    "onnx_640_recall": 0.715,
+    "pt_896_class_map50": {
+      "Hardhat": 0.937,
+      "NO-Hardhat": 0.754,
+      "Safety Vest": 0.892,
+      "NO-Safety Vest": 0.386
+    }
+  },
+  "limitations": {
+    "overhead_or_drone_camera_supported_by_author": false,
+    "crowded_heavy_occlusion_supported_by_author": false,
+    "small_worker_under_50px_reliable": false,
+    "no_safety_vest_is_weakest_target_class": true,
+    "published_test_independence_locally_replayed": false,
+    "training_dataset_provenance_locally_replayed": false,
+    "target_960_onnx_present": false,
+    "batch_12_dynamic_profile_present": false,
+    "deepstream91_parser_parity_tested": false,
+    "tensorrt_engine_built": false
+  },
+  "authorization": {
+    "network_acquisition": true,
+    "offline_hash_and_static_graph_audit": true,
+    "cpu_inference": false,
+    "gpu_inference": false,
+    "training": false,
+    "re_export": false,
+    "threshold_calibration": false,
+    "independent_final_ground_truth_claim": false,
+    "product_acceptance": false,
+    "production_deployment": false
+  },
+  "selection": {
+    "role": "ppe_four_class_pretrained_challenger",
+    "accepted_model": false,
+    "reason": "all_four_runtime_classes_present_but_overhead_batch12_960_no_vest_and_local_gt_gates_open",
+    "next_gate": "exact_pt_acquisition_then_execution_closed_dynamic_640_960_export_or_authorized_fixed_640_diagnostic_parity"
+  }
+}

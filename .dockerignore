@@ -1,0 +1,56 @@
+# Fail closed: the two checked-in Dockerfiles only need these application and
+# runtime-control sources.  In particular, never send multi-gigabyte datasets,
+# model weights, generated evidence, local environments, or operator secrets to
+# the Docker build context.
+**
+
+!.dockerignore
+
+!admin/
+!admin/**
+
+!video_selector/
+!video_selector/**
+
+!deepstream/
+!deepstream/**
+
+!evaluation/
+!evaluation/__init__.py
+!evaluation/metrics.py
+!evaluation/model.py
+!evaluation/readers.py
+
+!content/
+!content/__init__.py
+!content/roi_demo.py
+!content/theme.py
+!content/configs/
+!content/configs/colt-collbrai-person-full-*.json
+
+!validation/
+!validation/__init__.py
+!validation/ds9_runtime_compatibility.py
+!validation/ds9_parser_bootstrap.py
+!validation/ds9_gpu_smoke.py
+!validation/full_stack_benchmark_contract_v1.py
+!validation/open_video_manual_review.py
+!validation/site_distance_evaluation.py
+!validation/site_distance_readiness_v2.py
+!validation/site_distance_evaluator_v2.py
+!validation/schemas/
+!validation/schemas/**
+!validation/schemas/ds9-parser-bootstrap-v1.schema.json
+!validation/schemas/ds9-gpu-smoke-authorization-v1.schema.json
+!validation/schemas/ds9-gpu-smoke-evidence-v1.schema.json
+!validation/schemas/ds9-cuda-kernel-proof-v1.schema.json
+!validation/schemas/site-distance-evaluation-plan-v1.schema.json
+!validation/schemas/distance-validation-v1.schema.json
+!validation/schemas/validation-campaign-report-v1.schema.json
+!validation/plans/
+!validation/plans/deepstream-full-stack-benchmark-v1.json
+
+# Local bytecode and caches are neither source nor reproducible build input.
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/

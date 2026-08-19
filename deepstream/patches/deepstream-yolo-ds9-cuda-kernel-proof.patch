@@ -1,0 +1,199 @@
+diff --git a/nvdsinfer_custom_impl_Yolo/nvdsparsebbox_Yolo_cuda.cu b/nvdsinfer_custom_impl_Yolo/nvdsparsebbox_Yolo_cuda.cu
+index e6123ea..b2b5b59 100644
+--- a/nvdsinfer_custom_impl_Yolo/nvdsparsebbox_Yolo_cuda.cu
++++ b/nvdsinfer_custom_impl_Yolo/nvdsparsebbox_Yolo_cuda.cu
+@@ -22,11 +22,183 @@
+  * https://www.github.com/marcoslucianops
+  */
+ 
++#include <cerrno>
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <fcntl.h>
++#include <iostream>
++#include <mutex>
++#include <string>
++#include <sys/stat.h>
++#include <unistd.h>
++
++#include <cuda_runtime_api.h>
+ #include <thrust/host_vector.h>
+ #include <thrust/device_vector.h>
+ 
+ #include "nvdsinfer_custom_impl.h"
+ 
++__global__ void decodeTensorYoloCuda(NvDsInferParseObjectInfo *binfo, const float* output,
++    const uint outputSize, const uint netW, const uint netH, const float* preclusterThreshold);
++
++namespace {
++
++constexpr char kProofEnableEnv[] = "DEEPSAFE_DS9_CUDA_PROOF";
++constexpr char kProofNonceEnv[] = "DEEPSAFE_DS9_CAMPAIGN_NONCE";
++constexpr char kProofRunIdEnv[] = "DEEPSAFE_DS9_RUN_ID";
++constexpr char kProofMarkerPathEnv[] = "DEEPSAFE_DS9_CUDA_MARKER_PATH";
++constexpr char kProofSchema[] = "deepsafe.ds9-cuda-kernel-proof/v1";
++constexpr char kProofKernel[] = "decodeTensorYoloCuda";
++constexpr char kProofMarkerName[] = "cuda-parser-kernel.json";
++
++std::mutex proofMutex;
++unsigned long long successfulInstrumentedLaunches = 0;
++bool proofMarkerWritten = false;
++bool proofFailed = false;
++
++bool isLowerHexNonce(const char* value)
++{
++  if (value == nullptr || std::strlen(value) != 64) {
++    return false;
++  }
++  for (size_t index = 0; index < 64; ++index) {
++    const char current = value[index];
++    if (!((current >= '0' && current <= '9') || (current >= 'a' && current <= 'f'))) {
++      return false;
++    }
++  }
++  return true;
++}
++
++bool isCudaSmokeRunId(const char* value)
++{
++  return value != nullptr &&
++      (std::strcmp(value, "640-cuda") == 0 || std::strcmp(value, "960-cuda") == 0);
++}
++
++bool writeAll(const int descriptor, const char* data, const size_t length)
++{
++  size_t offset = 0;
++  while (offset < length) {
++    const ssize_t written = write(descriptor, data + offset, length - offset);
++    if (written < 0 && errno == EINTR) {
++      continue;
++    }
++    if (written <= 0) {
++      return false;
++    }
++    offset += static_cast<size_t>(written);
++  }
++  return true;
++}
++
++bool recordCudaKernelProof(const uint outputSize, const int numberOfBlocks,
++    const int threadsPerBlock)
++{
++  const char* enabled = std::getenv(kProofEnableEnv);
++  if (enabled == nullptr) {
++    return true;
++  }
++  if (std::strcmp(enabled, "1") != 0) {
++    std::cerr << "ERROR: invalid DeepSafe CUDA proof enable value" << std::endl;
++    return false;
++  }
++
++  std::lock_guard<std::mutex> lock(proofMutex);
++  if (proofFailed) {
++    return false;
++  }
++
++  const cudaError_t launchError = cudaGetLastError();
++  const cudaError_t synchronizeError = cudaDeviceSynchronize();
++  cudaFuncAttributes attributes{};
++  const cudaError_t attributesError = cudaFuncGetAttributes(&attributes, decodeTensorYoloCuda);
++  if (launchError != cudaSuccess || synchronizeError != cudaSuccess ||
++      attributesError != cudaSuccess || attributes.binaryVersion != 86) {
++    proofFailed = true;
++    std::cerr << "ERROR: DeepSafe CUDA kernel proof check failed" << std::endl;
++    return false;
++  }
++
++  ++successfulInstrumentedLaunches;
++  if (proofMarkerWritten) {
++    return true;
++  }
++  if (successfulInstrumentedLaunches != 1 || outputSize == 0 ||
++      numberOfBlocks <= 0 || threadsPerBlock != 1024) {
++    proofFailed = true;
++    std::cerr << "ERROR: invalid DeepSafe CUDA kernel launch facts" << std::endl;
++    return false;
++  }
++
++  const char* nonce = std::getenv(kProofNonceEnv);
++  const char* runId = std::getenv(kProofRunIdEnv);
++  const char* markerPath = std::getenv(kProofMarkerPathEnv);
++  if (!isLowerHexNonce(nonce) || !isCudaSmokeRunId(runId) || markerPath == nullptr) {
++    proofFailed = true;
++    std::cerr << "ERROR: invalid DeepSafe CUDA proof environment" << std::endl;
++    return false;
++  }
++  const std::string expectedPath =
++      std::string("/evidence/") + runId + "/" + kProofMarkerName;
++  if (expectedPath != markerPath) {
++    proofFailed = true;
++    std::cerr << "ERROR: DeepSafe CUDA proof marker path differs" << std::endl;
++    return false;
++  }
++
++  char payload[4096];
++  const int length = std::snprintf(
++      payload, sizeof(payload),
++      "{\n"
++      "  \"binary_version\": 86,\n"
++      "  \"campaign_nonce\": \"%s\",\n"
++      "  \"cuda_device_synchronize\": 0,\n"
++      "  \"cuda_func_get_attributes\": 0,\n"
++      "  \"cuda_get_last_error\": 0,\n"
++      "  \"kernel\": \"%s\",\n"
++      "  \"launch_count_at_marker\": 1,\n"
++      "  \"marker_path\": \"%s\",\n"
++      "  \"marker_write_count\": 1,\n"
++      "  \"number_of_blocks\": %d,\n"
++      "  \"output_size\": %u,\n"
++      "  \"pid\": %lld,\n"
++      "  \"ptx_version\": %d,\n"
++      "  \"run_id\": \"%s\",\n"
++      "  \"schema_version\": \"%s\",\n"
++      "  \"threads_per_block\": %d\n"
++      "}\n",
++      nonce, kProofKernel, markerPath, numberOfBlocks, outputSize,
++      static_cast<long long>(getpid()), attributes.ptxVersion, runId,
++      kProofSchema, threadsPerBlock);
++  if (length <= 0 || static_cast<size_t>(length) >= sizeof(payload)) {
++    proofFailed = true;
++    std::cerr << "ERROR: DeepSafe CUDA proof marker overflow" << std::endl;
++    return false;
++  }
++
++  const int descriptor = open(markerPath,
++      O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0440);
++  if (descriptor < 0) {
++    proofFailed = true;
++    std::cerr << "ERROR: DeepSafe CUDA proof marker exclusive create failed" << std::endl;
++    return false;
++  }
++  const bool persisted = writeAll(descriptor, payload, static_cast<size_t>(length)) &&
++      fchmod(descriptor, 0440) == 0 && fsync(descriptor) == 0;
++  const int closeResult = close(descriptor);
++  if (!persisted || closeResult != 0) {
++    proofFailed = true;
++    std::cerr << "ERROR: DeepSafe CUDA proof marker persistence failed" << std::endl;
++    return false;
++  }
++  proofMarkerWritten = true;
++  return true;
++}
++
++}  // namespace
++
+ extern "C" bool
+ NvDsInferParseYoloCuda(std::vector<NvDsInferLayerInfo> const& outputLayersInfo, NvDsInferNetworkInfo const& networkInfo,
+     NvDsInferParseDetectionParams const& detectionParams, std::vector<NvDsInferParseObjectInfo>& objectList);
+@@ -82,6 +254,10 @@ static bool NvDsInferParseCustomYoloCuda(std::vector<NvDsInferLayerInfo> const&
+       thrust::raw_pointer_cast(objects.data()), (float*) (output.buffer), outputSize, networkInfo.width,
+           networkInfo.height, thrust::raw_pointer_cast(perClassPreclusterThreshold.data()));
+ 
++  if (!recordCudaKernelProof(outputSize, number_of_blocks, threads_per_block)) {
++    return false;
++  }
++
+   objectList.resize(outputSize);
+   thrust::copy(objects.begin(), objects.end(), objectList.begin());
+ 

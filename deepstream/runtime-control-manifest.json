@@ -1,0 +1,95 @@
+{
+  "artifacts": {
+    "caviar_batch_runner": {
+      "bytes": 59450,
+      "path": "validation/run_caviar_batch.py",
+      "sha256": "af332b8593560ee2e688a7091eb5c922c6d7d4fc8cf8f4ab3ca981d9c29a31f6"
+    },
+    "caviar_runner": {
+      "bytes": 41770,
+      "path": "validation/run_caviar.py",
+      "sha256": "365b6508dd50e0d2510979d2a2de7b5b9fd24728c7c4f15da763a00a2d263b4a"
+    },
+    "deepstream_image_build": {
+      "bytes": 16820,
+      "path": "deepstream/Dockerfile",
+      "sha256": "96fc6ad951b663055e2c1b794dd5ded23f134669f74dd1cdcb08dbb522619b35"
+    },
+    "docker_build_context_policy": {
+      "bytes": 1455,
+      "path": ".dockerignore",
+      "sha256": "8dee0f2a959735b8772d3a76fc5500f601d8ad3200b2fec5ae66d643e10593fc"
+    },
+    "ds9_cuda_kernel_proof_schema": {
+      "bytes": 1891,
+      "path": "validation/schemas/ds9-cuda-kernel-proof-v1.schema.json",
+      "sha256": "3c9a4c091b8c2e4b342b327fc08ba9e7e2f376cd70f497475ddc5025604abe68"
+    },
+    "ds9_cuda_kernel_source_patch": {
+      "bytes": 7001,
+      "path": "deepstream/patches/deepstream-yolo-ds9-cuda-kernel-proof.patch",
+      "sha256": "dd85619bf62da249d17d99e967caf53de96367a0f139286c52a86f5e67b7623e"
+    },
+    "ds9_gpu_smoke": {
+      "bytes": 109236,
+      "path": "validation/ds9_gpu_smoke.py",
+      "sha256": "b88f2f83798a73929cf0136e272bffd0213153372478df83d1aa6762ad96c507"
+    },
+    "ds9_gpu_smoke_authorization_schema": {
+      "bytes": 2124,
+      "path": "validation/schemas/ds9-gpu-smoke-authorization-v1.schema.json",
+      "sha256": "f4d3efee839c7330f91964906812c155079ddd0dd89d558f42fc4cefb6a08f1f"
+    },
+    "ds9_gpu_smoke_evidence_schema": {
+      "bytes": 7311,
+      "path": "validation/schemas/ds9-gpu-smoke-evidence-v1.schema.json",
+      "sha256": "fe7c89b3a8d02f38237dbaad109b40b62551a846a528219d8fe4c659f094c3e1"
+    },
+    "ds9_parser_bootstrap": {
+      "bytes": 64454,
+      "path": "validation/ds9_parser_bootstrap.py",
+      "sha256": "52bf3eb0f0da26da45e43a175df7ac7e70179675e25cb610ccc957f7917fbd28"
+    },
+    "ds9_parser_bootstrap_schema": {
+      "bytes": 10981,
+      "path": "validation/schemas/ds9-parser-bootstrap-v1.schema.json",
+      "sha256": "00f92e5bba04b5e8c498b378756fd955d0043e7e8009a54bbe9a078e03336e92"
+    },
+    "ds9_runtime_compatibility": {
+      "bytes": 83083,
+      "path": "validation/ds9_runtime_compatibility.py",
+      "sha256": "5d04ecb95e0775b7638914659217f0d4bb34c50f9a73627012aa5a11f71580e6"
+    },
+    "ds9_runtime_compatibility_schema": {
+      "bytes": 7169,
+      "path": "validation/schemas/ds9-runtime-compatibility-v1.schema.json",
+      "sha256": "d18333b7637b2033fb3f6b2f658285d59ac4080dcf8d501278d1f9a1151ac189"
+    },
+    "gpu_guard": {
+      "bytes": 52923,
+      "path": "validation/gpu_guarded_process.py",
+      "sha256": "fe601c77660944430804b5056ab5473873b52a28dd4b35809a3a9e621026f10a"
+    },
+    "loaf_batch_runner": {
+      "bytes": 80399,
+      "path": "validation/run_loaf_batch.py",
+      "sha256": "07b78cb60553b646671bdc5b0d7d512237de94e86b8c6d5ad6ec6c7152ae60d8"
+    },
+    "loaf_runner": {
+      "bytes": 20478,
+      "path": "validation/run_loaf.py",
+      "sha256": "bfd4ab8134f0639f0874a2b82551ba46b38efb548def0c63065f266e8206a2ac"
+    },
+    "person_quality_policy": {
+      "bytes": 127354,
+      "path": "validation/person_quality_policy.py",
+      "sha256": "5b4cc2b8e3687ed675407ae3853d550fb4522fe74893a75a6f04015f32278133"
+    },
+    "scene_benchmark_runner": {
+      "bytes": 112630,
+      "path": "validation/scene_benchmark/run_matrix.py",
+      "sha256": "bdb90c7ef99935c7ff88d074fce2f22c71a173eeffe5eb1c27dbaa458c543e5a"
+    }
+  },
+  "schema_version": "deepsafe.runtime-control-manifest/v1"
+}

@@ -1,0 +1,109 @@
+{
+  "schema_version": "deepsafe.ppe-model-checkpoint-quarantine/v1",
+  "status": "checkpoint_acquired_static_archive_audited_never_deserialized",
+  "observed_at": "2026-07-18",
+  "predecessor": {
+    "path": "data/manifests/ppe-safetyvision-yolov8s-v2-challenger-r1.json",
+    "bytes": 4519,
+    "sha256": "6b38eec658952fc5d2327625c1fc631df2ba160e1c64ca72cc2ce8a8e8254e30"
+  },
+  "source": {
+    "repository": "ayushgupta7777/safetyvision-yolov8",
+    "commit": "56a71758b55f0e9f2b4b2d6b51a779a1f882da10",
+    "resolve_url": "https://huggingface.co/ayushgupta7777/safetyvision-yolov8/resolve/56a71758b55f0e9f2b4b2d6b51a779a1f882da10/v2/best.pt",
+    "provider_reported_lfs_sha256": "7863be4700dcf831579d610bb3fe3668fb29fb22ab17ca027b55e94b88bfff7a",
+    "license_id": "AGPL-3.0"
+  },
+  "checkpoint": {
+    "path": "data/raw/ppe/models/safetyvision-yolov8-v2-56a7175/best.pt",
+    "bytes": 22547434,
+    "sha256": "7863be4700dcf831579d610bb3fe3668fb29fb22ab17ca027b55e94b88bfff7a",
+    "format": "pytorch_zip_pickle_checkpoint"
+  },
+  "static_archive_audit": {
+    "zip_member_count": 365,
+    "duplicate_member_count": 0,
+    "unsafe_member_path_count": 0,
+    "crc_failure": null,
+    "total_uncompressed_bytes": 22498704,
+    "pickle_member": "best/data.pkl",
+    "pickle_bytes": 114735,
+    "pickle_opcode_count": 40038,
+    "global_reference_occurrences": 24,
+    "global_references": [
+      "__builtin__ set",
+      "collections OrderedDict",
+      "torch FloatStorage",
+      "torch HalfStorage",
+      "torch LongStorage",
+      "torch Size",
+      "torch._utils _rebuild_parameter",
+      "torch._utils _rebuild_tensor_v2",
+      "torch.nn.modules.activation SiLU",
+      "torch.nn.modules.batchnorm BatchNorm2d",
+      "torch.nn.modules.container ModuleList",
+      "torch.nn.modules.container Sequential",
+      "torch.nn.modules.conv Conv2d",
+      "torch.nn.modules.linear Identity",
+      "torch.nn.modules.pooling MaxPool2d",
+      "torch.nn.modules.upsampling Upsample",
+      "ultralytics.nn.modules.block Bottleneck",
+      "ultralytics.nn.modules.block C2f",
+      "ultralytics.nn.modules.block DFL",
+      "ultralytics.nn.modules.block SPPF",
+      "ultralytics.nn.modules.conv Concat",
+      "ultralytics.nn.modules.conv Conv",
+      "ultralytics.nn.modules.head Detect",
+      "ultralytics.nn.tasks DetectionModel"
+    ],
+    "extension_opcode_count": 0,
+    "reduce_opcode_count": 3799,
+    "pickle_deserialized": false,
+    "torch_or_ultralytics_used_to_open_checkpoint": false,
+    "safe_deserialization_claimed": false,
+    "reason": "pickle_global_inventory_is_metadata_only_and_does_not_make_deserialization_safe"
+  },
+  "observed_export_environment_not_yet_pinned_or_authorized": {
+    "python_environment": ".venv-export",
+    "torch": "2.13.0+cpu",
+    "ultralytics": "8.4.0",
+    "onnx": "1.22.0",
+    "onnxruntime": "1.27.0",
+    "checkpoint_reported_ultralytics": "8.4.51",
+    "version_match": false
+  },
+  "proposed_export_contract_not_authorized": {
+    "execution": "isolated_cpu_only_network_none_read_only_checkpoint_new_output",
+    "profiles": [640, 960],
+    "batch_profile": {
+      "minimum": 1,
+      "optimum": 12,
+      "maximum": 12
+    },
+    "opset": 18,
+    "nms": false,
+    "simplify": true,
+    "fp16": false,
+    "required_outputs": [
+      "exact checkpoint replay",
+      "ONNX checker",
+      "input and output semantic inventory",
+      "four-class metadata replay",
+      "no-overwrite export receipt"
+    ]
+  },
+  "authorization": {
+    "network_acquisition": true,
+    "zip_crc_and_pickle_opcode_inventory": true,
+    "checkpoint_deserialization": false,
+    "cpu_export": false,
+    "cpu_inference": false,
+    "gpu_export_or_inference": false,
+    "training": false,
+    "threshold_calibration": false,
+    "deepstream_or_tensorrt": false,
+    "product_acceptance": false,
+    "production_deployment": false
+  },
+  "next_gate": "exact_export_environment_and_execution_closed_cpu_export_successor"
+}

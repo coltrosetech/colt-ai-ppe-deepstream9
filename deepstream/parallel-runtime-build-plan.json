@@ -1,0 +1,167 @@
+{
+  "build": {
+    "binary_name": "deepstream-parallel-infer",
+    "docker_argv_template": [
+      "docker",
+      "run",
+      "--rm",
+      "--pull=never",
+      "--network=none",
+      "--runtime=runc",
+      "--cap-drop=ALL",
+      "--cap-add=DAC_OVERRIDE",
+      "--security-opt=no-new-privileges",
+      "--pids-limit=512",
+      "--user=0:0",
+      "--env=NVIDIA_VISIBLE_DEVICES=void",
+      "--env=NVIDIA_DRIVER_CAPABILITIES=none",
+      "--env=CUDA_VISIBLE_DEVICES=-1",
+      "--env=SOURCE_DATE_EPOCH=0",
+      "--tmpfs=/tmp:rw,nosuid,nodev,noexec,size=512m",
+      "--mount=type=bind,src={source_dir},dst=/build/src",
+      "--mount=type=bind,src={output_dir},dst=/build/out",
+      "--workdir=/build/src",
+      "--entrypoint=/usr/bin/make",
+      "deepsafe-deepstream@sha256:96aedaba7ebb8d50359a7f73db251d46a81fd23e42c7c7ae215542795f88d663",
+      "-j2",
+      "APP_INSTALL_DIR=/build/out/",
+      "install"
+    ],
+    "network": "none",
+    "nvidia_container_runtime": false,
+    "source_date_epoch": 0,
+    "uses_gpu": false
+  },
+  "container": {
+    "architecture": "amd64",
+    "image_id": "sha256:96aedaba7ebb8d50359a7f73db251d46a81fd23e42c7c7ae215542795f88d663",
+    "image_reference": "deepsafe-deepstream@sha256:96aedaba7ebb8d50359a7f73db251d46a81fd23e42c7c7ae215542795f88d663",
+    "operating_system": "linux"
+  },
+  "plan_id": "nvidia-deepstream-parallel-inference-ds9-static-build-r1",
+  "probes": {
+    "docker_common_argv_template": [
+      "docker",
+      "run",
+      "--rm",
+      "--pull=never",
+      "--network=none",
+      "--runtime=runc",
+      "--read-only",
+      "--cap-drop=ALL",
+      "--security-opt=no-new-privileges",
+      "--pids-limit=64",
+      "--user=1000:1000",
+      "--env=NVIDIA_VISIBLE_DEVICES=void",
+      "--env=NVIDIA_DRIVER_CAPABILITIES=none",
+      "--env=CUDA_VISIBLE_DEVICES=-1",
+      "--mount=type=bind,src={binary_path},dst=/probe/deepstream-parallel-infer,readonly"
+    ],
+    "tools": {
+      "ldd": [
+        "/usr/bin/ldd",
+        "/probe/deepstream-parallel-infer"
+      ],
+      "objdump": [
+        "/usr/bin/objdump",
+        "-p",
+        "/probe/deepstream-parallel-infer"
+      ],
+      "readelf": [
+        "/usr/bin/readelf",
+        "--file-header",
+        "--program-headers",
+        "--dynamic",
+        "--notes",
+        "/probe/deepstream-parallel-infer"
+      ],
+      "strings": [
+        "/usr/bin/strings",
+        "-a",
+        "/probe/deepstream-parallel-infer"
+      ]
+    }
+  },
+  "publication": {
+    "destination": "models/runtime/deepstream-parallel-infer-ds9-9946965e-r2",
+    "directory_mode": "0550",
+    "executable_mode": "0550",
+    "json_mode": "0440",
+    "no_overwrite": true,
+    "primitive": "renameat2(RENAME_NOREPLACE)"
+  },
+  "schema_version": "deepsafe.deepstream-parallel-runtime-build-plan/v1",
+  "source": {
+    "build_root": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer",
+    "commit": "9946965e8adb1aa93b1b66983ec4196351c9190c",
+    "files": [
+      {
+        "bytes": 2376,
+        "git_blob": "33467045ad14e6377c0848af8c5fb4a136c58e18",
+        "mode": "100755",
+        "path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/Makefile",
+        "sha256": "20e073c36f562604b8a4d6e9159f4dbd9485170dfe782f2228e0233a97a68179"
+      },
+      {
+        "bytes": 6486,
+        "git_blob": "4288687162597ae601b96d4907ba03fddb0175e6",
+        "mode": "100755",
+        "path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/deepstream_parallel_infer.h",
+        "sha256": "34ddde2062c5ddd9fdba3bf189f4ad26422ed33f682027d7e5da3d2bb6809637"
+      },
+      {
+        "bytes": 52603,
+        "git_blob": "2e938ba1cbec9c2577b1b8e617f6e00d99e3d554",
+        "mode": "100755",
+        "path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/deepstream_parallel_infer_app.cpp",
+        "sha256": "a3b9345296c0b47d3fc4530254bb89fc9295d254c883d30074634ac87310986f"
+      },
+      {
+        "bytes": 22969,
+        "git_blob": "d2c5c734f06c2fdcb1c0dec40049477899f19324",
+        "mode": "100755",
+        "path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/deepstream_parallel_infer_config_parser.cpp",
+        "sha256": "c4ed8e9b5b6769753840b110ce44d858792ea2db871dc18ee047a058a1ed96cc"
+      },
+      {
+        "bytes": 1658,
+        "git_blob": "7c2ff6c8adbb4626c16b6b5d5abf98cb1d091674",
+        "mode": "100755",
+        "path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/post_process/body_pose/cover_table.hpp",
+        "sha256": "0a90cffc2b8b2755991abf7d37e4e457220f0d5cf41480b7e686271c522d9c07"
+      },
+      {
+        "bytes": 6098,
+        "git_blob": "2bb73ddf61545a695219596ad51e595ee11c23c6",
+        "mode": "100755",
+        "path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/post_process/body_pose/munkres_algorithm.cpp",
+        "sha256": "a59121ecab5fe3c8a02c1a17f155be1672b43c19240fbd97a77d47b1f2c5fa5a"
+      },
+      {
+        "bytes": 2492,
+        "git_blob": "3f3c8b38aea72fb9b65611ef87f774b7e5ad556b",
+        "mode": "100755",
+        "path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/post_process/body_pose/pair_graph.hpp",
+        "sha256": "527f8cbc90ea37352bb0452f018ec0efe307cf638680523c0db815b300aadb28"
+      },
+      {
+        "bytes": 11559,
+        "git_blob": "11352de6bdbe7b82d400226fa35add70365a6ca1",
+        "mode": "100755",
+        "path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/post_process/body_pose/post_process.cpp",
+        "sha256": "ca8076d8790387b765bc85443005b9b081a7f653bbc8938de430645622e00060"
+      }
+    ],
+    "license": {
+      "app_license_git_blob": "59479b3d74ca50d840a7d34d0e313e7d9ec63e0d",
+      "app_license_path": "deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer/LICENSE.md",
+      "app_license_sha256": "1220125d6189724d693198167a25bf022459cea70993c6280eb5a4cdd141b653",
+      "repository_license_git_blob": "971af82597503f663fea5f2afb50bd0f62610eda",
+      "repository_license_path": "LICENSE",
+      "repository_license_sha256": "4609fec420a4ea4695f991bae058688ca9cf51b955afdb950afcf8ed417f754a",
+      "spdx": "Apache-2.0"
+    },
+    "repository_path": "third_party/deepstream_reference_apps",
+    "tree": "4c4382ed32fad08767d01cd7bfbf464bd6be0e37"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": "deepsafe.deepstream-fusion-runtime-build-plan-overlay/v1",
+  "plan_id": "deepsafe-ds9-canonical-fusion-static-build-r2",
+  "base_plan": {
+    "path": "deepstream/fusion-runtime-build-plan.json",
+    "sha256": "3fb57248a97de1ebd6eb90dcc2451befc3c05f9db5bc788fca15182ce3e8cd2a"
+  },
+  "input_replacements": [
+    {
+      "remove_path": "deepstream/fusion/build-runtime.sh",
+      "add": {
+        "path": "deepstream/fusion-r2/build-runtime.sh",
+        "sha256": "86638e942ffdd21e3d332266b3d4a9088582ed49389cd884d5edecbcd0dcb7c2",
+        "bytes": 1736
+      }
+    },
+    {
+      "remove_path": "deepstream/patches/deepsafe-fusion-ds9-app.patch",
+      "add": {
+        "path": "deepstream/patches/deepsafe-fusion-ds9-app-r2.patch",
+        "sha256": "ea4081eb91047bd8ecc37e1018294f5b25f87d15a6d6d7dc3e465b037a1beb60",
+        "bytes": 4699
+      }
+    }
+  ],
+  "build_script_container_path": "/build/src/deepstream/fusion-r2/build-runtime.sh",
+  "publication": {
+    "destination": "models/runtime/deepsafe-fusion-ds9-9946965e-r2",
+    "no_overwrite": true,
+    "primitive": "renameat2(RENAME_NOREPLACE)",
+    "directory_mode": "0550",
+    "executable_mode": "0550",
+    "config_mode": "0440",
+    "json_mode": "0440"
+  },
+  "required_static_evidence": {
+    "legacy_openpose_probe_registered": false,
+    "canonical_fusion_probe_install_count": 1
+  }
+}

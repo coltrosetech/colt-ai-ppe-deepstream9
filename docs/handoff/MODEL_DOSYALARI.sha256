@@ -1,0 +1,17 @@
+7863be4700dcf831579d610bb3fe3668fb29fb22ab17ca027b55e94b88bfff7a  data/raw/ppe/models/safetyvision-yolov8-v2-56a7175/best.pt
+aff2ee1379d1cd9a815b14236593194d425f29f6dcb3fa75509196b1eeb58c35  validation/results/ppe/models/safetyvision-yolov8s-v2-cpu-export-r3/safetyvision-v2-cpu-export-r3-001/artifacts/safetyvision-yolov8s-v2-640-bdynamic-opset18.onnx
+4fb5c5f9ad6a407cddd16a654f3419c4d71cecf691d133a7f41537f052bde374  validation/results/ppe/models/safetyvision-yolov8s-v2-cpu-export-r3/safetyvision-v2-cpu-export-r3-001/artifacts/safetyvision-yolov8s-v2-960-bdynamic-opset18.onnx
+b49c8f9fb3b62c3f7b30cd51c0779c2b1564edf3981e423accdf3f995ba24409  models/ppe/safetyvision-yolov8s-v2/labels.txt
+c592b05dea8570b13157df8f4e92f2263ecd693dc2779347f059b7a414f465e4  models/ppe/safetyvision-yolov8s-v2/ds9-raw6-real-frame-parity.json
+adeadfb440c54a5e9539d090dcc06fa07b4a63b8efee6c627837dc9261d5674c  models/ppe/safetyvision-yolov8s-v2/640/ds9-raw6-receipt.json
+7249b197e8b5f4d472199d3c70e678378e03a0346b908b6cb1f9cfcc73767c3d  models/ppe/safetyvision-yolov8s-v2/640/safetyvision-yolov8s-v2-640-ds9-raw6.onnx
+70205e2a2b344df0d67e6b5d18410694002142cbaacec46ddcee5e5272c2aad3  models/ppe/safetyvision-yolov8s-v2/960/ds9-raw6-receipt.json
+167251a265e3728d4645821654b360272fbd912ae950654f868441fc4ce5c203  models/ppe/safetyvision-yolov8s-v2/960/safetyvision-yolov8s-v2-960-ds9-raw6.onnx
+bd17f1ee35d5f3c862a4894605855abbb9dda4b0621fdb0ac4c2c8c7bb7e730a  models/person/640/labels.txt
+b250995b806042fd0602474945f82f7cfa42b96a493fabda07e1fb0e2dc596b6  models/person/640/config_infer_primary.txt
+ad0bb6e414adacde5d4aea652197670d2265a68b4b69cde61fd99d40d7306814  models/person/640/yolo11s.onnx
+c0034f112991337967c913470adf1f12aa5fcb4c7f1bbd3a2851cb8be9b26f28  models/person/640/yolo11s.onnx.data
+bd17f1ee35d5f3c862a4894605855abbb9dda4b0621fdb0ac4c2c8c7bb7e730a  models/person/960/labels.txt
+4f27f6bd523c37fc2375433186ff039419d517212a7873e9b19bee9ae228caeb  models/person/960/config_infer_primary.txt
+271dafd5234f19c2487daf2a75cee97f940ae1cba695e70d1cb179d328cf5f9c  models/person/960/yolo11s.onnx
+0945ff9843953c75889dc45e017748e06dc3bb1892e7c168a62beaf221830a39  models/person/960/yolo11s.onnx.data

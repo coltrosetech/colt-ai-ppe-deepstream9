@@ -1,0 +1,56 @@
+# Local environments and credentials
+.env
+.env.*
+!.env.example
+.venv/
+.venv-*/
+*.pem
+*.key
+
+# Python/test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage.xml
+.coverage
+
+# GPU- and host-specific build artefacts
+*.engine
+*.plan
+*.trt
+engine-build.log
+
+# Generated run output and local operator state
+benchmark/results/
+validation/results/**/runs/
+validation/results/**/generated/
+content/video-selector/state/selections/*.json
+content/video-selector/state/queues/*.json
+content/video-selector/media/
+content/ppe-video-selector/media/
+content/ppe-video-selector/posters/
+
+# Raw videos/datasets are distributed through a versioned Release, not Git
+data/samples/
+data/datasets/
+*.mp4
+*.mov
+*.mkv
+*.avi
+
+# Legacy DeepStream 9.1 builder evidence is host-bound and not part of this
+# DeepStream 9.0 PPE handoff.
+deepstream/ds91-engine-builder/
+deepstream/ds91-engine-builder-r1c/
+deepstream/ds91-engine-builder-r1c2/
+deepstream/ds91-engine-builder-r1c3/
+tests/test_ds91_engine_builder_r1c3_terminal.py
+tests/test_endurance_systemd_templates.py
+
+# Editor/OS noise
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

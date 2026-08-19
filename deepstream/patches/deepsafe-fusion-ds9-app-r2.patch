@@ -1,0 +1,123 @@
+diff --git a/deepstream_parallel_infer_app.cpp b/deepstream_parallel_infer_app.cpp
+index 2e938ba..2874951 100755
+--- a/deepstream_parallel_infer_app.cpp
++++ b/deepstream_parallel_infer_app.cpp
+@@ -14,6 +14,7 @@
+  * limitations under the License.
+  */
+ #include "deepstream_parallel_infer.h"
++#include "deepstream_fusion_hook.hpp"
+ #include "post_process/body_pose/post_process.cpp"
+ #include "nvds_version.h"
+ 
+@@ -931,10 +932,6 @@ create_parallel_infer_bin (guint num_sub_bins, NvDsConfig *config,
+   g_object_set (G_OBJECT (bin->muxer), "config-file",
+ 		 GET_FILE_PATH (config->meta_mux_config.config_file_path), NULL);
+ 
+-  NVGSTDS_ELEM_ADD_PROBE (bin->muxer_buffer_probe_id, bin->muxer, "src",
+-      body_pose_gie_src_pad_buffer_probe, GST_PAD_PROBE_TYPE_BUFFER,
+-      appCtx);
+-
+   gst_bin_add (GST_BIN (bin->bin), bin->muxer);
+ 
+   for (i = 0; i < num_sub_bins; i++) {
+@@ -1091,10 +1088,6 @@ create_parallel_infer_bin (guint num_sub_bins, NvDsConfig *config,
+   g_object_set (G_OBJECT (bin->muxer), "config-file",
+ 		 GET_FILE_PATH (config->meta_mux_config.config_file_path), NULL);
+ 
+-  NVGSTDS_ELEM_ADD_PROBE (bin->muxer_buffer_probe_id, bin->muxer, "src",
+-      body_pose_gie_src_pad_buffer_probe, GST_PAD_PROBE_TYPE_BUFFER,
+-      appCtx);
+-
+   gst_bin_add (GST_BIN (bin->bin), bin->muxer);
+   sink_elem = bin->muxer;
+ 
+@@ -1333,6 +1326,8 @@ int main(int argc, char *argv[])
+   guint i;
+   const gchar *new_mux_str = NULL;
+   gboolean use_new_mux = FALSE;
++  DeepsafeFusionAppHook *fusion_hook = NULL;
++  gchar fusion_error[512] = {0};
+ 
+   ctx = g_option_context_new ("Nvidia DeepStream Parallel Demo");
+   group = g_option_group_new ("abc", NULL, NULL, NULL, NULL);
+@@ -1387,6 +1382,14 @@ int main(int argc, char *argv[])
+   gst_init(&argc, &argv);
+   main_loop = g_main_loop_new(NULL, FALSE);
+ 
++  fusion_hook = deepsafe_fusion_app_hook_create(
++      fusion_error, sizeof (fusion_error));
++  if (!fusion_hook) {
++    NVGSTDS_ERR_MSG_V ("DeepSafe fusion initialization failed: %s", fusion_error);
++    return_value = -1;
++    goto done;
++  }
++
+   /* Create gstreamer elements */
+   /* Create Pipeline element that will form a connection of other elements */
+   instance_bin = &appCtx->pipeline.instance_bins[0];
+@@ -1441,6 +1444,13 @@ int main(int argc, char *argv[])
+       g_print ("creating parallel infer bin failed\n");
+       goto done;
+   }
++  if (!deepsafe_fusion_app_hook_install(
++          fusion_hook, pipeline->parallel_infer_bin.muxer,
++          config->num_source_sub_bins, fusion_error, sizeof (fusion_error))) {
++    NVGSTDS_ERR_MSG_V ("DeepSafe fusion probe installation failed: %s", fusion_error);
++    return_value = -1;
++    goto done;
++  }
+   gst_bin_add (GST_BIN (pipeline->pipeline), pipeline->parallel_infer_bin.bin);
+   last_elem = pipeline->parallel_infer_bin.bin;
+   NVGSTDS_LINK_ELEMENT (pipeline->multi_src_bin.bin, last_elem);
+@@ -1584,9 +1594,15 @@ done:
+ 
+   g_print ("Quitting\n");
+   if (bus_watch_id) {
+     g_print("Returned, stopping playback\n");
+     gst_element_set_state(pipeline->pipeline, GST_STATE_NULL);
++  }
++
++  deepsafe_fusion_app_hook_destroy(fusion_hook);
++  fusion_hook = NULL;
++
++  if (bus_watch_id) {
+     g_print("Deleting pipeline\n");
+     gst_object_unref(GST_OBJECT(pipeline->pipeline));
+     g_source_remove(bus_watch_id);
+   }
+diff --git a/Makefile b/Makefile
+index 3346704..0f278f0 100755
+--- a/Makefile
++++ b/Makefile
+@@ -27,8 +27,12 @@ ifeq ($(TARGET_DEVICE),aarch64)
+ endif
+ 
+ #SRCS:= $(wildcard *.c) $(wildcard *.cpp)
++DEEPSAFE_FUSION_INCLUDE_DIR?=/opt/deepsafe/include
++DEEPSAFE_FUSION_LIBRARY_DIR?=/opt/deepsafe/lib
++
+ SRCS:= deepstream_parallel_infer_app.cpp \
+-	deepstream_parallel_infer_config_parser.cpp
++	deepstream_parallel_infer_config_parser.cpp \
++	deepstream_fusion_hook.cpp
+ 
+ SRCS+= $(wildcard /opt/nvidia/deepstream/deepstream/sources/apps/apps-common/src/*.c)
+ SRCS+= $(wildcard /opt/nvidia/deepstream/deepstream/sources/apps/apps-common/src/deepstream-yaml/*.cpp)
+@@ -43,6 +47,7 @@ OBJS:= $(OBJS:.cpp=.o)
+ CFLAGS+= -g -I./ -I/opt/nvidia/deepstream/deepstream/sources/apps/apps-common/includes \
+ 		 -I/opt/nvidia/deepstream/deepstream/sources/includes \
+ 		 -I /usr/local/cuda/include
++CFLAGS+= -I$(DEEPSAFE_FUSION_INCLUDE_DIR)
+ 
+ LIBS:= -L/usr/local/cuda/lib64/ -lcudart
+ 
+@@ -49,6 +54,8 @@ LIBS+= -L$(LIB_INSTALL_DIR) -lnvdsgst_meta -lnvds_meta -lnvdsgst_helper \
+ 	  -lnvdsgst_smartrecord -lnvds_utils -lnvds_msgbroker -lm -lyaml-cpp \
+     -lcuda -lgstrtspserver-1.0 -ldl -Wl,-rpath,$(LIB_INSTALL_DIR) -lnvbufsurface
+ 
++LIBS+= -L$(DEEPSAFE_FUSION_LIBRARY_DIR) -ldeepsafe_fusion -Wl,-rpath,'$$ORIGIN'
++
+ CFLAGS+= $(shell pkg-config --cflags $(PKGS))
+ 
+ LIBS+= $(shell pkg-config --libs $(PKGS))

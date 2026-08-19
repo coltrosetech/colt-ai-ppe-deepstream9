@@ -1,0 +1,2753 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>COLT AI - COLLBRAI</title>
+  <style>
+    :root{font-family:Inter,system-ui;color:#e8eef2;background:#071015}
+    body{max-width:1100px;margin:40px auto;padding:0 20px}
+    h1{color:#72f5b2}
+    section{background:#101d24;padding:20px;border:1px solid #20343e;border-radius:14px;margin:16px 0}
+    input,select,button{padding:11px;border-radius:8px;border:1px solid #345;background:#09151b;color:#fff;margin:4px}
+    button{cursor:pointer;background:#166b4a}
+    .danger{background:#772f3a}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    pre{white-space:pre-wrap;color:#a9c7d4}
+    .muted{color:#91a8b2;font-size:.92rem}
+    .validation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px;margin-top:14px}
+    .validation-card{background:#09151b;border:1px solid #29414d;border-radius:10px;padding:14px;min-width:0}
+    .validation-card h3{font-size:1rem;margin:0;line-height:1.4}
+    .validation-card p{margin:.65rem 0}
+    .badge{display:inline-block;border:1px solid #527080;border-radius:999px;padding:3px 8px;font-size:.78rem;margin-top:8px}
+    .state-complete,.state-accepted,.state-ready,.state-pass{border-color:#40b87c;color:#72f5b2}
+    .state-in_progress,.state-running,.state-preliminary,.state-planned,.state-pending,
+    .state-prepared_not_evaluated,.state-planned_not_acquired,.state-planned_license_required_not_exported,.state-waiting_for_predictions,
+    .state-ready_for_cpu_evaluation,.state-collected_not_verified,
+    .state-ready_for_operator_review,.state-waiting_for_inputs,
+    .state-unproven,.state-not_ready,.state-incomplete,.state-quarantine_structural_pass_training_blocked,
+    .state-dry_run_group_split_complete_training_blocked,.state-live_reentry_smoke_passed_deepstream_and_endurance_pending{border-color:#d6a444;color:#ffd884}
+    .state-proven{border-color:#40b87c;color:#72f5b2}
+    .state-attention,.state-artifact_error,.state-acquired_quarantine_failed,.state-stale_lineage,.state-invalid,.state-blocked_by_hardware,
+    .state-blocked,.state-blocked_missing_runtime_artifacts,.state-blocked_host_driver_upgrade_required,
+    .state-blocked_host_platform_mismatch,.state-unavailable_integrity_error{border-color:#c65e69;color:#ff9da8}
+    .metric-list{font-size:.86rem;color:#b9d0d9;line-height:1.55;margin:.5rem 0}
+    .evidence{border-top:1px solid #20343e;margin-top:10px;padding-top:8px;font-size:.82rem}
+    .evidence a{display:block;color:#72d6f5;margin:4px 0;overflow-wrap:anywhere}
+    .evidence span{display:block;color:#758d98;margin:4px 0;overflow-wrap:anywhere}
+    .review-layout{display:grid;grid-template-columns:minmax(220px,.7fr) minmax(0,2fr);gap:14px}
+    .review-queue{max-height:560px;overflow:auto;background:#09151b;border:1px solid #29414d;border-radius:10px;padding:8px}
+    .review-queue button{display:block;width:100%;text-align:left;background:#102630;margin:5px 0}
+    .review-queue button.active{outline:2px solid #72f5b2}
+    .review-profiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .review-profile{background:#09151b;border:1px solid #29414d;border-radius:10px;padding:12px;min-width:0}
+    .review-evidence-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}
+    .review-evidence-pair figure{min-width:0;margin:0}
+    .review-evidence-pair figcaption{color:#b9d0d9;font-size:.78rem;margin:0 0 5px}
+    .review-evidence-pair img{display:block;width:100%;height:230px;object-fit:contain;background:#020608;border-radius:6px}
+    .review-evidence-missing{display:grid;place-items:center;height:230px;background:#020608;border-radius:6px;color:#758d98;font-size:.82rem;text-align:center;padding:6px;box-sizing:border-box}
+    .review-form{margin-top:14px;padding-top:12px;border-top:1px solid #29414d}
+    .review-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:7px}
+    .review-form label{display:flex;flex-direction:column;color:#b9d0d9;font-size:.85rem}
+    .review-form textarea{min-height:70px;padding:10px;border-radius:8px;border:1px solid #345;background:#09151b;color:#fff}
+    .ppe-filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:7px;margin:10px 0}
+    .ppe-filter-grid label,.ppe-decision-form label,.ppe-policy-card label{display:flex;flex-direction:column;color:#b9d0d9;font-size:.85rem}
+    .ppe-review-layout{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,2fr);gap:14px;margin-top:12px}
+    .ppe-review-queue{max-height:620px;overflow:auto;background:#09151b;border:1px solid #29414d;border-radius:10px;padding:8px}
+    .ppe-review-queue button{display:block;width:100%;text-align:left;background:#102630;margin:5px 0}
+    .ppe-review-queue button.active{outline:2px solid #72f5b2}
+    .ppe-sample-card{background:#09151b;border:1px solid #29414d;border-radius:10px;padding:12px;min-height:330px}
+    .ppe-tile{display:block;width:100%;max-height:430px;object-fit:contain;background:#020608;border-radius:7px;margin:8px 0}
+    .ppe-decision-form textarea,.ppe-policy-card textarea{min-height:72px;padding:10px;border-radius:8px;border:1px solid #345;background:#09151b;color:#fff}
+    .ppe-policy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:9px;margin-top:12px}
+    .ppe-policy-card{background:#09151b;border:1px solid #29414d;border-radius:10px;padding:10px;min-width:0}
+    .ppe-policy-card h4{overflow-wrap:anywhere;margin:.2rem 0 .6rem}
+    /* COLT AI ROI + clip editor */
+    :root{
+      --colt-bg:#06152d;--colt-panel:#0d2b52;--colt-panel-2:#091f3d;
+      --colt-line:#274d78;--colt-text:#f4f7ff;--colt-muted:#a8b9d4;
+      --colt-accent:#46c7ff;--colt-accent-2:#789dff;--colt-danger:#ff637d;
+      --colt-success:#62e6ae;
+    }
+    body{background:radial-gradient(circle at 85% 2%,#123b6b 0,transparent 35%),var(--colt-bg);color:var(--colt-text)}
+    body>h1{margin-bottom:4px;color:var(--colt-accent)}
+    .colt-brandline{color:var(--colt-muted);margin-top:0}
+    #roiEditorSection{padding:0;overflow:hidden;border-color:#265587;background:linear-gradient(145deg,#0d2b52,#081d38);box-shadow:0 24px 70px #02091680}
+    .roi-editor-head{padding:22px 24px 18px;border-bottom:1px solid var(--colt-line);display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+    .roi-editor-head h2{margin:0 0 6px;font-size:1.45rem}
+    .roi-editor-head p{margin:0;color:var(--colt-muted)}
+    .roi-step-pill{white-space:nowrap;color:var(--colt-accent);background:#071a33;border:1px solid #2d6296;border-radius:999px;padding:7px 11px;font-size:.8rem;font-weight:700}
+    .roi-editor-shell{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,.7fr)}
+    .roi-workspace{padding:20px;border-right:1px solid var(--colt-line);min-width:0}
+    .roi-sidebar{padding:20px;min-width:0;background:#071a33a8}
+    .roi-field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;color:#dbe8fa;font-size:.87rem;font-weight:650}
+    .roi-field select,.roi-field input{width:100%;box-sizing:border-box;margin:0;background:#06152d;border-color:#315f8d;min-height:44px}
+    .roi-video-stage{position:relative;display:grid;place-items:center;background:#020711;border:1px solid #315f8d;border-radius:12px;overflow:hidden;min-height:260px;isolation:isolate}
+    .roi-video-stage video{display:block;width:100%;max-height:560px;min-height:260px;object-fit:contain;background:#020711}
+    #roiCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;touch-action:none;cursor:crosshair;outline:none}
+    #roiCanvas:focus-visible{box-shadow:inset 0 0 0 3px var(--colt-accent)}
+    .roi-stage-message{position:absolute;z-index:3;max-width:360px;padding:14px 18px;border:1px solid #315f8d;border-radius:10px;background:#06152de8;color:var(--colt-muted);text-align:center;pointer-events:none}
+    .roi-stage-message[hidden]{display:none}
+    .roi-video-controls{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+    .roi-video-controls button,.roi-toolstrip button,.roi-actions button{min-height:44px;margin:0;background:#123d6a;border-color:#316a9e;font-weight:700}
+    .roi-video-controls button:hover,.roi-toolstrip button:hover,.roi-actions button:hover{background:#195083}
+    .roi-video-controls .roi-time-readout{margin-left:auto;color:var(--colt-muted);font-variant-numeric:tabular-nums}
+    .roi-playhead-seek{display:flex;align-items:center;gap:10px;margin-top:10px;color:var(--colt-muted);font-size:.78rem}
+    .roi-playhead-seek input{flex:1;min-width:0;margin:0;accent-color:var(--colt-accent);cursor:pointer}
+    .roi-playhead-seek input:focus-visible{outline:3px solid #46c7ff66;outline-offset:4px}
+    .roi-hint{margin:11px 0 0;color:var(--colt-muted);font-size:.82rem;line-height:1.5}
+    .roi-toolstrip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:14px 0}
+    .roi-toolstrip button{font-size:.82rem;padding:9px 6px}
+    .roi-toolstrip button.danger-outline{background:transparent;border-color:#9b4157;color:#ff9caf}
+    .roi-statusline{display:flex;align-items:center;gap:8px;min-height:24px;color:var(--colt-muted);font-size:.82rem}
+    .roi-dot{width:8px;height:8px;border-radius:50%;background:#637b9a;flex:0 0 auto}
+    .roi-dot.good{background:var(--colt-success);box-shadow:0 0 0 4px #62e6ae1a}
+    .roi-dot.bad{background:var(--colt-danger);box-shadow:0 0 0 4px #ff637d1a}
+    .roi-card{border:1px solid var(--colt-line);background:#06152dbd;border-radius:12px;padding:14px;margin-bottom:13px}
+    .roi-card h3{font-size:.96rem;margin:0 0 12px}
+    .roi-time-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .roi-time-box{background:#0b2547;border:1px solid #315f8d;border-radius:9px;padding:10px}
+    .roi-time-box label{display:block;color:var(--colt-muted);font-size:.75rem;margin-bottom:5px}
+    .roi-time-box input{box-sizing:border-box;width:100%;margin:0;padding:7px;color:var(--colt-text);background:#06152d;border-color:#315f8d;font-variant-numeric:tabular-nums}
+    .roi-time-box button{width:100%;margin:7px 0 0;padding:7px;background:#123d6a;font-size:.78rem}
+    .roi-timeline{position:relative;height:44px;margin:15px 2px 5px}
+    .roi-timeline-base,.roi-timeline-selection{position:absolute;left:0;right:0;top:19px;height:6px;border-radius:99px;background:#203e64}
+    .roi-timeline-selection{left:0;right:auto;width:100%;background:linear-gradient(90deg,var(--colt-accent),var(--colt-accent-2));box-shadow:0 0 12px #46c7ff55}
+    .roi-timeline input[type=range]{position:absolute;inset:0;width:100%;height:44px;margin:0;padding:0;background:transparent;border:0;pointer-events:none;appearance:none;-webkit-appearance:none}
+    .roi-timeline input[type=range]::-webkit-slider-runnable-track{height:6px;background:transparent}
+    .roi-timeline input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#f4f7ff;border:4px solid var(--colt-accent);box-shadow:0 2px 8px #0008;pointer-events:auto;cursor:ew-resize}
+    .roi-timeline input[type=range]::-moz-range-track{height:6px;background:transparent}
+    .roi-timeline input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#f4f7ff;border:4px solid var(--colt-accent);box-shadow:0 2px 8px #0008;pointer-events:auto;cursor:ew-resize}
+    .roi-duration-summary{display:flex;justify-content:space-between;gap:10px;color:var(--colt-muted);font-size:.78rem;font-variant-numeric:tabular-nums}
+    .roi-duration-summary strong{color:var(--colt-text)}
+    #roiPlanPreview{max-height:180px;overflow:auto;background:#020b18;border:1px solid #274d78;border-radius:9px;padding:11px;margin:0;color:#bdeaff;font-size:.75rem}
+    .roi-validation{min-height:22px;margin:10px 0;color:var(--colt-muted);font-size:.82rem;line-height:1.45}
+    .roi-validation.error{color:#ff9caf}
+    .roi-validation.success{color:var(--colt-success)}
+    .roi-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .roi-actions button.primary{background:linear-gradient(135deg,#1674a2,#315fd1);border-color:#5fcfff}
+    .roi-actions button.execute{background:linear-gradient(135deg,#2459b8,#684be0);border-color:#9aa7ff}
+    .roi-actions button:disabled{cursor:not-allowed;filter:grayscale(.6);opacity:.48}
+    .roi-job{margin-top:12px;padding:11px;border-radius:9px;background:#0b2547;border:1px solid #315f8d;color:var(--colt-muted);font-size:.82rem;line-height:1.5}
+    .roi-job[hidden]{display:none}
+    .roi-job a{color:var(--colt-accent);font-weight:700}
+    @media(max-width:900px){
+      .roi-editor-shell{grid-template-columns:1fr}.roi-workspace{border-right:0;border-bottom:1px solid var(--colt-line)}
+    }
+    @media(max-width:560px){
+      body{padding:0 12px;margin:22px auto}.roi-editor-head,.roi-workspace,.roi-sidebar{padding:15px}
+      .roi-editor-head{display:block}.roi-step-pill{display:inline-block;margin-top:12px}
+      .roi-toolstrip{grid-template-columns:1fr 1fr}.roi-actions{grid-template-columns:1fr}
+      .roi-video-stage,.roi-video-stage video{min-height:190px}
+    }
+    @media(max-width:760px){.review-layout,.review-profiles,.review-evidence-pair{grid-template-columns:1fr}}
+    @media(max-width:760px){.ppe-review-layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <h1>COLT AI - COLLBRAI</h1>
+  <p class="colt-brandline">Akıllı video analitik yönetimi</p>
+
+  <section id="roiEditorSection" aria-labelledby="roiEditorTitle">
+    <header class="roi-editor-head">
+      <div>
+        <h2 id="roiEditorTitle">Alan ve video aralığı düzenleyici</h2>
+        <p>Videoyu seç, güvenli alanı çiz ve yalnızca istediğin zaman aralığını işle.</p>
+      </div>
+      <span class="roi-step-pill">3 kolay adım</span>
+    </header>
+    <div class="roi-editor-shell">
+      <div class="roi-workspace">
+        <label class="roi-field" for="roiVideoSelect">
+          1 · Video seç
+          <select id="roiVideoSelect" aria-describedby="roiVideoHelp">
+            <option value="">Videolar yükleniyor…</option>
+          </select>
+        </label>
+        <p id="roiVideoHelp" class="muted">Tam videolar güvenli MP4 önizleme akışıyla açılır.</p>
+        <div id="roiVideoStage" class="roi-video-stage">
+          <video id="roiVideo" preload="metadata" playsinline aria-label="ROI çizilecek video önizlemesi"></video>
+          <canvas id="roiCanvas" tabindex="0" role="application" aria-label="ROI çokgen çizim alanı"></canvas>
+          <p id="roiStageMessage" class="roi-stage-message">Önizlemek için bir video seçin.</p>
+        </div>
+        <div class="roi-video-controls" aria-label="Video oynatma kontrolleri">
+          <button id="roiPlayButton" type="button" aria-label="Videoyu oynat veya duraklat">▶ Oynat</button>
+          <button id="roiBackFrame" type="button" aria-label="Bir kare geri git">−1 kare</button>
+          <button id="roiNextFrame" type="button" aria-label="Bir kare ileri git">+1 kare</button>
+          <span id="roiPlayhead" class="roi-time-readout">00:00.000 / 00:00.000</span>
+        </div>
+        <label class="roi-playhead-seek" for="roiPlayheadSeek">
+          Video konumu
+          <input id="roiPlayheadSeek" type="range" min="0" max="0" value="0" step="0.033333" aria-label="Video oynatma konumu">
+        </label>
+        <p class="roi-hint">Alan köşelerine tıklayın. Noktaları sürükleyerek düzeltebilirsiniz. Çift tık veya Enter ile alanı kapatın; Esc son noktayı geri alır.</p>
+        <div class="roi-toolstrip" aria-label="ROI çizim araçları">
+          <button id="roiUndo" type="button">↶ Geri al</button>
+          <button id="roiClose" type="button">◇ Alanı kapat</button>
+          <button id="roiFullFrame" type="button">▣ Tüm görüntü</button>
+          <button id="roiReset" class="danger-outline" type="button">× Temizle</button>
+        </div>
+        <div class="roi-statusline" aria-live="polite">
+          <span id="roiStatusDot" class="roi-dot"></span>
+          <span id="roiPointStatus">En az 3 köşe ekleyin.</span>
+        </div>
+      </div>
+      <aside class="roi-sidebar" aria-label="İşleme planı">
+        <div class="roi-card">
+          <h3>2 · İşlenecek bölümü seç</h3>
+          <div class="roi-time-grid">
+            <div class="roi-time-box">
+              <label for="roiStartNumber">Başlangıç (sn)</label>
+              <input id="roiStartNumber" type="number" min="0" value="0" step="0.001" inputmode="decimal">
+              <button id="roiSetStart" type="button">Oynatma konumunu al</button>
+            </div>
+            <div class="roi-time-box">
+              <label for="roiEndNumber">Bitiş (sn)</label>
+              <input id="roiEndNumber" type="number" min="0" value="0" step="0.001" inputmode="decimal">
+              <button id="roiSetEnd" type="button">Oynatma konumunu al</button>
+            </div>
+          </div>
+          <div class="roi-timeline">
+            <span class="roi-timeline-base"></span>
+            <span id="roiTimelineSelection" class="roi-timeline-selection"></span>
+            <input id="roiStartRange" type="range" min="0" max="0" value="0" step="0.001" aria-label="Video başlangıç zamanı">
+            <input id="roiEndRange" type="range" min="0" max="0" value="0" step="0.001" aria-label="Video bitiş zamanı">
+          </div>
+          <div class="roi-duration-summary">
+            <span><strong id="roiClipDuration">00:00.000</strong> işlenecek</span>
+            <span id="roiClipRatio">%0</span>
+          </div>
+        </div>
+        <div class="roi-card">
+          <h3>3 · Kontrol et ve başlat</h3>
+          <pre id="roiPlanPreview" aria-label="İşleme planı JSON önizlemesi">{}</pre>
+          <p id="roiValidation" class="roi-validation" aria-live="polite">Video ve ROI seçimi bekleniyor.</p>
+          <div class="roi-actions">
+            <button id="roiSavePlan" class="primary" type="button" disabled>Planı kaydet</button>
+            <button id="roiExecutePlan" class="execute" type="button" disabled>İşlemeyi başlat</button>
+          </div>
+          <div id="roiJobStatus" class="roi-job" aria-live="polite" hidden></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pipeline</h2>
+    <div class="row">
+      <button onclick="act('start')">Başlat</button>
+      <button class="danger" onclick="act('stop')">Durdur</button>
+      <button onclick="load()">Yenile</button>
+    </div>
+    <pre id="status">yükleniyor…</pre>
+  </section>
+
+  <section id="finalizationBundleSection">
+    <h2>Doğrulama bundle commit</h2>
+    <p class="muted">Salt okunur commit göstergesi; canlı raporlar ancak receipt ve altı çıktı pini birebir doğrulandığında finalized sayılır.</p>
+    <article id="finalizationBundleCard" class="validation-card" aria-live="polite">
+      <p class="muted">Finalization receipt kontrol ediliyor…</p>
+    </article>
+  </section>
+
+  <section id="productFinalizationV2Section">
+    <h2>Üç modül ürün acceptance commit v2</h2>
+    <p class="muted">Salt okunur gösterge; person+pose+PPE freeze, 12×640/960 en az beş dakika, üç semantic replay ve insan QA aynı canlı hash zincirinde değilse commit oluşmaz.</p>
+    <article id="productFinalizationV2Card" class="validation-card" aria-live="polite">
+      <p class="muted">V2 ürün finalization kanıtı kontrol ediliyor…</p>
+    </article>
+  </section>
+
+  <section id="productReadinessSection">
+    <div class="row">
+      <h2>Üç modül ürün hazırlığı</h2>
+      <button onclick="loadValidation()">Hazırlığı yenile</button>
+    </div>
+    <p class="muted">Bu kart salt okunur; kişi, pose, PPE, saha mesafesi ve birleşik 12-akış kanıtlarını tek kabul sözleşmesinde gösterir. Panel GPU işi başlatmaz.</p>
+    <article id="productReadinessCard" class="validation-card" aria-live="polite">
+      <p class="muted">Ürün hazırlık kanıtı yükleniyor…</p>
+    </article>
+  </section>
+
+  <section id="fullStackBenchmarkSection">
+    <h2>Üç modül 12-kamera / 5-dakika benchmark</h2>
+    <p class="muted">Salt okunur yürütme-hazırlığı kartıdır. 640/960 person-only ölçülmüş taban çizgilerini, henüz ölçülmemiş üç-modül tahminlerinden ayrı gösterir; panel GPU, Docker veya benchmark başlatmaz.</p>
+    <article id="fullStackBenchmarkCard" class="validation-card" aria-live="polite">
+      <p class="muted">Pinli benchmark planı, şemaları ve semantic replay kontrol ediliyor…</p>
+    </article>
+  </section>
+
+  <section id="personUpgradeSection">
+    <h2>Kişi modeli yükseltme hazırlığı</h2>
+    <p class="muted">Salt okunur provenance göstergesi; veri ve plan hazırlığını model kabulünden ayırır. Bu kart indirme, eğitim, export veya GPU işi başlatmaz.</p>
+    <article id="personUpgradeCard" class="validation-card" aria-live="polite">
+      <p class="muted">Pinli hazırlık zinciri kontrol ediliyor…</p>
+    </article>
+  </section>
+
+  <section id="poseModelReadinessSection">
+    <h2>Pose modeli hazırlığı</h2>
+    <p class="muted">Salt okunur provenance, 640/960 export planı, COCO17 semantic contract ve PCK değerlendirici göstergesi. Bu kart model indirme, export, inference, GPU veya Docker işi başlatmaz.</p>
+    <article id="poseModelReadinessCard" class="validation-card" aria-live="polite">
+      <p class="muted">Pinli pose hazırlık zinciri kontrol ediliyor…</p>
+    </article>
+  </section>
+
+  <section id="ppeSeedReadinessSection">
+    <h2>PPE veri tohumu hazırlığı</h2>
+    <p class="muted">Salt okunur kaynak ve receipt sözleşmesi göstergesi; ham dosya veya pinlenmemiş receipt taramaz. Bu kart indirme, karantina incelemesi, eğitim, export veya GPU işi başlatmaz.</p>
+    <article id="ppeSeedReadinessCard" class="validation-card" aria-live="polite">
+      <p class="muted">Pinli PPE seed sözleşmesi kontrol ediliyor…</p>
+    </article>
+  </section>
+
+  <section id="ppeFiveClassQuarantineSection">
+    <h2>PPE 5-Class R2 karantina</h2>
+    <p class="muted">Mevcut PPE seed tarihçesinden ayrı salt-okunur karttır. Büyük authoritative receipt yalnız stream hash/stat ile doğrulanır; panel karantina, eğitim, export veya GPU işi başlatmaz.</p>
+    <article id="ppeFiveClassQuarantineCard" class="validation-card" aria-live="polite">
+      <p class="muted">Compact R2 karantina kanıtı kontrol ediliyor…</p>
+    </article>
+  </section>
+
+  <section id="ppePublicSourceQuarantineSection">
+    <h2>PPE Lo/CPPED açık kaynak karantinası</h2>
+    <p class="muted">Lo/Lin/Hung ve CPPED için yalnız exact-pinli küçük metadata manifesti ile R1/R2 receipt zincirini gösterir. Panel dataset indirme, annotation açma, eğitim, final test veya GPU işi başlatmaz.</p>
+    <article id="ppePublicSourceQuarantineCard" class="validation-card" aria-live="polite">
+      <p class="muted">Lo/CPPED metadata karantina zinciri kontrol ediliyor…</p>
+    </article>
+  </section>
+
+  <section id="ppeHumanQaR6Section">
+    <div class="row">
+      <h2>PPE R6 — insan semantik QA</h2>
+      <button onclick="loadPpeHumanQa(true)">Kuyruğu yenile</button>
+      <button onclick="exportPpeHumanQa()">Strict adjudication export</button>
+    </div>
+    <p class="muted">Exact-pinli 718 train/calibration görsel örneği ve 6 politika kararı incelenir. Ham kaynak/label ve development_holdout bu arayüzden açılmaz. İnceleme tamamlansa bile eğitim veya üretim yetkisi doğmaz; yeni bir exact eğitim yetkilendirmesi gerekir.</p>
+    <p id="ppeQaState" class="muted" aria-live="polite">Yetkili PPE R6 kuyruğu bekleniyor…</p>
+    <div class="ppe-filter-grid">
+      <label>Örnek ara<input id="ppeQaQuery" maxlength="100" placeholder="ppe-r6-…"></label>
+      <label>Durum<select id="ppeQaStatus"><option value="">Tümü</option><option value="pending">Bekleyen</option><option value="decided">Karar verilen</option></select></label>
+      <label>Rol<select id="ppeQaRole"><option value="">Tümü</option><option value="train">Train</option><option value="calibration">Calibration</option></select></label>
+      <label>Kategori<select id="ppeQaCategory"><option value="">Tümü</option></select></label>
+      <label>Karar<select id="ppeQaDecisionFilter"><option value="">Tümü</option><option value="approve_sample_semantics">Semantik onay</option><option value="reject_sample_semantics">Semantik ret</option><option value="uncertain_needs_relabel">Belirsiz / relabel</option></select></label>
+    </div>
+    <div class="row">
+      <button onclick="applyPpeHumanQaFilters()">Filtrele</button>
+      <button id="ppeQaPrevious" onclick="pagePpeHumanQa('previous')" disabled>Önceki</button>
+      <button id="ppeQaNext" onclick="pagePpeHumanQa('next')" disabled>Sonraki</button>
+      <span id="ppeQaPage" class="muted"></span>
+    </div>
+    <div class="ppe-review-layout">
+      <nav id="ppeQaQueue" class="ppe-review-queue" aria-label="PPE R6 insan QA kuyruğu"></nav>
+      <div>
+        <article id="ppeQaSample" class="ppe-sample-card">
+          <p class="muted">İncelenecek bir örnek seçin.</p>
+        </article>
+        <div class="ppe-decision-form review-form">
+          <h3>Örnek kararı</h3>
+          <div class="review-form-grid">
+            <label>İnceleyen kimliği<input id="ppeQaReviewer" maxlength="200" autocomplete="off"></label>
+            <label>Karar<select id="ppeQaSampleDecision" onchange="syncPpeQaReason()"><option value="approve_sample_semantics">Semantiği onayla</option><option value="reject_sample_semantics">Semantiği reddet</option><option value="uncertain_needs_relabel">Belirsiz — relabel gerekli</option></select></label>
+            <label>Neden<select id="ppeQaReason"><option value="visually_correct">Görsel olarak doğru</option><option value="held_or_carried_helmet">Tutulan/taşınan kask</option><option value="helmet_not_on_associated_head">Kask ilişkili başta değil</option><option value="head_zone_policy_mismatch">Baş bölgesi politikası uyumsuz</option><option value="harness_not_hi_vis">Harness, hi-vis değil</option><option value="ordinary_garment_not_hi_vis">Sıradan giysi, hi-vis değil</option><option value="no_helmet_box_wrong">No-helmet kutusu yanlış</option><option value="quarantine_should_be_retained">Karantina yerine tutulmalı</option><option value="retained_should_be_quarantined">Tutulmak yerine karantinaya alınmalı</option><option value="unknown_must_not_be_negative_ground_truth">Unknown negatif GT olmamalı</option><option value="image_too_ambiguous">Görüntü fazla belirsiz</option><option value="other">Diğer</option></select></label>
+          </div>
+          <label>Notlar<textarea id="ppeQaSampleNotes" maxlength="4000"></textarea></label>
+          <div class="row"><button id="ppeQaSampleSave" onclick="savePpeHumanQaSample()" disabled>Örnek kararını kaydet</button></div>
+        </div>
+      </div>
+    </div>
+    <h3>Altı zorunlu politika kararı</h3>
+    <div id="ppeQaPolicies" class="ppe-policy-grid"></div>
+  </section>
+
+  <section id="manualReviewSection">
+    <div class="row">
+      <h2>İnsan algılama — manuel overlay incelemesi</h2>
+      <button onclick="loadManualReview()">Kuyruğu yenile</button>
+    </div>
+    <p class="muted">640 ve 960 çıktıları yan yana, yalnızca örneklenmiş kareler için insan tarafından incelenir. Bu alan pipeline veya GPU işi başlatmaz; sonuçlar yoğun ground truth ya da veri kümesi metriği değildir.</p>
+    <p id="manualReviewState" class="muted" aria-live="polite">Yetkili kuyruk bekleniyor…</p>
+    <div class="review-layout">
+      <nav id="manualReviewQueue" class="review-queue" aria-label="Manuel inceleme kuyruğu"></nav>
+      <div>
+        <div id="manualReviewContext" class="muted"></div>
+        <div id="manualReviewProfiles" class="review-profiles"></div>
+        <div class="review-form">
+          <h3 id="manualDecisionTitle">Karar formu</h3>
+          <div class="review-form-grid">
+            <label>İnceleyen kimliği<input id="manualReviewerId" maxlength="120" autocomplete="off"></label>
+            <label>İnceleme biçimi<select id="manualReviewerType"><option value="human">İnsan</option><option value="human_with_ai_assist">AI destekli insan</option></select></label>
+            <label>Durum<select id="manualDecisionStatus"><option value="reviewed">İncelendi</option><option value="ambiguous">Belirsiz</option><option value="excluded">Hariç</option></select></label>
+            <label>İncelenen tespit<input id="countDetection" type="number" min="0" step="1"></label>
+            <label>Görünür insan<input id="countVisible" type="number" min="0" step="1"></label>
+            <label>Skorlanabilir insan<input id="countScorable" type="number" min="0" step="1"></label>
+            <label>Doğru pozitif (TP)<input id="countTp" type="number" min="0" step="1"></label>
+            <label>Yanlış pozitif (FP)<input id="countFp" type="number" min="0" step="1"></label>
+            <label>Yanlış negatif (FN)<input id="countFn" type="number" min="0" step="1"></label>
+            <label>Yok sayılan tespit<input id="countIgnored" type="number" min="0" step="1"></label>
+            <label>Skorlanamaz görünür insan<input id="countUnscorable" type="number" min="0" step="1"></label>
+          </div>
+          <label>Nedenler (satır başına bir neden)<textarea id="manualReasons"></textarea></label>
+          <div class="row"><button id="manualSaveButton" onclick="saveManualDecision()" disabled>İnsan kararını kaydet</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row">
+      <h2>Doğrulama kampanyaları</h2>
+      <button onclick="loadValidation()">Durumu yenile</button>
+    </div>
+    <p class="muted">Bu alan salt okunurdur; panel test başlatmaz, yeniden denemez veya sonlandırmaz.</p>
+    <div id="validationGrid" class="validation-grid" aria-live="polite">
+      <p class="muted">Doğrulama kanıtları yükleniyor…</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>İnsan algılama profili</h2>
+    <div class="row">
+      <select id="profileSelect"></select>
+      <button onclick="saveProfile()">Profili uygula</button>
+    </div>
+    <p id="profileInfo" class="muted"></p>
+  </section>
+
+  <section>
+    <h2>Kamera / video ekle</h2>
+    <input id="name" placeholder="Kamera adı">
+    <input id="uri" size="50" placeholder="rtsp://... veya file:///...">
+    <button onclick="add()">Ekle</button>
+    <div id="sources"></div>
+  </section>
+
+  <section>
+    <h2>Analitik modüller</h2>
+    <div id="analytics"></div>
+  </section>
+
+  <script>
+    const headers={'Content-Type':'application/json'};
+    let manualQueuePayload=null;
+    let activeManualDecision=null;
+    let manualObjectUrls=[];
+    let ppeQaPayload=null;
+    let ppeQaOffset=0;
+    let activePpeQaSample=null;
+    let ppeQaTileUrl=null;
+
+    const roiEditor={
+      videos:[],selected:null,points:[],closed:false,selectedVertex:-1,
+      draggingVertex:-1,duration:0,fps:30,videoReady:false,savedPlan:null,
+      pollTimer:null,dirty:false,suppressDirty:false
+    };
+
+    function roiClamp(value,min,max){return Math.min(max,Math.max(min,value))}
+    function roiRound(value,digits=3){
+      const scale=10**digits;
+      return Math.round((Number(value)+Number.EPSILON)*scale)/scale;
+    }
+    function roiFormatTime(seconds){
+      const safe=Math.max(0,Number.isFinite(Number(seconds))?Number(seconds):0);
+      const minutes=Math.floor(safe/60);
+      const rest=Math.floor(safe%60);
+      const millis=Math.floor((safe-Math.floor(safe))*1000);
+      return `${String(minutes).padStart(2,'0')}:${String(rest).padStart(2,'0')}.${String(millis).padStart(3,'0')}`;
+    }
+    function roiPolygonArea(points){
+      if(!Array.isArray(points)||points.length<3)return 0;
+      return Math.abs(points.reduce((sum,point,index)=>{
+        const next=points[(index+1)%points.length];
+        return sum+(point.x*next.y-next.x*point.y);
+      },0)/2);
+    }
+    function roiCross(a,b,c){
+      return(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
+    }
+    function roiOnSegment(point,start,end){
+      return Math.abs(roiCross(start,end,point))<=1e-9
+        &&point.x>=Math.min(start.x,end.x)-1e-9&&point.x<=Math.max(start.x,end.x)+1e-9
+        &&point.y>=Math.min(start.y,end.y)-1e-9&&point.y<=Math.max(start.y,end.y)+1e-9;
+    }
+    function roiSegmentsIntersect(a,b,c,d){
+      const firstA=roiCross(a,b,c),firstB=roiCross(a,b,d);
+      const secondA=roiCross(c,d,a),secondB=roiCross(c,d,b);
+      if(((firstA>1e-9&&firstB< -1e-9)||(firstA< -1e-9&&firstB>1e-9))
+        &&((secondA>1e-9&&secondB< -1e-9)||(secondA< -1e-9&&secondB>1e-9)))return true;
+      return roiOnSegment(c,a,b)||roiOnSegment(d,a,b)||roiOnSegment(a,c,d)||roiOnSegment(b,c,d);
+    }
+    function roiSelfIntersects(points){
+      if(!Array.isArray(points)||points.length<4)return false;
+      for(let i=0;i<points.length;i++){
+        const a=points[i],b=points[(i+1)%points.length];
+        for(let j=i+1;j<points.length;j++){
+          if(j===i||j===(i+1)%points.length||(i===0&&j===points.length-1))continue;
+          const c=points[j],d=points[(j+1)%points.length];
+          if(roiSegmentsIntersect(a,b,c,d))return true;
+        }
+      }
+      return false;
+    }
+    function roiValidatePlan(plan,{duration=Infinity,closed=true,videoReady=true}={}){
+      const errors=[];
+      if(!plan?.video_id)errors.push('Bir video seçin.');
+      if(!videoReady)errors.push('Video önizlemesinin hazır olmasını bekleyin.');
+      if(!Number.isFinite(plan?.start_seconds)||plan.start_seconds<0)errors.push('Başlangıç zamanı geçersiz.');
+      if(!Number.isFinite(plan?.end_seconds)||plan.end_seconds<=plan.start_seconds)errors.push('Bitiş başlangıçtan büyük olmalı.');
+      if(Number.isFinite(duration)&&plan?.end_seconds>duration+.001)errors.push('Bitiş video süresini aşamaz.');
+      const points=plan?.rois?.[0]?.points;
+      if(!Array.isArray(points)||points.length<3)errors.push('ROI için en az 3 köşe ekleyin.');
+      if(Array.isArray(points)&&points.length>16)errors.push('ROI en fazla 16 köşe içerebilir.');
+      if(Array.isArray(points)&&points.some(point=>!Number.isFinite(point.x)||!Number.isFinite(point.y)||point.x<0||point.x>1||point.y<0||point.y>1)){
+        errors.push('ROI noktaları görüntü sınırları içinde olmalı.');
+      }
+      if(Array.isArray(points)&&points.some((point,index)=>points.slice(index+1).some(other=>Math.hypot(point.x-other.x,point.y-other.y)<=1e-9))){
+        errors.push('ROI aynı köşeyi birden fazla kez içeremez.');
+      }
+      if(Array.isArray(points)&&points.length>=3&&roiPolygonArea(points)<.00001)errors.push('ROI alanı çok küçük.');
+      if(Array.isArray(points)&&roiSelfIntersects(points))errors.push('ROI kenarları birbiriyle kesişemez.');
+      if(Array.isArray(points)&&points.length>=3&&!closed)errors.push('ROI alanını çift tık veya Enter ile kapatın.');
+      return errors;
+    }
+    function roiBuildPlan(){
+      const rawEnd=Number(document.getElementById('roiEndNumber').value);
+      const exactEnd=Math.abs(rawEnd-roiEditor.duration)<=.0005?roiEditor.duration:rawEnd;
+      return{
+        video_id:roiEditor.selected?.video_id||'',
+        start_seconds:roiRound(Number(document.getElementById('roiStartNumber').value),9),
+        end_seconds:exactEnd===roiEditor.duration?roiEditor.duration:roiRound(exactEnd,9),
+        rois:[{
+          name:'Güvenlik Alanı',
+          points:roiEditor.points.map(point=>({x:roiRound(point.x,6),y:roiRound(point.y,6)}))
+        }]
+      };
+    }
+    window.ColtRoiEditorUtils=Object.freeze({
+      clamp:roiClamp,round:roiRound,formatTime:roiFormatTime,
+      polygonArea:roiPolygonArea,selfIntersects:roiSelfIntersects,validatePlan:roiValidatePlan
+    });
+
+    function roiInvalidateSavedPlan(){
+      if(!roiEditor.suppressDirty)roiEditor.dirty=true;
+      roiEditor.savedPlan=null;
+      document.getElementById('roiExecutePlan').disabled=true;
+      const job=document.getElementById('roiJobStatus');
+      if(roiEditor.pollTimer){clearTimeout(roiEditor.pollTimer);roiEditor.pollTimer=null}
+      job.hidden=true;job.replaceChildren();
+    }
+    function roiContentRect(){
+      const canvas=document.getElementById('roiCanvas');
+      const video=document.getElementById('roiVideo');
+      const canvasRect=canvas.getBoundingClientRect();
+      const videoRect=video.getBoundingClientRect();
+      const sourceWidth=video.videoWidth||roiEditor.selected?.width||16;
+      const sourceHeight=video.videoHeight||roiEditor.selected?.height||9;
+      const sourceRatio=sourceWidth/sourceHeight;
+      const elementRatio=videoRect.width/Math.max(1,videoRect.height);
+      let width,height,left,top;
+      if(elementRatio>sourceRatio){
+        height=videoRect.height;width=height*sourceRatio;
+        left=videoRect.left+(videoRect.width-width)/2;top=videoRect.top;
+      }else{
+        width=videoRect.width;height=width/sourceRatio;
+        left=videoRect.left;top=videoRect.top+(videoRect.height-height)/2;
+      }
+      return{x:left-canvasRect.left,y:top-canvasRect.top,width,height,canvasRect};
+    }
+    function roiNormalizedFromPointer(event){
+      const content=roiContentRect();
+      const localX=event.clientX-content.canvasRect.left-content.x;
+      const localY=event.clientY-content.canvasRect.top-content.y;
+      if(localX<0||localY<0||localX>content.width||localY>content.height)return null;
+      return{x:roiClamp(localX/content.width,0,1),y:roiClamp(localY/content.height,0,1)};
+    }
+    function roiCanvasPoint(point){
+      const content=roiContentRect();
+      return{x:content.x+point.x*content.width,y:content.y+point.y*content.height};
+    }
+    function roiResizeCanvas(){
+      const canvas=document.getElementById('roiCanvas');
+      const rect=canvas.getBoundingClientRect();
+      const ratio=Math.min(window.devicePixelRatio||1,2);
+      const width=Math.max(1,Math.round(rect.width*ratio));
+      const height=Math.max(1,Math.round(rect.height*ratio));
+      if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height}
+      const context=canvas.getContext('2d');
+      context.setTransform(ratio,0,0,ratio,0,0);
+      roiDrawCanvas();
+    }
+    function roiDrawCanvas(){
+      const canvas=document.getElementById('roiCanvas');
+      const context=canvas.getContext('2d');
+      const rect=canvas.getBoundingClientRect();
+      const ratio=Math.min(window.devicePixelRatio||1,2);
+      context.setTransform(ratio,0,0,ratio,0,0);
+      context.clearRect(0,0,rect.width,rect.height);
+      if(!roiEditor.videoReady||!roiEditor.points.length)return;
+      const drawn=roiEditor.points.map(roiCanvasPoint);
+      context.save();
+      context.lineJoin='round';context.lineCap='round';
+      context.beginPath();context.moveTo(drawn[0].x,drawn[0].y);
+      drawn.slice(1).forEach(point=>context.lineTo(point.x,point.y));
+      if(roiEditor.closed)context.closePath();
+      context.fillStyle=roiEditor.closed?'rgba(70,199,255,.22)':'rgba(70,199,255,.11)';
+      context.fill();
+      context.strokeStyle='#46c7ff';context.lineWidth=3;context.stroke();
+      if(!roiEditor.closed&&drawn.length>=3){
+        context.setLineDash([7,6]);context.beginPath();
+        context.moveTo(drawn[drawn.length-1].x,drawn[drawn.length-1].y);
+        context.lineTo(drawn[0].x,drawn[0].y);context.strokeStyle='rgba(70,199,255,.65)';context.stroke();
+        context.setLineDash([]);
+      }
+      drawn.forEach((point,index)=>{
+        const selected=index===roiEditor.selectedVertex;
+        context.beginPath();context.arc(point.x,point.y,selected?9:7,0,Math.PI*2);
+        context.fillStyle=selected?'#ffcf66':'#f4f7ff';context.fill();
+        context.lineWidth=3;context.strokeStyle=selected?'#b77900':'#1787bc';context.stroke();
+        context.fillStyle='#06152d';context.font='700 9px system-ui';context.textAlign='center';context.textBaseline='middle';
+        context.fillText(String(index+1),point.x,point.y+.5);
+      });
+      context.restore();
+    }
+    function roiNearestVertex(event){
+      const content=roiContentRect();
+      const x=event.clientX-content.canvasRect.left;
+      const y=event.clientY-content.canvasRect.top;
+      let match=-1,best=24;
+      roiEditor.points.forEach((point,index)=>{
+        const drawn=roiCanvasPoint(point);
+        const distance=Math.hypot(x-drawn.x,y-drawn.y);
+        if(distance<best){best=distance;match=index}
+      });
+      return match;
+    }
+    function roiSetClosed(value=true){
+      if(value&&roiEditor.points.length<3)return;
+      roiEditor.closed=value;roiEditor.selectedVertex=value?0:Math.max(-1,roiEditor.points.length-1);
+      roiInvalidateSavedPlan();roiRefresh();
+    }
+    function roiUndoPoint(){
+      if(!roiEditor.points.length)return;
+      if(roiEditor.closed){roiEditor.closed=false}
+      else roiEditor.points.pop();
+      roiEditor.selectedVertex=roiEditor.points.length-1;
+      roiInvalidateSavedPlan();roiRefresh();
+    }
+    function roiResetPoints(){
+      roiEditor.points=[];roiEditor.closed=false;roiEditor.selectedVertex=-1;
+      roiInvalidateSavedPlan();roiRefresh();
+    }
+    function roiUseFullFrame(){
+      roiEditor.points=[{x:.005,y:.005},{x:.995,y:.005},{x:.995,y:.995},{x:.005,y:.995}];
+      roiEditor.closed=true;roiEditor.selectedVertex=0;
+      roiInvalidateSavedPlan();roiRefresh();
+    }
+    function roiSeek(delta){
+      const video=document.getElementById('roiVideo');
+      if(!roiEditor.videoReady)return;
+      video.currentTime=roiClamp(video.currentTime+delta,0,roiEditor.duration);
+    }
+    function roiSyncTimeline(source){
+      const startInput=document.getElementById('roiStartNumber');
+      const endInput=document.getElementById('roiEndNumber');
+      const startRange=document.getElementById('roiStartRange');
+      const endRange=document.getElementById('roiEndRange');
+      let start=Number(source===startRange?startRange.value:startInput.value);
+      let end=Number(source===endRange?endRange.value:endInput.value);
+      if(source===startRange)startInput.value=roiRound(start,9);
+      if(source===endRange)endInput.value=roiRound(end,9);
+      start=roiClamp(Number.isFinite(start)?start:0,0,roiEditor.duration);
+      end=roiClamp(Number.isFinite(end)?end:roiEditor.duration,0,roiEditor.duration);
+      if(source===startInput)startRange.value=String(start);
+      if(source===endInput)endRange.value=String(end);
+      const selection=document.getElementById('roiTimelineSelection');
+      const denom=Math.max(roiEditor.duration,.001);
+      selection.style.left=`${start/denom*100}%`;
+      selection.style.width=`${Math.max(0,end-start)/denom*100}%`;
+      const duration=Math.max(0,end-start);
+      document.getElementById('roiClipDuration').textContent=roiFormatTime(duration);
+      document.getElementById('roiClipRatio').textContent=`%${Math.round(duration/denom*100)}`;
+      roiInvalidateSavedPlan();roiRefreshPlan();
+    }
+    function roiSetTimelineBounds(duration){
+      roiEditor.duration=Math.max(0,Number(duration)||0);
+      for(const id of ['roiStartRange','roiEndRange']){
+        const input=document.getElementById(id);input.max=String(roiEditor.duration);input.step='any';
+      }
+      document.getElementById('roiStartNumber').max=String(roiEditor.duration);
+      document.getElementById('roiEndNumber').max=String(roiEditor.duration);
+      document.getElementById('roiStartNumber').value='0';
+      document.getElementById('roiStartRange').value='0';
+      document.getElementById('roiEndNumber').value=String(roiRound(roiEditor.duration,9));
+      document.getElementById('roiEndRange').value=String(roiEditor.duration);
+      roiSyncTimeline(document.getElementById('roiEndRange'));
+    }
+    function roiRefreshPlan(){
+      const plan=roiBuildPlan();
+      const errors=roiValidatePlan(plan,{duration:roiEditor.duration,closed:roiEditor.closed,videoReady:roiEditor.videoReady});
+      document.getElementById('roiPlanPreview').textContent=JSON.stringify(plan,null,2);
+      const validation=document.getElementById('roiValidation');
+      validation.className='roi-validation '+(errors.length?'error':'success');
+      validation.textContent=errors.length?errors[0]:'Plan hazır. Önce kaydedin, ardından işlemeyi başlatın.';
+      document.getElementById('roiSavePlan').disabled=errors.length>0;
+      return{plan,errors};
+    }
+    function roiRefresh(){
+      const count=roiEditor.points.length;
+      const status=document.getElementById('roiPointStatus');
+      const dot=document.getElementById('roiStatusDot');
+      if(roiEditor.closed&&count>=3){
+        status.textContent=`Alan hazır · ${count} köşe · görüntünün %${Math.round(roiPolygonArea(roiEditor.points)*100)} kadarı`;
+        dot.className='roi-dot good';
+      }else if(count){
+        status.textContent=`${count} köşe eklendi · ${Math.max(0,3-count)} köşe daha gerekli`;
+        dot.className='roi-dot';
+      }else{
+        status.textContent='En az 3 köşe ekleyin.';dot.className='roi-dot';
+      }
+      document.getElementById('roiClose').disabled=count<3||roiEditor.closed;
+      document.getElementById('roiUndo').disabled=count===0;
+      document.getElementById('roiReset').disabled=count===0;
+      roiDrawCanvas();roiRefreshPlan();
+    }
+    function roiSetStageMessage(message){
+      const element=document.getElementById('roiStageMessage');
+      element.textContent=message;element.hidden=!message;
+    }
+    function roiUpdatePlayhead(){
+      const video=document.getElementById('roiVideo');
+      const seek=document.getElementById('roiPlayheadSeek');
+      seek.value=String(roiClamp(video.currentTime,0,Number(seek.max)||roiEditor.duration));
+      document.getElementById('roiPlayhead').textContent=`${roiFormatTime(video.currentTime)} / ${roiFormatTime(roiEditor.duration)}`;
+      document.getElementById('roiPlayButton').textContent=video.paused?'▶ Oynat':'❚❚ Duraklat';
+    }
+    async function roiSelectVideo(videoId){
+      const video=document.getElementById('roiVideo');
+      const select=document.getElementById('roiVideoSelect');
+      const previousId=roiEditor.selected?.video_id||'';
+      if(videoId!==previousId&&roiEditor.dirty&&roiEditor.selected
+        &&!window.confirm('Kaydedilmemiş ROI veya zaman seçimi silinecek. Video değiştirilsin mi?')){
+        select.value=previousId;return;
+      }
+      roiEditor.suppressDirty=true;
+      roiEditor.selected=roiEditor.videos.find(item=>item.video_id===videoId)||null;
+      roiEditor.videoReady=false;roiEditor.fps=Number(roiEditor.selected?.fps)||30;
+      roiResetPoints();roiSetTimelineBounds(0);roiSetStageMessage(roiEditor.selected?'MP4 önizleme hazırlanıyor…':'Önizlemek için bir video seçin.');
+      video.pause();video.removeAttribute('src');video.load();
+      const playheadSeek=document.getElementById('roiPlayheadSeek');
+      playheadSeek.max='0';playheadSeek.value='0';
+      roiEditor.dirty=false;roiEditor.suppressDirty=false;
+      if(!roiEditor.selected){roiRefresh();return}
+      video.src=roiEditor.selected.stream_url;
+      video.load();
+    }
+    async function roiLoadVideos(){
+      const select=document.getElementById('roiVideoSelect');
+      try{
+        const response=await fetch('/api/roi-editor/videos',{headers});
+        if(!response.ok)throw new Error(`HTTP ${response.status}`);
+        const payload=await response.json();
+        roiEditor.videos=Array.isArray(payload.videos)?payload.videos:[];
+        select.replaceChildren(new Option('Bir video seçin…',''));
+        roiEditor.videos.forEach(item=>{
+          const seconds=roiFormatTime(item.duration_seconds);
+          const option=new Option(`${item.display_name} · ${seconds}${item.playable===false?' · önizleme hazırlanıyor':''}`,item.video_id);
+          option.disabled=item.playable===false;
+          select.appendChild(option);
+        });
+        if(!roiEditor.videos.length){
+          select.replaceChildren(new Option('Düzenlenebilir video bulunamadı',''));
+          roiSetStageMessage('Düzenlenebilir video bulunamadı.');
+        }else{
+          const first=roiEditor.videos.find(item=>item.playable!==false);
+          if(first){select.value=first.video_id;await roiSelectVideo(first.video_id)}
+        }
+      }catch(error){
+        select.replaceChildren(new Option('Video listesi yüklenemedi',''));
+        roiSetStageMessage('Video listesi yüklenemedi. ROI editörü API bağlantısını kontrol edin.');
+        document.getElementById('roiValidation').className='roi-validation error';
+        document.getElementById('roiValidation').textContent='Video listesi alınamadı: '+error.message;
+      }
+    }
+    function roiApiError(payload,status){
+      const detail=payload?.detail;
+      if(typeof detail==='string')return detail;
+      if(Array.isArray(detail)){
+        const messages=detail.map(item=>item?.msg||item?.message).filter(Boolean);
+        if(messages.length)return messages.join(' · ');
+      }
+      if(detail&&typeof detail==='object')return detail.message||detail.msg||JSON.stringify(detail);
+      return `HTTP ${status}`;
+    }
+    async function roiSavePlan(){
+      const prepared=roiRefreshPlan();
+      if(prepared.errors.length)return;
+      const button=document.getElementById('roiSavePlan');
+      button.disabled=true;button.textContent='Kaydediliyor…';
+      try{
+        const response=await fetch('/api/roi-editor/plans',{method:'POST',headers,body:JSON.stringify(prepared.plan)});
+        const payload=await response.json().catch(()=>({}));
+        if(!response.ok)throw new Error(roiApiError(payload,response.status));
+        const planId=payload.plan_id||payload.id||payload.plan?.plan_id;
+        if(!planId)throw new Error('Sunucu plan kimliği döndürmedi.');
+        roiEditor.savedPlan={...payload,plan_id:planId};
+        roiEditor.dirty=false;
+        const validation=document.getElementById('roiValidation');
+        validation.className='roi-validation success';
+        validation.textContent='Plan kaydedildi. İşlemeyi başlatabilirsiniz.';
+        document.getElementById('roiExecutePlan').disabled=false;
+      }catch(error){
+        const validation=document.getElementById('roiValidation');
+        validation.className='roi-validation error';validation.textContent='Plan kaydedilemedi: '+error.message;
+      }finally{
+        button.textContent='Planı kaydet';
+        button.disabled=roiValidatePlan(roiBuildPlan(),{duration:roiEditor.duration,closed:roiEditor.closed,videoReady:roiEditor.videoReady}).length>0;
+      }
+    }
+    function roiRenderJob(payload){
+      const container=document.getElementById('roiJobStatus');
+      container.hidden=false;container.replaceChildren();
+      const state=String(payload.status||payload.state||'queued');
+      const labels={queued:'Sırada',running:'İşleniyor',complete:'Tamamlandı',completed:'Tamamlandı',error:'Hata',failed:'Hata'};
+      const title=document.createElement('strong');title.textContent=labels[state]||state;
+      container.append(title);
+      if(Number.isFinite(Number(payload.progress_percent))){
+        container.append(document.createTextNode(` · %${Math.round(Number(payload.progress_percent))}`));
+      }
+      const detail=payload.message||payload.detail;
+      if(detail){container.append(document.createElement('br'),document.createTextNode(String(detail)))}
+      const href=payload.output_url||payload.result_url||payload.output?.href;
+      if((state==='complete'||state==='completed')&&href){
+        try{
+          const safe=new URL(href,window.location.origin);
+          if(['http:','https:'].includes(safe.protocol)){
+            const link=document.createElement('a');link.href=safe.href;link.textContent='İşlenmiş videoyu aç';
+            link.target='_blank';link.rel='noopener';container.append(document.createElement('br'),link);
+          }
+        }catch(_error){/* malformed result links are never rendered */}
+      }
+      return state;
+    }
+    async function roiPollJob(jobId){
+      try{
+        const response=await fetch('/api/roi-editor/jobs/'+encodeURIComponent(jobId),{headers});
+        const payload=await response.json().catch(()=>({}));
+        if(!response.ok)throw new Error(roiApiError(payload,response.status));
+        const state=roiRenderJob(payload);
+        if(!['complete','completed','error','failed'].includes(state)){
+          roiEditor.pollTimer=setTimeout(()=>roiPollJob(jobId),1500);
+        }else{
+          roiEditor.pollTimer=null;document.getElementById('roiExecutePlan').disabled=false;
+        }
+      }catch(error){
+        roiRenderJob({status:'error',message:'İş durumu alınamadı: '+error.message});
+        roiEditor.pollTimer=null;document.getElementById('roiExecutePlan').disabled=false;
+      }
+    }
+    async function roiExecutePlan(){
+      if(!roiEditor.savedPlan?.plan_id)return;
+      const button=document.getElementById('roiExecutePlan');
+      button.disabled=true;roiRenderJob({status:'queued',message:'İşleme isteği gönderiliyor…'});
+      try{
+        const response=await fetch('/api/roi-editor/plans/'+encodeURIComponent(roiEditor.savedPlan.plan_id)+'/execute',{method:'POST',headers});
+        const payload=await response.json().catch(()=>({}));
+        if(!response.ok)throw new Error(roiApiError(payload,response.status));
+        const jobId=payload.job_id||payload.id||payload.job?.job_id;
+        if(!jobId)throw new Error('Sunucu iş kimliği döndürmedi.');
+        roiRenderJob(payload);roiPollJob(jobId);
+      }catch(error){
+        roiRenderJob({status:'error',message:'İşleme başlatılamadı: '+error.message});
+        button.disabled=false;
+      }
+    }
+    function roiInitEditor(){
+      const video=document.getElementById('roiVideo');
+      const canvas=document.getElementById('roiCanvas');
+      document.getElementById('roiVideoSelect').addEventListener('change',event=>roiSelectVideo(event.target.value));
+      video.addEventListener('loadedmetadata',()=>{
+        const declared=Number(roiEditor.selected?.duration_seconds);
+        const duration=Number.isFinite(declared)&&declared>0?declared:video.duration;
+        roiEditor.videoReady=Number.isFinite(duration)&&duration>0&&video.videoWidth>0;
+        if(!roiEditor.videoReady){
+          roiSetStageMessage('Önizleme hazırlanamadı. MP4 önizleme akışını kontrol edin.');
+          roiRefresh();return;
+        }
+        roiEditor.suppressDirty=true;
+        roiSetStageMessage('');roiSetTimelineBounds(duration);
+        const playheadSeek=document.getElementById('roiPlayheadSeek');
+        playheadSeek.max=String(duration);
+        playheadSeek.step=String(1/Math.max(1,roiEditor.fps));
+        roiEditor.dirty=false;roiEditor.suppressDirty=false;
+        roiResizeCanvas();roiUpdatePlayhead();roiRefresh();
+      });
+      video.addEventListener('error',()=>{
+        roiEditor.videoReady=false;
+        roiSetStageMessage('Önizleme hazırlanamadı. Tarayıcı uyumlu MP4 akışını kontrol edin.');
+        roiRefresh();
+      });
+      video.addEventListener('timeupdate',roiUpdatePlayhead);
+      video.addEventListener('play',roiUpdatePlayhead);video.addEventListener('pause',roiUpdatePlayhead);
+      document.getElementById('roiPlayButton').addEventListener('click',()=>video.paused?video.play():video.pause());
+      document.getElementById('roiBackFrame').addEventListener('click',()=>roiSeek(-1/Math.max(1,roiEditor.fps)));
+      document.getElementById('roiNextFrame').addEventListener('click',()=>roiSeek(1/Math.max(1,roiEditor.fps)));
+      document.getElementById('roiPlayheadSeek').addEventListener('input',event=>{
+        if(!roiEditor.videoReady)return;
+        video.currentTime=roiClamp(Number(event.target.value)||0,0,roiEditor.duration);
+        roiUpdatePlayhead();
+      });
+      document.getElementById('roiUndo').addEventListener('click',roiUndoPoint);
+      document.getElementById('roiClose').addEventListener('click',()=>roiSetClosed(true));
+      document.getElementById('roiFullFrame').addEventListener('click',roiUseFullFrame);
+      document.getElementById('roiReset').addEventListener('click',roiResetPoints);
+      document.getElementById('roiSetStart').addEventListener('click',()=>{
+        document.getElementById('roiStartNumber').value=roiRound(video.currentTime,9);
+        roiSyncTimeline(document.getElementById('roiStartNumber'));
+      });
+      document.getElementById('roiSetEnd').addEventListener('click',()=>{
+        document.getElementById('roiEndNumber').value=roiRound(video.currentTime,9);
+        roiSyncTimeline(document.getElementById('roiEndNumber'));
+      });
+      for(const id of ['roiStartNumber','roiEndNumber','roiStartRange','roiEndRange']){
+        const input=document.getElementById(id);
+        input.addEventListener('input',()=>roiSyncTimeline(input));
+        input.addEventListener('change',()=>{
+          let value=roiClamp(Number(input.value)||0,0,roiEditor.duration);
+          input.value=String(roiRound(value,9));roiSyncTimeline(input);
+        });
+      }
+      document.getElementById('roiSavePlan').addEventListener('click',roiSavePlan);
+      document.getElementById('roiExecutePlan').addEventListener('click',roiExecutePlan);
+      canvas.addEventListener('pointerdown',event=>{
+        if(!roiEditor.videoReady)return;
+        const vertex=roiNearestVertex(event);
+        if(vertex>=0){
+          roiEditor.draggingVertex=vertex;roiEditor.selectedVertex=vertex;
+          canvas.setPointerCapture(event.pointerId);event.preventDefault();roiDrawCanvas();return;
+        }
+        if(roiEditor.closed||event.detail>1)return;
+        const point=roiNormalizedFromPointer(event);
+        if(!point||roiEditor.points.length>=16)return;
+        roiEditor.points.push(point);roiEditor.selectedVertex=roiEditor.points.length-1;
+        roiInvalidateSavedPlan();roiRefresh();event.preventDefault();
+      });
+      canvas.addEventListener('pointermove',event=>{
+        if(roiEditor.draggingVertex<0)return;
+        const point=roiNormalizedFromPointer(event);
+        if(!point)return;
+        roiEditor.points[roiEditor.draggingVertex]=point;roiInvalidateSavedPlan();roiRefresh();
+      });
+      const releasePointer=event=>{
+        if(roiEditor.draggingVertex>=0){
+          roiEditor.draggingVertex=-1;
+          if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);
+        }
+      };
+      canvas.addEventListener('pointerup',releasePointer);canvas.addEventListener('pointercancel',releasePointer);
+      canvas.addEventListener('dblclick',event=>{if(roiEditor.points.length>=3){event.preventDefault();roiSetClosed(true)}});
+      canvas.addEventListener('keydown',event=>{
+        if(event.key==='Enter'){event.preventDefault();roiSetClosed(true);return}
+        if(event.key==='Escape'){event.preventDefault();roiUndoPoint();return}
+        if(event.key==='Delete'||event.key==='Backspace'){event.preventDefault();roiResetPoints();return}
+        if(event.shiftKey&&(event.key==='ArrowLeft'||event.key==='ArrowRight')){
+          event.preventDefault();roiSeek(event.key==='ArrowLeft'?-1:1);return;
+        }
+        if(roiEditor.selectedVertex<0||!event.key.startsWith('Arrow'))return;
+        const point=roiEditor.points[roiEditor.selectedVertex],step=.002;
+        if(event.key==='ArrowLeft')point.x=roiClamp(point.x-step,0,1);
+        if(event.key==='ArrowRight')point.x=roiClamp(point.x+step,0,1);
+        if(event.key==='ArrowUp')point.y=roiClamp(point.y-step,0,1);
+        if(event.key==='ArrowDown')point.y=roiClamp(point.y+step,0,1);
+        event.preventDefault();roiInvalidateSavedPlan();roiRefresh();
+      });
+      new ResizeObserver(roiResizeCanvas).observe(document.getElementById('roiVideoStage'));
+      roiRefresh();roiLoadVideos();
+    }
+
+    const stateLabels={
+      complete:'tamamlandı',in_progress:'devam ediyor',running:'çalışıyor',planned:'planlandı',
+      accepted:'kabul edildi',preliminary:'ön rapor',blocked_by_hardware:'donanım engeli',
+      blocked:'engelli',ready_for_operator_review:'operatör incelemesine hazır',
+      collected_not_verified:'toplandı, doğrulanmadı',prepared_not_evaluated:'hazırlandı, ölçülmedi',
+      waiting_for_predictions:'tahminler bekleniyor',ready_for_cpu_evaluation:'CPU ölçümüne hazır',
+      waiting_for_inputs:'saha girdileri bekleniyor',proven:'kanıtlandı',unproven:'kanıtlanmadı',
+      awaiting_execution:'yetkili koşu bekleniyor',jobs_complete_aggregate_pending:'işler tamam; birleştirme bekleniyor',
+      passed:'geçti',failed:'başarısız',draft_unapproved:'onaysız taslak',missing:'eksik',invalid:'geçersiz',
+      verified:'doğrulandı',synthetic_pending:'sentetik; SLA yok',pending:'segment sonu bekleniyor',
+      not_reported:'raporlanmadı',blocked_by_floor_binding:'floor bağı geçersiz',
+      integrity_failed:'bütünlük başarısız',failed_below_floor:'floor altında',
+      failed_missing_measurement:'ölçüm eksik',interrupted_not_evaluated:'kesildi; ölçülmedi',
+      not_ready:'hazır değil',complete_verified_cpu_only:'yalnız CPU ile doğrulandı',
+      incomplete:'kanıt eksik',
+      invalid_or_incomplete:'geçersiz veya eksik',
+      valid_metadata_only:'geçerli; yalnız metadata',
+      not_started:'başlamadı',attention:'inceleme gerekli',artifact_error:'kanıt hatası',
+      approved_not_evaluated:'onaylı eşikler; henüz ölçülmedi',
+      license_basis_not_selected:'lisans temeli seçilmedi',
+      planned_license_required_not_exported:'planlar hazır; lisans ve export bekleniyor',
+      planned_not_acquired:'kaynak planı hazır; veri edinilmedi',
+      no_exact_pinned_acquisition_receipt:'exact-pinli edinim receipt’i yok',
+      acquired_quarantine_failed:'edinildi; karantina reddedildi',
+      quarantine_structural_gates_failed:'karantina yapısal kapıları başarısız',
+      quarantine_structural_pass_training_blocked:'yapısal karantina geçti; eğitim kapalı',
+      dry_run_group_split_complete_training_blocked:'grup-safe dry-run tamam; eğitim kapalı',
+      metadata_only_training_blocked:'yalnız metadata; eğitim kapalı',
+      live_reentry_smoke_passed_deepstream_and_endurance_pending:'CUDA smoke geçti; DS9 ve dayanıklılık bekliyor',
+      deepstream_runtime_qualified_endurance_pending:'DS9 çalışma zamanı geçti; dayanıklılık bekliyor',
+      blocked_missing_runtime_artifacts:'runtime artefaktları bekleniyor',
+      pose_ppe_engines_configs_authorization_and_fusion_pending:'Pose/PPE ve fusion hazırlığı bekleniyor',
+      runtime_qualified_current:'DS9 yeterliliği güncel',
+      stale_pending_requalification:'süresi doldu; yeniden yeterlilik bekleniyor',
+      pending_qualification_window:'yeterlilik penceresi henüz başlamadı',
+      rights_group_normalization_and_test_gates_incomplete:'hak, grup, normalizasyon ve test kapıları eksik',
+      rights_camera_semantics_and_independent_test_gates_incomplete:'hak, kamera grubu, semantik ve bağımsız test kapıları eksik',
+      deepstream9_engine_smoke_and_seven_day_endurance_pending:'DeepStream 9 motor smoke ve 7 günlük dayanıklılık bekliyor',
+      rights_access_grouping_semantics_and_test_unresolved:'hak, erişim, gruplama, semantik ve bağımsız test çözülmedi',
+      seven_day_endurance_pending:'7 günlük dayanıklılık bekliyor',
+      qualification_expired:'DS9 yeterlilik süresi doldu',
+      qualification_not_yet_current:'DS9 yeterlilik penceresi başlamadı',
+      blocked_host_driver_upgrade_required:'host sürücü güncellemesi ve reboot gerekli',
+      blocked_host_platform_mismatch:'host platformu DS9.1 matrisiyle uyumsuz',
+      static_prerequisites_met_live_probe_not_run:'statik önkoşullar geçti; canlı probe çalışmadı',
+      unavailable_integrity_error:'statik yeterlilik kanıtı okunamadı',
+      host_driver_upgrade_and_reboot_required:'595.58.03+ sürücü ve reboot gerekli',
+      live_runtime_probe_not_run:'canlı DS9.1 runtime probe çalışmadı',
+      static_qualification_evidence_unavailable:'statik yeterlilik kanıtı kullanılamıyor',
+      passed_cpu_only:'CPU-only derleme geçti',
+      native_build_evidence_unavailable:'native build kanıtı kullanılamıyor',
+      gpu_runtime_and_engine_validation_pending:'GPU runtime ve engine doğrulaması bekleniyor',
+      quarantined_diagnostic_only:'tanısal karantinada',
+      split_leakage_no_hi_vis_class_and_model_artifacts_missing:'split sızıntısı, no-hi-vis sınıfı ve model artefaktları eksik',
+      construction_ppe_evidence_integrity_failed:'Construction-PPE kanıt bütünlüğü başarısız',
+      challenger_static_verified:'challenger statik olarak doğrulandı',
+      fixed_batch1_no_960_overhead_and_runtime_validation_pending:'fixed batch 1; 960, üst açı ve runtime doğrulaması bekleniyor',
+      ppe_challenger_evidence_integrity_failed:'PPE challenger kanıt bütünlüğü başarısız',
+      contract_verified_no_live_plan:'sözleşme doğrulandı; canlı plan yok',
+      no_published_live_plan_execution_closed:'yayınlanmış plan yok; yürütme kapalı',
+      contract_exact_host_tool_pins_stale:'sözleşme exact; host tool pinleri eski',
+      docker_and_nvidia_smi_pins_drifted_requalification_required:'Docker ve nvidia-smi pinleri drift etti; yeniden yeterlilik gerekli',
+      gpu_lease_v5_control_integrity_failed:'GPU Lease V5 kontrol bütünlüğü başarısız',
+      terminal_accepted_prepared_closed_identity_only:'prepared-closed image kimliği ve kanıtı kabul edildi',
+      gpu_engine_and_runtime_validation_pending:'GPU engine ve runtime doğrulaması bekleniyor',
+      ds91_engine_builder_r1c3_integrity_failed:'R1C3 accepted-root bütünlüğü başarısız',
+      independent_reject_successor_required:'bağımsız inceleme reddetti; successor gerekli',
+      independent_reject_successor_in_progress:'bağımsız inceleme reddetti; R2 hazırlanıyor',
+      four_p1_findings_block_r1:'dört P1 bulgusu R1 kabulünü engelliyor',
+      accepted_cpu_preflight_runtime_closed:'CPU ön-uçuş tanımı kabul; runtime kapalı',
+      runtime_and_module_artifacts_pending:'runtime ve üç modül artefaktları bekleniyor',
+      ds91_preflight_r2_accept_integrity_failed:'R2 kabul zinciri bütünlüğü başarısız',
+      seven_p1_findings_block_r4:'yedi P1 bulgusu R4 kabulünü engelliyor',
+      driver595_r4_reject_integrity_failed:'R4 reject kaydı bütünlüğü başarısız',
+      current_boot_prerequisite_accepted:'mevcut boot sürücü önkoşulu kabul edildi',
+      driver595_current_boot_prerequisite_only:'yalnız mevcut boot için sürücü önkoşulu',
+      stale_boot_identity:'boot kimliği değişti; yeniden yeterlilik gerekli',
+      driver595_r7_boot_identity_changed:'R7 receipt farklı bir boot kimliğine ait',
+      driver595_r7_accept_integrity_failed:'R7 kabul zinciri bütünlüğü başarısız',
+      independent_static_controller_accepted_execution_closed:'bağımsız statik kontrol kabulü; yürütme kapalı',
+      engine_build_runtime_parity_and_publication_gates_pending:'engine build, runtime, parity ve yayın kapıları bekleniyor',
+      person_r14i_independent_acceptance_integrity_failed:'R14I bağımsız kabul zinciri bütünlüğü başarısız',
+      independent_static_controller_accepted_v5_host_gate_blocked:'bağımsız statik controller kabulü; V5 host kapısı kapalı',
+      gpu_lease_v6_successor_and_runtime_engine_gates_pending:'GPU Lease V6, runtime ve engine kapıları bekleniyor',
+      pose_r13i_independent_acceptance_integrity_failed:'Pose R13I bağımsız kabul zinciri bütünlüğü başarısız',
+      independent_phase_b_context_accepted_build_closed:'bağımsız Phase-B context kabulü; build kapalı',
+      separate_exact_cpu_image_build_gate_pending:'ayrı exact CPU image-build kapısı bekleniyor',
+      ppe_a32_independent_acceptance_integrity_failed:'PPE A3.2 bağımsız kabul zinciri bütünlüğü başarısız',
+      stale_lineage:'önceki koşuya ait; canlı koşuyla bağlı değil',unknown:'bilinmiyor',
+      ready:'hazır',pass:'geçti'
+    };
+
+    function addMetric(container,label,value){
+      if(value===null||value===undefined||value==='')return;
+      const line=document.createElement('div');
+      line.textContent=label+': '+value;
+      container.appendChild(line);
+    }
+
+    function renderProductReadiness(campaign){
+      const card=document.getElementById('productReadinessCard');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=campaign?.label||'Üç modül ürün hazırlığı';
+      card.appendChild(title);
+      if(!campaign){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='Salt-okunur ürün hazırlık raporu bulunamadı.';
+        card.appendChild(missing);
+        return;
+      }
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(campaign.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[campaign.state]||campaign.state||'bilinmiyor';
+      card.appendChild(badge);
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      const progress=campaign.progress||{};
+      addMetric(metrics,'Zorunlu kapı',`${progress.completed??0}/${progress.total??6}`);
+      addMetric(metrics,'Final ürün iddiası',campaign.final_claim_allowed?'izinli':'kapalı');
+      addMetric(metrics,'Bundle finalized',campaign.finalized?'evet':'hayır');
+      addMetric(metrics,'Kontrol düzlemi',campaign.read_only?'salt okunur':'geçersiz');
+      for(const gate of campaign.required_gates||[]){
+        const missing=(gate.missing_components||[]).length
+          ?`; eksik: ${gate.missing_components.join(', ')}`:'';
+        addMetric(metrics,gate.title||gate.id,`${stateLabels[gate.state]||gate.state}${missing}`);
+      }
+      for(const item of campaign.optional_hardening||[]){
+        addMetric(metrics,`Opsiyonel — ${item.title||item.id}`,`${stateLabels[item.state]||item.state}; zorunlu kapı etkisi yok`);
+      }
+      const stage=campaign.person_validation_stage||{};
+      if(stage.role)addMetric(metrics,'Kişi kampanyası','yalnız person-validation aşaması; ürün kabulüne eşdeğer değil');
+      card.appendChild(metrics);
+      const evidence=document.createElement('div');
+      evidence.className='evidence';
+      for(const item of campaign.evidence||[]){
+        const line=document.createElement('span');
+        line.textContent=item.available
+          ?`${item.label} — güvenli özet panelde`
+          :`${item.label} — ${item.artifact_state}`;
+        evidence.appendChild(line);
+      }
+      card.appendChild(evidence);
+    }
+
+    function renderFullStackBenchmark(campaign){
+      const card=document.getElementById('fullStackBenchmarkCard');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=campaign?.label||'Üç modül 12-kamera / 5-dakika benchmark planı';
+      card.appendChild(title);
+      if(!campaign){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='Pinli benchmark kontrol sözleşmesi okunamadı; çalıştırma ve sonuç iddiaları kapalı.';
+        card.appendChild(missing);
+        return;
+      }
+
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(campaign.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[campaign.state]||campaign.state||'bilinmiyor';
+      card.appendChild(badge);
+
+      const scope=campaign.scope||{};
+      const runtime=campaign.runtime||{};
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      addMetric(metrics,'Kontrol düzlemi',campaign.read_only?'salt okunur':'geçersiz');
+      addMetric(metrics,'Çalıştırma hazır',campaign.execution_ready?'evet':'hayır');
+      addMetric(metrics,'Final sonuç iddiası',campaign.final_claim_allowed?'izinli':'kapalı');
+      addMetric(metrics,'Profil / ayrı run',(scope.profiles||[]).join(' / ')+(scope.separate_runs?' / evet':''));
+      addMetric(metrics,'Simüle akış / ayrı kaynak / video tipi',`${scope.simulated_streams??0} / ${scope.distinct_sources??0} / ${scope.distinct_video_types??0}`);
+      addMetric(metrics,'Isınma / ölçüm',scope.measurement_seconds_per_run===undefined?null:`${scope.warmup_seconds_per_run} sn / ${scope.measurement_seconds_per_run} sn`);
+      addMetric(metrics,'Yürütme biçimi',scope.execution_mode);
+      addMetric(metrics,'Kaynak başı minimum kapsama',scope.minimum_per_source_coverage===undefined?null:`%${(scope.minimum_per_source_coverage*100).toFixed(0)}`);
+      addMetric(metrics,'Kaynak başı FPS hedefi',scope.minimum_output_fps_per_source===undefined?null:`${scope.minimum_output_fps_per_source} FPS`);
+      addMetric(metrics,'Runtime',runtime.deepstream?`DeepStream ${runtime.deepstream}; TensorRT ${runtime.tensorrt}`:null);
+      addMetric(metrics,'Image / parser / fusion',runtime.image?`${runtime.image}; ${runtime.parser}; ${runtime.fusion}`:null);
+      addMetric(metrics,'Neden',stateLabels[campaign.reason]||campaign.reason);
+      card.appendChild(metrics);
+
+      const profileGrid=document.createElement('div');
+      profileGrid.className='validation-grid';
+      for(const profileId of ['640','960']){
+        const profile=(campaign.profiles||{})[profileId];
+        if(!profile)continue;
+        const profileCard=document.createElement('article');
+        profileCard.className='validation-card';
+        const profileTitle=document.createElement('h3');
+        profileTitle.textContent=profileId+' profil';
+        profileCard.appendChild(profileTitle);
+        const profileMetrics=document.createElement('div');
+        profileMetrics.className='metric-list';
+        const baseline=profile.person_only_baseline||{};
+        const estimate=profile.full_stack_estimate||{};
+        addMetric(profileMetrics,'Person-only measured baseline — full-stack sonucu değil',baseline.classification);
+        addMetric(profileMetrics,'Person-only aggregate / akış',baseline.aggregate_mean_fps===undefined?null:`${baseline.aggregate_mean_fps} / ${baseline.per_stream_mean_fps} FPS`);
+        addMetric(profileMetrics,'Full-stack estimate_not_measured — ölçülmüş sonuç değil',estimate.classification);
+        addMetric(profileMetrics,'Tahmini aggregate aralık',(estimate.aggregate_fps_range||[]).length?`${estimate.aggregate_fps_range[0]}–${estimate.aggregate_fps_range[1]} FPS`:null);
+        addMetric(profileMetrics,'Tahmini akış başı aralık',(estimate.per_stream_fps_range||[]).length?`${estimate.per_stream_fps_range[0]}–${estimate.per_stream_fps_range[1]} FPS`:null);
+        addMetric(profileMetrics,'Person engine/config',profile.person_engine_config_ready?'hazır':'eksik');
+        addMetric(profileMetrics,'Pose engine/config',profile.pose_engine_config_ready?'hazır':'eksik');
+        addMetric(profileMetrics,'PPE engine/config',profile.ppe_engine_config_ready?'hazır':'eksik');
+        addMetric(profileMetrics,'Yetkili run planı',profile.authorization_plan_ready?'hazır':'eksik');
+        profileCard.appendChild(profileMetrics);
+        profileGrid.appendChild(profileCard);
+      }
+      card.appendChild(profileGrid);
+
+      const blockerBox=document.createElement('div');
+      blockerBox.className='evidence';
+      const blockerTitle=document.createElement('strong');
+      blockerTitle.textContent=`Açık blokajlar (${campaign.blocker_count??0})`;
+      blockerBox.appendChild(blockerTitle);
+      for(const [index,blocker] of (campaign.blockers||[]).entries()){
+        const line=document.createElement('span');
+        line.textContent=`${index+1}. ${blocker.label}`;
+        blockerBox.appendChild(line);
+      }
+      card.appendChild(blockerBox);
+
+      const measurement=campaign.measurement||{};
+      const integrity=campaign.integrity||{};
+      const closing=document.createElement('div');
+      closing.className='metric-list';
+      addMetric(closing,'Full-stack ölçüm',measurement.executed?'yürütüldü':'yürütülmedi');
+      addMetric(closing,'Full-stack receipt sonucu',measurement.full_stack_result_available?'mevcut':'mevcut değil');
+      const verified=Object.values(integrity).filter(Boolean).length;
+      const total=Object.keys(integrity).length;
+      if(total)addMetric(closing,'Kontrol artefaktı bütünlüğü',`${verified}/${total}`);
+      card.appendChild(closing);
+
+      const caveats=document.createElement('div');
+      caveats.className='evidence';
+      for(const caveat of campaign.caveats||[]){
+        const line=document.createElement('span');
+        line.textContent=caveat;
+        caveats.appendChild(line);
+      }
+      card.appendChild(caveats);
+    }
+
+    function renderPersonUpgrade(campaign){
+      const card=document.getElementById('personUpgradeCard');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=campaign?.label||'Kişi modeli yükseltme hazırlığı';
+      card.appendChild(title);
+      if(!campaign){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='Pinli hazırlık zinciri okunamadı; tüm hazırlık ve kabul bayrakları kapalı.';
+        card.appendChild(missing);
+        return;
+      }
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(campaign.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[campaign.state]||campaign.state||'bilinmiyor';
+      card.appendChild(badge);
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      const preparation=campaign.preparation||{};
+      const selection=campaign.selection||{};
+      const license=campaign.license||{};
+      const dataset=campaign.dataset||{};
+      const plan=campaign.training_plan||{};
+      const challenger=campaign.permissive_challenger||{};
+      const gpuR10=campaign.gpu_execution_r10||{};
+      const integrity=campaign.integrity||{};
+      addMetric(metrics,'Lisans kararı',license.decision===null?'seçilmedi — indirme/eğitim kapalı':license.decision);
+      addMetric(metrics,'Eğitim verisi',preparation.training_data_prepared?'pinli manifest hazır':'hazır değil');
+      addMetric(metrics,'Dondurulmuş eğitim planı',preparation.frozen_training_plan_verified?'doğrulandı; çalıştırılmadı':'doğrulanmadı');
+      addMetric(metrics,'Üretim modeli',selection.production_model_selected?'seçildi':'seçilmedi');
+      if(selection.primary_candidate)addMetric(metrics,'Birincil aday',selection.primary_candidate);
+      if(dataset.train_frames!==undefined)addMetric(metrics,'R-LiViT fit / kalibrasyon',`${dataset.train_frames} / ${dataset.calibration_frames} kare; ${dataset.person_instances} insan`);
+      if(dataset.official_test_output_frames!==undefined)addMetric(metrics,'Resmî test sızıntısı',`${dataset.official_test_output_frames} çıktı karesi`);
+      if(plan.candidate)addMetric(metrics,'Eğitim planı',`${plan.candidate}, ${plan.training_input_size}px; ${plan.deployment_profiles.join('/')} deploy profili; batch ${plan.deepstream_batch}`);
+      if(challenger.candidate)addMetric(metrics,'İzinli challenger',`${challenger.candidate} (${challenger.declared_code_license}); checkpoint ve sentetik export kanıtı doğrulandı`);
+      if(challenger.structural_load_verified!==undefined)addMetric(metrics,'Yapısal checkpoint yükleme',challenger.structural_load_verified?'CPU strict model + EMA doğrulandı; forward/inference yapılmadı':'doğrulanmadı');
+      if(challenger.framework_profiles_verified!==undefined)addMetric(metrics,'Challenger framework profilleri',challenger.framework_profiles_verified?'640/960 sentetik I/O doğrulandı':'doğrulanmadı');
+      if(challenger.onnx_profiles_exported)addMetric(metrics,'Challenger ONNX profilleri',`${challenger.onnx_profiles_exported.join('/')} fixed-spatial + dynamic-batch; sentetik PT/ORT parity ${challenger.synthetic_onnx_parity_passed?'geçti':'geçmedi'}`);
+      if(challenger.onnx_batch12_shape_verified!==undefined)addMetric(metrics,'ONNX batch-12 şekil/finite',challenger.onnx_batch12_shape_verified?`${challenger.onnx_batch12_profiles.join('/')} CPU ORT geçti; FPS/kapasite iddiası yok`:'doğrulanmadı');
+      if(challenger.parser_cpu_contract_ready!==undefined)addMetric(metrics,'DS9 parser CPU/ABI sözleşmesi',challenger.parser_cpu_contract_ready?`hazır; contract testi geçti; batch üst sınırı ${challenger.parser_max_batch_contract}`:'hazır değil');
+      if(challenger.real_image_framework_onnx_evidence_verified)addMetric(metrics,'Gerçek-görüntü framework/ONNX parity',challenger.real_image_framework_onnx_parity_passed?'geçti':`${challenger.real_image_selected_frame_count} pinli kare / ${challenger.real_image_unique_video_type_count} tip: 640 geçti, 960 geçmedi (${challenger.real_image_failure_count} strict fark); gate kapalı`);
+      if(gpuR10.evidence_version){
+        const smoke=gpuR10.smoke_one_step||{};
+        const baseline=gpuR10.internal_baseline||{};
+        const coco=baseline.coco||{};
+        const point=baseline.operating_point_score_0_5_iou_0_5||{};
+        const full=gpuR10.full_training_r10||{};
+        const fullEpochs=full.epochs||{};
+        const fullBest=full.coco?.best||{};
+        const fullFinal=full.coco?.final||{};
+        const fullDuration=full.duration||{};
+        const fullGpu=full.gpu||{};
+        const exportR11=gpuR10.export_plan_r11||{};
+        const onnxR12=gpuR10.onnx_export_r12||{};
+        const thresholdR13b=gpuR10.threshold_calibration_r13b||{};
+        const distance=gpuR10.distance_proxy_r1||{};
+        const proxyPoint=distance.operating_point_score_0_25||{};
+        const pixel=distance.pixel_height_proxy||{};
+        addMetric(metrics,'RT-DETRv4 GPU zinciri R10',gpuR10.available?(gpuR10.full_training_complete?`${gpuR10.state}; exact receipt zinciriyle 60/60 tamamlandı (yalnız iç validation)`:`${gpuR10.state}; full train sonucu henüz projekte edilmedi`):`fail-closed: ${gpuR10.reason||'kanıt geçersiz'}`);
+        if(gpuR10.image_build?.status)addMetric(metrics,'R10 image build',`${gpuR10.image_build.status}; GPU build sırasında expose edilmedi; exact immutable kimlik doğrulandı`);
+        if(smoke.status)addMetric(metrics,'R10 CUDA smoke',`${smoke.run_id} ${smoke.status}; AMP ${smoke.overflow_backoffs} backoff / ${smoke.amp_attempts} deneme / scale ${smoke.accepted_scale}; optimizer ${smoke.optimizer_steps}, EMA ${smoke.ema_updates}`);
+        if(baseline.status)addMetric(metrics,'R10 iç baseline',`${baseline.images} görüntü / ${baseline.annotations} GT; AP50–95 ${Number(coco.ap_50_95).toFixed(4)}, AP50 ${Number(coco.ap_50).toFixed(4)}; resmî test/test-unseen açılmadı`);
+        if(point.f1!==undefined)addMetric(metrics,'R10 @score 0.50 / IoU 0.50',`P/R/F1 ${Number(point.precision).toFixed(4)} / ${Number(point.recall).toFixed(4)} / ${Number(point.f1).toFixed(4)}; TP/FP/FN ${point.tp}/${point.fp}/${point.fn}`);
+        if(full.evidence_version)addMetric(metrics,'R10 full-60e-001',full.available?`${fullEpochs.completed}/${fullEpochs.contract} epoch + ${fullEpochs.validation_runs} validation; best epoch ${fullEpochs.best_zero_based_epoch}, final epoch ${fullEpochs.final_zero_based_epoch}; resmî test/test-unseen açılmadı`:`tarihsel/fallback: ${full.reason||'tam receipt zinciri yok'}`);
+        if(fullBest.ap_50_95!==undefined)addMetric(metrics,'R10 full best / final COCO',`best AP50–95 ${Number(fullBest.ap_50_95).toFixed(6)} (epoch ${fullEpochs.best_zero_based_epoch}); final ${Number(fullFinal.ap_50_95).toFixed(6)}; best checkpoint exact-pin doğrulandı`);
+        if(fullDuration.host_seconds!==undefined)addMetric(metrics,'R10 full süre / GPU tepe bellek',`host ${Number(fullDuration.host_seconds).toFixed(1)} sn, container ${Number(fullDuration.container_seconds).toFixed(1)} sn; ${Number(fullGpu.max_cuda_memory_allocated_gib).toFixed(3)} GiB`);
+        if(exportR11.evidence_version)addMetric(metrics,'R11 export planı',exportR11.available?`plan hazır/yetkili; 640 + 960, batch 12 FP16; bu satır yalnız immutable plan kanıtıdır`:`fail-closed: ${exportR11.reason||'plan kanıtı geçersiz'}`);
+        if(onnxR12.evidence_version){
+          const p640=onnxR12.profiles?.['640']||{};
+          const p960=onnxR12.profiles?.['960']||{};
+          addMetric(metrics,'R12 trained-person ONNX',onnxR12.available?`${p640.onnx_exported?'640 exact receipt geçti':'640 yok'} / ${p960.onnx_exported?'960 exact receipt geçti':'960 yok'}; CPU, opset 18, batch 1/12 parity; production değil`:`fail-closed: ${onnxR12.reason||'bağımsız receipt pini yok'}`);
+          if(onnxR12.available)addMetric(metrics,'R12 kanıt sınırı','TensorRT / DS9 / kalite / 20–25 m / 12 kamera / production kapalı');
+        }
+        if(thresholdR13b.evidence_version){
+          const t640=thresholdR13b.profiles?.['640']||{};
+          const t960=thresholdR13b.profiles?.['960']||{};
+          addMetric(metrics,'R13B score eşiği',thresholdR13b.available?`CPU-only exact sweep: 640 ${Number(t640.threshold).toFixed(6)} / 960 ${Number(t960.threshold).toFixed(6)}; final receipt doğrulandı`:`fail-closed: ${thresholdR13b.reason||'exact kalibrasyon zinciri yok'}`);
+          if(thresholdR13b.available)addMetric(metrics,'R13B kanıt sınırı','geliştirme validation; bağımsız kalite / metre-25 m / TensorRT / DS9 / kapasite / production değil');
+        }
+        if(distance.evidence_version)addMetric(metrics,'R10 mesafe proxy R1',distance.available?`@score 0.25 P/R/F1 ${Number(proxyPoint.precision).toFixed(4)} / ${Number(proxyPoint.recall).toFixed(4)} / ${Number(proxyPoint.f1).toFixed(4)}; ≤16 px recall %${(100*Number(pixel.le_16_px_recall)).toFixed(2)}, >96 px %${(100*Number(pixel.gt_96_px_recall)).toFixed(2)}`:`fail-closed: ${distance.reason||'kanıt geçersiz'}`);
+        if(distance.twenty_to_twenty_five_m_status)addMetric(metrics,'20–25 m kabulü',`${distance.twenty_to_twenty_five_m_status}; piksel ölçeği metre mesafe değildir`);
+        const r10Integrity=gpuR10.integrity||{};
+        const r10Verified=Object.values(r10Integrity).filter(Boolean).length;
+        const r10Total=Object.keys(r10Integrity).length;
+        if(r10Total)addMetric(metrics,'R10 exact-pin / receipt replay',`${r10Verified}/${r10Total}`);
+      }
+      addMetric(metrics,'Model/eğitim/export/parity/kabul',gpuR10.full_training_complete?`aday / 60-epoch tamamlandı (iç val) / ${gpuR10.threshold_calibration_complete?'640+960 ONNX + R13B eşik tamam; TensorRT-DS9 bekliyor':(gpuR10.onnx_export_complete?'640+960 ONNX exact receipt; eşik/deployment bekliyor':'tamamlanmadı')} / TensorRT-DS9 kapalı / kapalı`:'kapalı / kapalı / kapalı / kapalı / kapalı');
+      addMetric(metrics,'Final ürün iddiası',campaign.final_claim_allowed?'izinli':'kapalı');
+      const verified=Object.values(integrity).filter(Boolean).length;
+      const total=Object.keys(integrity).length;
+      if(total)addMetric(metrics,'Canlı pin bütünlüğü',`${verified}/${total}`);
+      addMetric(metrics,'Neden',stateLabels[campaign.reason]||campaign.reason);
+      card.appendChild(metrics);
+      const caveats=document.createElement('div');
+      caveats.className='evidence';
+      for(const caveat of campaign.caveats||[]){
+        const line=document.createElement('span');
+        line.textContent=caveat;
+        caveats.appendChild(line);
+      }
+      card.appendChild(caveats);
+    }
+
+    function renderPpeSeedReadiness(campaign){
+      const card=document.getElementById('ppeSeedReadinessCard');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=campaign?.label||'PPE veri tohumu hazırlığı';
+      card.appendChild(title);
+      if(!campaign){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='Pinli PPE seed sözleşmesi okunamadı; edinimden kabule kadar tüm kapılar kapalı.';
+        card.appendChild(missing);
+        return;
+      }
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(campaign.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[campaign.state]||campaign.state||'bilinmiyor';
+      card.appendChild(badge);
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      const preparation=campaign.preparation||{};
+      const contract=campaign.source_contract||{};
+      const receipts=campaign.receipts||{};
+      const quarantine=campaign.quarantine_review||{};
+      const provenance=campaign.provenance_review||{};
+      const normalization=campaign.normalization||{};
+      const integrity=campaign.integrity||{};
+      addMetric(metrics,'Kaynak manifesti',preparation.source_manifest_verified?'exact fingerprint + şema doğrulandı':'doğrulanmadı');
+      addMetric(metrics,'Receipt sözleşmeleri',preparation.receipt_contracts_verified?'acquisition + quarantine şemaları doğrulandı':'doğrulanmadı');
+      if(contract.source_count!==undefined)addMetric(metrics,'Kaynak / pinli asset / pinli ZIP',`${contract.source_count} / ${contract.fully_pinned_asset_count} / ${contract.fully_pinned_archive_count}`);
+      if(contract.required_classes)addMetric(metrics,'Hedef sınıflar',contract.required_classes.join(', '));
+      if(contract.declared_license)addMetric(metrics,'Kaynak metadata lisansı',`${contract.declared_license}; embedded hak denetimi ${contract.embedded_third_party_rights_audited_sources}/${contract.source_count}`);
+      addMetric(metrics,'Edinim receipt’i',receipts.acquisition?.verified?(receipts.acquisition?.accepted?'doğrulandı; edinim kabul edildi':'doğrulandı; edinim reddedildi'):'doğrulanmadı — acquired=false');
+      addMetric(metrics,'Karantina receipt’i',receipts.quarantine?.verified?(receipts.quarantine?.accepted?'doğrulandı; karantina kabul edildi':'doğrulandı; karantina reddedildi'):'doğrulanmadı — quarantined=false');
+      if(quarantine.decoded_images!==undefined)addMetric(metrics,'Decode / eşleşen görsel',`${quarantine.decoded_images} / ${quarantine.paired_images}`);
+      if(quarantine.dimension_mismatch_images!==undefined)addMetric(metrics,'640×640 boyut denetimi',`${quarantine.exact_declared_dimension_images} tam; ${quarantine.dimension_mismatch_images} uyuşmaz; ${quarantine.distinct_observed_dimensions} farklı boyut`);
+      if(quarantine.failed_structural_gate_count!==undefined)addMetric(metrics,'Başarısız karantina kapısı',`${quarantine.failed_structural_gate_count}: ${(quarantine.failed_gate_ids||[]).join(', ')}`);
+      if(quarantine.independent_bbox_out_of_range_count!==null&&quarantine.independent_bbox_out_of_range_count!==undefined)addMetric(metrics,'Bağımsız bbox aralık ihlali',quarantine.independent_bbox_out_of_range_count);
+      if(provenance.evidence_verified!==undefined)addMetric(metrics,'Provenance/split R2',provenance.evidence_verified?`${provenance.images} görsel (${provenance.train_images}/${provenance.validation_images}); mekanik replay doğrulandı`:'doğrulanmadı');
+      if(provenance.cross_split_filename_families!==undefined)addMetric(metrics,'Çapraz-split filename aileleri',`${provenance.cross_split_filename_families}/${provenance.filename_families}; etkilenen ${provenance.images_in_cross_split_filename_families}/${provenance.images}`);
+      if(provenance.strict_near_duplicate_candidate_pairs!==undefined)addMetric(metrics,'Yakın-kopya incelemesi',`${provenance.strict_near_duplicate_candidate_pairs} aday / ${provenance.strict_near_duplicate_validation_members} validation üyesi / ${provenance.high_confidence_near_duplicate_candidate_pairs} yüksek güven; insan incelemesi ${provenance.human_near_duplicate_review_complete?'tamam':'eksik'}`);
+      if(provenance.exact_content_duplicate_groups!==undefined)addMetric(metrics,'Exact kopya grupları',`içerik ${provenance.exact_content_duplicate_groups}; original-key ${provenance.exact_original_key_duplicate_groups}`);
+      if(normalization.provenance_review_evidence_present!==undefined)addMetric(metrics,'R2 provenance → normalizasyon',normalization.provenance_review_evidence_present&&normalization.provenance_mechanical_audit_replayed?'kanıt mevcut + mekanik replay eşleşti; insan/hak/grup onayı yok':'bağ doğrulanmadı');
+      if(normalization.evidence_verified!==undefined)addMetric(metrics,'Normalizasyon assessment’i',normalization.evidence_verified?'exact-pin + şema + lineage doğrulandı':'doğrulanmadı');
+      if(normalization.normalization_ready!==undefined)addMetric(metrics,'Normalizasyon uygunluğu',`kaynak eğitim ${normalization.source_training_eligible?'evet':'hayır'}; normalize veri eğitim ${normalization.normalized_training_eligible?'evet':'hayır'}; hazır ${normalization.normalization_ready?'evet':'hayır'}`);
+      const overflow=normalization.bbox_overflow_severity;
+      if(overflow){
+        const compact=value=>Number(value).toExponential(2);
+        const severity=overflow.classification==='small_but_blocking'?'küçük ama bloke edici':overflow.classification;
+        addMetric(metrics,'BBox taşma şiddeti',`${severity}; min ${compact(overflow.minimum)}, medyan ${compact(overflow.median)}, p95 ${compact(overflow.p95)}, maks ${compact(overflow.maximum)}`);
+      }
+      addMetric(metrics,'Eğitim/export/DS9/kabul','kapalı / kapalı / kapalı / kapalı');
+      addMetric(metrics,'Final ürün iddiası',campaign.final_claim_allowed?'izinli':'kapalı');
+      const verified=Object.values(integrity).filter(Boolean).length;
+      const total=Object.keys(integrity).length;
+      if(total)addMetric(metrics,'Canlı pin bütünlüğü',`${verified}/${total}`);
+      addMetric(metrics,'Neden',stateLabels[campaign.reason]||campaign.reason);
+      card.appendChild(metrics);
+      const caveats=document.createElement('div');
+      caveats.className='evidence';
+      for(const caveat of campaign.caveats||[]){
+        const line=document.createElement('span');
+        line.textContent=caveat;
+        caveats.appendChild(line);
+      }
+      card.appendChild(caveats);
+    }
+
+    function renderPpeFiveClassQuarantine(campaign){
+      const card=document.getElementById('ppeFiveClassQuarantineCard');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=campaign?.label||'PPE 5-Class R2 normalizasyon + karantina';
+      card.appendChild(title);
+      if(!campaign){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='Exact-pinli büyük receipt veya compact projection okunamadı; bütün kapılar kapalı.';
+        card.appendChild(missing);
+        return;
+      }
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(campaign.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[campaign.state]||campaign.state||'bilinmiyor';
+      card.appendChild(badge);
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      const dataset=campaign.dataset||{};
+      const sourceReceipt=campaign.source_receipt||{};
+      const quarantine=campaign.quarantine||{};
+      const normalization=campaign.normalization_group_split||{};
+      const semantic=campaign.semantic_audit_r4||{};
+      const remediation=campaign.semantic_remediation_r5||{};
+      const humanQaR6=remediation.human_qa_packet_r6||{};
+      const launchGate=campaign.semantic_launch_gate_r3||{};
+      const history=campaign.quarantine_history||{};
+      const eligibility=campaign.eligibility||{};
+      const integrity=campaign.integrity||{};
+      addMetric(metrics,'Kaynak lisansı',dataset.repository_license?`${dataset.repository_license}; embedded hak denetimi ${dataset.embedded_third_party_rights_audit_complete?'tamam':'eksik'}`:null);
+      addMetric(metrics,'Büyük R2 receipt',sourceReceipt.stream_pin_verified?`${sourceReceipt.bytes} byte exact stream pin; admin parse etmedi`:'doğrulanmadı; parse edilmedi');
+      addMetric(metrics,'Yapısal karantina',quarantine.structural_pass?`${quarantine.structural_gates_passed}/${quarantine.structural_gates_total} kapı geçti; karantina kabul`:'kapalı');
+      if(quarantine.images!==undefined)addMetric(metrics,'Görüntü / bbox / split',`${quarantine.images} / ${quarantine.bounding_boxes} / ${quarantine.train_images} train + ${quarantine.validation_images} validation`);
+      if(quarantine.exact_duplicate_groups!==undefined)addMetric(metrics,'Exact duplicate grupları',`${quarantine.exact_duplicate_groups}; cross-split ${quarantine.cross_split_exact_duplicate_groups}`);
+      if(quarantine.class_bbox_counts){
+        const c=quarantine.class_bbox_counts;
+        addMetric(metrics,'Sınıf bbox sayıları',`helmet ${c.helmet}, no-helmet ${c.no_helmet}, no-vest ${c.no_vest}, person ${c.person}, vest ${c.vest}`);
+      }
+      if(normalization.current){
+        const roles=normalization.roles||{};
+        addMetric(metrics,'R2 grup-safe dry-run',`${normalization.final_group_count} grup; max ${normalization.maximum_group_image_count} görüntü/grup; veri materialize edilmedi`);
+        addMetric(metrics,'Yeni train / calibration / test',`${roles.train?.images} / ${roles.calibration?.images} / ${roles.test?.images} görüntü (${roles.train?.groups}/${roles.calibration?.groups}/${roles.test?.groups} grup)`);
+        const leakage=normalization.leakage||{};
+        addMetric(metrics,'Rol sızıntısı',leakage.zero?`0 — path ${leakage.image_path_role}, capture ${leakage.capture_key_role}, duplicate ${leakage.exact_duplicate_role}, group ${leakage.group_role}`:'doğrulanmadı');
+        addMetric(metrics,'259 test rolünün kapsamı','yalnız internal held-out audit; bağımsız final test değil');
+        addMetric(metrics,'Canonical karar sınıfları',(normalization.canonical_decision_classes||[]).join(' / '));
+        addMetric(metrics,'Normalizasyon eğitim uygunluğu',normalization.training_eligible?'açık':'kapalı; semantik adjudication bekliyor');
+      }
+      if(semantic.exact_evidence_verified){
+        const decisions=semantic.decisions||{};
+        addMetric(metrics,'R4 semantik audit',`${semantic.sample_images} görüntü / ${semantic.source_groups} grup / ${semantic.bbox_rows_checked} bbox; exact kanıt doğrulandı`);
+        addMetric(metrics,'R4 kararları',`${decisions.accepted_with_guardrails} guardrail ile aday / ${decisions.questionable_needs_adjudication} insan adjudication / ${decisions.rejected_development_candidates} development reddi`);
+        addMetric(metrics,'R4 holdout erişimi',`${semantic.development_holdout_payload_files_opened} payload dosyası`);
+        addMetric(metrics,'R4 kritik semantik bulgular',(semantic.critical_findings||[]).join(' / '));
+      }
+      if(remediation.evidence_version){
+        const candidate=remediation.candidate||{};
+        const counts=candidate.retained_class_counts||{};
+        const rejected=candidate.quarantine_reason_counts||{};
+        const holdout=remediation.holdout_payload_access||{};
+        addMetric(metrics,'R5 semantik remediation',remediation.available?`${candidate.images} görüntü / ${candidate.groups} grup; ${candidate.retained_bbox_rows} retained, ${candidate.quarantined_bbox_rows} karantina`:`fail-closed: ${remediation.reason||'exact kanıt geçersiz'}`);
+        if(remediation.available){
+          addMetric(metrics,'R5 dört aday sınıf',`person ${counts.person}; helmet-worn ${counts.helmet_worn_candidate}; no-helmet explicit ${counts.no_helmet_explicit}; hi-vis-worn ${counts.hi_vis_worn_candidate}`);
+          addMetric(metrics,'R5 proxy / semantik karantina',`no-vest ${rejected.no_vest_proxy_removed_no_runtime_no_hi_vis_class}; helmetsiz ilişki ${rejected.helmet_no_person_center_association}; baş bölgesi dışı ${rejected.helmet_center_below_associated_person_top_35_percent}; hi-vis grup ${rejected.hi_vis_group_semantic_quarantine_r4_harness_or_uncertain}`);
+          addMetric(metrics,'R5 development holdout payload',`${holdout.image_files_opened}/${holdout.label_files_opened} görüntü/etiket; ${holdout.metadata_rows_seen} metadata satırı`);
+          addMetric(metrics,'R5 no-hi-vis / eğitim yetkisi',`${remediation.runtime_no_hi_vis_detector_class_created?'detector sınıfı oluştu':'runtime detector sınıfı yok'} / ${remediation.training_authorized?'açık':'kapalı; insan QA + yeni yetki gerekli'}`);
+        }
+      }
+      if(humanQaR6.evidence_version){
+        const roles=humanQaR6.role_samples||{};
+        const holdout=humanQaR6.holdout_payload_access||{};
+        addMetric(metrics,'R6 insan-QA paket durumu',humanQaR6.available?`${humanQaR6.samples} örnek / ${humanQaR6.contact_sheets} contact sheet / ${humanQaR6.groups} grup; hazırlandı, adjudication yok`:`fail-closed: ${humanQaR6.reason||'exact kanıt geçersiz'}`);
+        if(humanQaR6.available){
+          addMetric(metrics,'R6 örnek rolleri',`train ${roles.train} / calibration ${roles.calibration}`);
+          addMetric(metrics,'R6 development holdout payload',`${holdout.image_files_opened}/${holdout.label_files_opened} görüntü/etiket`);
+          addMetric(metrics,'R6 kalıcı inceleme / onay',`${humanQaR6.permanent_review_record_present?'mevcut':'yok'} / ${humanQaR6.permanent_approval_present?'mevcut':'yok'}`);
+          addMetric(metrics,'R6 insan QA / eğitim / üretim',`${humanQaR6.human_qa_complete?'tamam':'tamamlanmadı'} / ${humanQaR6.training_authorized?'açık':'kapalı'} / ${humanQaR6.production_ready?'hazır':'kapalı'}`);
+        }
+      }
+      if(launchGate.current_repository_launch_policy){
+        addMetric(metrics,'R3 semantik launch gate',launchGate.image_build_preparation_allowed?'image-build yalnız hazırlık için açık; veri/model yürütme kapalı':'tamamen kapalı');
+        addMetric(metrics,'R3 bloke modlar',(launchGate.blocked_modes||[]).join(' / '));
+        addMetric(metrics,'Yeni eğitim yetkisi',launchGate.new_authorization_receipt_present?'exact-pin receipt mevcut':'yok; insan adjudication + yeni receipt gerekli');
+      }
+      if(history.r1_superseded!==undefined){
+        addMetric(metrics,'Karantina tarihçesi',`R1 ${history.r1_stream_pin_verified?'exact-pinli, superseded':'doğrulanmadı'}; R2 ${history.r2_stream_pin_verified?'exact-pinli, authoritative':'doğrulanmadı'}`);
+      }
+      addMetric(metrics,'Eğitim / final test',`${eligibility.training_eligible?'açık':'kapalı'} / ${eligibility.final_validation_or_test_eligible?'açık':'kapalı'}`);
+      addMetric(metrics,'Hak / grup-safe / normalizasyon','kapalı / kapalı / kapalı');
+      addMetric(metrics,'Export/DS9/12 kamera/kabul','kapalı / kapalı / kapalı / kapalı');
+      addMetric(metrics,'Final ürün iddiası',campaign.final_claim_allowed?'izinli':'kapalı');
+      const verified=Object.values(integrity).filter(Boolean).length;
+      const total=Object.keys(integrity).length;
+      if(total)addMetric(metrics,'Canlı pin bütünlüğü',`${verified}/${total}`);
+      addMetric(metrics,'Neden',stateLabels[campaign.reason]||campaign.reason);
+      card.appendChild(metrics);
+      const caveats=document.createElement('div');
+      caveats.className='evidence';
+      for(const caveat of campaign.caveats||[]){
+        const line=document.createElement('span');
+        line.textContent=caveat;
+        caveats.appendChild(line);
+      }
+      card.appendChild(caveats);
+    }
+
+    function renderPpePublicSourceQuarantine(campaign){
+      const card=document.getElementById('ppePublicSourceQuarantineCard');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=campaign?.label||'PPE Lo/CPPED açık kaynak karantinası';
+      card.appendChild(title);
+      if(!campaign){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='Exact-pinli metadata manifesti veya receipt zinciri okunamadı; bütün acquisition, eğitim ve validation kapıları kapalı.';
+        card.appendChild(missing);
+        return;
+      }
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(campaign.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[campaign.state]||campaign.state||'bilinmiyor';
+      card.appendChild(badge);
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      const lo=campaign.sources?.lo||{};
+      const cpped=campaign.sources?.cpped||{};
+      const history=campaign.history||{};
+      const eligibility=campaign.eligibility||{};
+      const boundary=campaign.execution_boundary||{};
+      const integrity=campaign.integrity||{};
+      if(lo.images!==undefined)addMetric(metrics,'Lo/Lin/Hung metadata',`${lo.images} görüntü / ${lo.bounding_boxes} bbox; ${lo.dataset_package_license} dataset lisansı; ${lo.blocker_count} blocker`);
+      if(lo.target_class_counts){
+        const c=lo.target_class_counts;
+        addMetric(metrics,'Lo hedef sınıfları',`helmet ${c.helmet}, no-helmet ${c.no_helmet}, hi-vis ${c.hi_vis}, no-hi-vis ${c.no_hi_vis}`);
+      }
+      addMetric(metrics,'Lo erişim / artifact pini',`${lo.anonymous_access_available?'açık':'kapalı'} / ${lo.artifact_identity_pinned?'mevcut':'yok'}`);
+      if(cpped.images!==undefined)addMetric(metrics,'CPPED metadata',`${cpped.images} görüntü / ${cpped.categories} sınıf / ${cpped.bounding_boxes} bbox; ${cpped.dataset_package_license}; ${cpped.blocker_count} blocker`);
+      addMetric(metrics,'CPPED erişim / ticari eğitim',`${cpped.access_grant_obtained?'izinli':'izin yok'} / ${cpped.commercial_product_training_compatible?'uyumlu':'uyumsuz'}`);
+      addMetric(metrics,'CPPED hedef eşleme',cpped.complete_target_mapping_verified?'tamam':'eksik; kask-renk, vest ve negatif sınıf semantiği çözülmedi');
+      if(history.r1_superseded!==undefined)addMetric(metrics,'Receipt tarihçesi',`R1 exact-pinli, verifier-order kusuruyla korunmuş ve superseded; R2 ${history.r2_authoritative?'authoritative':'doğrulanmadı'}`);
+      addMetric(metrics,'Dataset/annotation sınırı',boundary.metadata_only&&!boundary.dataset_bytes_downloaded_or_persisted&&!boundary.annotations_or_final_test_labels_opened?'yalnız metadata; dataset ve final-test label açılmadı':'kanıt sınırı geçersiz');
+      addMetric(metrics,'Acquisition / eğitim / final test / üretim',`${eligibility.dataset_acquisition_authorized?'açık':'kapalı'} / ${eligibility.training_eligible?'açık':'kapalı'} / ${eligibility.final_test_eligible?'açık':'kapalı'} / ${eligibility.production_ready?'açık':'kapalı'}`);
+      addMetric(metrics,'Final ürün iddiası',campaign.final_claim_allowed?'izinli':'kapalı');
+      const verified=Object.values(integrity).filter(Boolean).length;
+      const total=Object.keys(integrity).length;
+      if(total)addMetric(metrics,'Exact-pin / şema / replay bütünlüğü',`${verified}/${total}`);
+      addMetric(metrics,'Neden',stateLabels[campaign.reason]||campaign.reason);
+      card.appendChild(metrics);
+      const caveats=document.createElement('div');
+      caveats.className='evidence';
+      for(const caveat of campaign.caveats||[]){
+        const line=document.createElement('span');
+        line.textContent=caveat;
+        caveats.appendChild(line);
+      }
+      card.appendChild(caveats);
+    }
+
+    function renderPoseModelReadiness(campaign){
+      const card=document.getElementById('poseModelReadinessCard');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=campaign?.label||'Pose modeli hazırlığı';
+      card.appendChild(title);
+      if(!campaign){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='Pinli pose zinciri okunamadı; export, PCK, kapasite ve kabul kapıları kapalı.';
+        card.appendChild(missing);
+        return;
+      }
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(campaign.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[campaign.state]||campaign.state||'bilinmiyor';
+      card.appendChild(badge);
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      const preparation=campaign.preparation||{};
+      const license=campaign.license||{};
+      const selection=campaign.selection||{};
+      const challenger=campaign.permissive_challenger||{};
+      const contract=campaign.model_contract||{};
+      const artifacts=campaign.artifacts||{};
+      const pck=campaign.pck||{};
+      const sources=campaign.source_readiness||{};
+      const integrity=campaign.integrity||{};
+      addMetric(metrics,'Lisans kararı',license.decision===null?'seçilmedi — indirme/export kapalı':license.decision);
+      if(selection.candidate)addMetric(metrics,'Model adayı',`${selection.candidate}; üretim modeli seçilmedi`);
+      if(challenger.candidate){
+        const structural=challenger.cpu_structural_evidence||{};
+        const deployment=challenger.deployment||{};
+        const preflight=challenger.onnx_preflight||{};
+        const currentPreflight=preflight.current||{};
+        const historicalPreflight=(preflight.historical||[])[0]||{};
+        const exportR9=challenger.export_environment_r9||{};
+        const exportR10=challenger.export_attempt_r10||{};
+        const shapeR11=challenger.shape_diagnostic_r11||{};
+        addMetric(metrics,'Açık lisans challenger',`${challenger.candidate} (${challenger.license}); checkpoint pinli, CPU strict-load ${structural.strict_state_load_verified?'geçti':'kapalı'}, ham profil ${(structural.raw_profiles_verified||[]).join('/')||'yok'} batch ${structural.raw_forward_batch||'—'}`);
+        addMetric(metrics,'Challenger üretim hattı',`960 yalnız fizibilite; batch-12 ${deployment.dynamic_batch12_verified?'geçti':'kapalı'}; ONNX/engine/parser/DS9 kapalı`);
+        if(exportR9.evidence_version){
+          const runtime=exportR9.runtime||{};
+          addMetric(metrics,'Export ortamı R9',exportR9.available?`${exportR9.state}; exact image sabit, yeniden build yok`:`fail-closed: ${exportR9.reason||'kanıt geçersiz'}`);
+          if(exportR9.available)addMetric(metrics,'R9 runtime probe',`MMDeploy ${runtime.mmdeploy}, MMPose ${runtime.mmpose}, MMCV ${runtime.mmcv}; compiled ops + YOLOX-Pose rewrite + CPU ORT geçti`);
+          addMetric(metrics,'R9 kanıt sınırı','yalnız CPU export environment; model load/export, ONNX 640/960, TensorRT, DS9, PCK ve FPS yok');
+          const r9Integrity=exportR9.integrity||{};
+          const r9Verified=Object.values(r9Integrity).filter(Boolean).length;
+          const r9Total=Object.keys(r9Integrity).length;
+          if(r9Total)addMetric(metrics,'R9 exact-pin / receipt replay',`${r9Verified}/${r9Total}`);
+        }
+        if(exportR10.evidence_version){
+          addMetric(metrics,'Pose export R10',exportR10.available?`FAILED: 640 ${exportR10.failure_cause}; 960 denenmedi; production ONNX yayınlanmadı`:`fail-closed: ${exportR10.reason||'failed receipt doğrulanamadı'}`);
+        }
+        if(shapeR11.evidence_version){
+          const iface=shapeR11.derived_interface||{};
+          const probe=shapeR11.runtime_blank_probe||{};
+          const b1=probe.batch_1||{};
+          const b12=probe.batch_12||{};
+          addMetric(metrics,'Pose shape diagnostic R11',shapeR11.available?`640 karantina diagnostic: dets [B,K,5], keypoints [B,K,17,3], ortak K; türetilen sınır ${iface.k_min}–${iface.k_max}`:`fail-closed: ${shapeR11.reason||'diagnostic receipt geçersiz'}`);
+          if(shapeR11.available){
+            addMetric(metrics,'R11 boş-tensor runtime ölçümü',`batch 1 K=${b1.k}, batch 12 K=${b12.k}; finite; farklı girdilerde K değişimi kanıtlanmadı`);
+            addMetric(metrics,'R11 production etkisi','sabit-K packer uyumsuz; contract değişikliği yetkisiz; TensorRT/DS9/PCK/FPS kapalı');
+          }
+        }
+        if(currentPreflight.status)addMetric(metrics,'ONNX preflight R2',`${currentPreflight.status}; ${currentPreflight.blocker_count} blocker: ${(currentPreflight.blocker_codes||[]).join(', ')}; export denenmedi`);
+        if(historicalPreflight.status)addMetric(metrics,'R1 tarihsel preflight',`${historicalPreflight.status}; ${historicalPreflight.blocker_count} blocker: ${(historicalPreflight.blocker_codes||[]).join(', ')}; canlı ortam durumu değildir`);
+      }
+      addMetric(metrics,'Dondurulmuş export planı',preparation.frozen_export_plans_verified?'640 + 960 doğrulandı; çalıştırılmadı':'doğrulanmadı');
+      if(contract.layout)addMetric(metrics,'Semantic contract',`${contract.layout}, ${contract.keypoint_count} keypoint, ${contract.profiles.join('/')} profil, batch ${contract.batch_min}/${contract.batch_opt}/${contract.batch_max}`);
+      addMetric(metrics,'Weight / ONNX / engine',artifacts.weights_acquired?'weight mevcut':'yok / yok / yok');
+      addMetric(metrics,'PCK evaluator',pck.evaluator_contract_verified?`doğrulandı; PCK@${pck.threshold_radius} eşiği ${pck.threshold}`:'doğrulanmadı');
+      addMetric(metrics,'PCK kanıt girdileri',pck.evaluation_plan_pin_declared?'pinli plan mevcut':'evaluation plan / GT / prediction / receipt pini yok');
+      if(sources.diagnostic_images_planned!==undefined)addMetric(metrics,'Tanısal kaynak planı',`${sources.diagnostic_images_planned} COCO görüntüsü; video ${sources.video_sequences}, track ${sources.track_ids}, üst/güvenlik ${sources.overhead_or_security_views}`);
+      addMetric(metrics,'Export/parity/PCK/kapasite/full-stack/kabul','kapalı / kapalı / kapalı / kapalı / kapalı / kapalı');
+      addMetric(metrics,'Final ürün iddiası',campaign.final_claim_allowed?'izinli':'kapalı');
+      const verified=Object.values(integrity).filter(Boolean).length;
+      const total=Object.keys(integrity).length;
+      if(total)addMetric(metrics,'Canlı pin bütünlüğü',`${verified}/${total}`);
+      addMetric(metrics,'Neden',stateLabels[campaign.reason]||campaign.reason);
+      card.appendChild(metrics);
+      const caveats=document.createElement('div');
+      caveats.className='evidence';
+      for(const caveat of campaign.caveats||[]){
+        const line=document.createElement('span');
+        line.textContent=caveat;
+        caveats.appendChild(line);
+      }
+      card.appendChild(caveats);
+    }
+
+    function renderFinalizationBundle(bundle){
+      const card=document.getElementById('finalizationBundleCard');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=bundle?.label||'Doğrulama bundle commit';
+      card.appendChild(title);
+      if(!bundle){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='Commit durumu okunamadı; canlı raporlar finalized değildir.';
+        card.appendChild(missing);
+        return;
+      }
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(bundle.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[bundle.state]||bundle.state||'bilinmiyor';
+      card.appendChild(badge);
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      addMetric(metrics,'Committed',bundle.committed?'evet':'hayır');
+      addMetric(metrics,'Canlı çıktı pini',`${bundle.verified_output_count??0}/${bundle.output_count??6}`);
+      addMetric(metrics,'Neden',bundle.reason);
+      addMetric(metrics,'Ürün snapshot',bundle.product_status);
+      addMetric(metrics,'Kampanya genel kabul',bundle.campaign_overall_accepted===undefined?null:(bundle.campaign_overall_accepted?'evet':'hayır'));
+      card.appendChild(metrics);
+    }
+
+    function renderProductFinalizationV2(bundle){
+      const card=document.getElementById('productFinalizationV2Card');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=bundle?.label||'Üç modül ürün acceptance commit v2';
+      card.appendChild(title);
+      if(!bundle){
+        const missing=document.createElement('p');
+        missing.className='muted';
+        missing.textContent='V2 commit durumu okunamadı; ürün ready/finalized değildir.';
+        card.appendChild(missing);
+        return;
+      }
+      const badge=document.createElement('span');
+      badge.className='badge state-'+String(bundle.state||'unknown').replace(/[^a-z_]/g,'');
+      badge.textContent=stateLabels[bundle.state]||bundle.state||'bilinmiyor';
+      card.appendChild(badge);
+      const metrics=document.createElement('div');
+      metrics.className='metric-list';
+      addMetric(metrics,'Committed',bundle.committed?'evet':'hayır');
+      addMetric(metrics,'Modüller',(bundle.required_modules||[]).join(' + '));
+      addMetric(metrics,'Profil / akış','640 + 960 / '+String(bundle.required_streams??12));
+      addMetric(metrics,'Profil başı alt sınır',bundle.minimum_elapsed_ms_per_profile?`${bundle.minimum_elapsed_ms_per_profile/1000} sn`:null);
+      addMetric(metrics,'Canlı input pini',bundle.verified_input_count??0);
+      addMetric(metrics,'Canlı çıktı pini',`${bundle.verified_output_count??0}/${bundle.output_count??4}`);
+      addMetric(metrics,'Ürün durumu',bundle.product_status);
+      addMetric(metrics,'Neden',stateLabels[bundle.reason]||bundle.reason);
+      card.appendChild(metrics);
+      const caveats=document.createElement('div');
+      caveats.className='evidence';
+      for(const caveat of bundle.caveats||[]){
+        const line=document.createElement('span');
+        line.textContent=caveat;
+        caveats.appendChild(line);
+      }
+      card.appendChild(caveats);
+    }
+
+    function renderValidation(payload){
+      const grid=document.getElementById('validationGrid');
+      grid.replaceChildren();
+      for(const [campaignId,campaign] of Object.entries(payload.campaigns||{})){
+        if(campaignId==='product_readiness'||campaignId==='full_stack_benchmark'||campaignId==='person_model_upgrade'||campaignId==='pose_model_readiness'||campaignId==='ppe_seed_readiness'||campaignId==='ppe_five_class_quarantine'||campaignId==='ppe_public_source_quarantine')continue;
+        const card=document.createElement('article');
+        card.className='validation-card';
+        const title=document.createElement('h3');
+        title.textContent=campaign.label||campaignId;
+        card.appendChild(title);
+
+        const badge=document.createElement('span');
+        badge.className='badge state-'+String(campaign.state||'unknown').replace(/[^a-z_]/g,'');
+        badge.textContent=stateLabels[campaign.state]||campaign.state||'bilinmiyor';
+        card.appendChild(badge);
+
+        const metrics=document.createElement('div');
+        metrics.className='metric-list';
+        const progress=campaign.progress||{};
+        if(progress.total){
+          addMetric(metrics,campaign.progress_label||'İlerleme',`${progress.completed}/${progress.total} (%${(100*(progress.fraction||0)).toFixed(1)})`);
+        }
+        if(campaign.evidence_complete!==undefined){
+          addMetric(metrics,'Hedef kanıtı',campaign.evidence_complete?'tamamlandı':'henüz tamamlanmadı');
+        }
+        if(campaign.finalized!==undefined){
+          addMetric(metrics,'Bundle finalized',campaign.finalized?'evet':'hayır');
+        }
+        addMetric(metrics,'Neden',stateLabels[campaign.reason]||campaign.reason);
+        if(campaign.does_not_imply_product_readiness===true){
+          addMetric(metrics,'Ürün hazırlığı','ayrı kabul sözleşmesi; bu kart ürün kabulü değildir');
+        }
+        if(campaignId==='deepstream91_static_qualification'&&campaign.available){
+          const runtime=campaign.runtime||{};
+          const host=campaign.host||{};
+          const checks=campaign.checks||{};
+          addMetric(metrics,'Hedef runtime',`DeepStream ${runtime.deepstream}; CUDA ${runtime.cuda}; TensorRT ${runtime.tensorrt}`);
+          addMetric(metrics,'Host',`${host.os_id||'?'} ${host.os_version||'?'} / ${host.architecture||'?'} / sürücü ${host.driver||'?'}`);
+          addMetric(metrics,'Statik kontrol',`${Object.values(checks).filter(Boolean).length}/${Object.keys(checks).length}`);
+          addMetric(metrics,'Canlı probe',campaign.live_probe_performed?'geçti':'çalışmadı');
+          addMetric(metrics,'Ürün hazırlığı',campaign.production_ready?'evet':'hayır');
+        }
+        if(campaignId==='deepstream91_native_build'&&campaign.available){
+          const runtime=campaign.runtime||{};
+          const tests=campaign.tests||{};
+          addMetric(metrics,'Native runtime',`DeepStream ${runtime.deepstream}; CUDA ${runtime.cuda}; TensorRT ${runtime.tensorrt}`);
+          addMetric(metrics,'CPU testleri',`${tests.passed||0} geçti / ${tests.failed||0} başarısız; ${tests.artifacts||0} artefakt`);
+          addMetric(metrics,'GPU runtime',campaign.gpu_runtime_qualified?'doğrulandı':'henüz doğrulanmadı');
+          addMetric(metrics,'Ürün hazırlığı',campaign.production_ready?'evet':'hayır');
+        }
+        if(campaignId==='deepstream91_engine_builder_r1c3'&&campaign.available){
+          const image=campaign.image||{};
+          const tests=campaign.tests||{};
+          const evidence=campaign.evidence_counts||{};
+          addMetric(metrics,'Exact image',`${String(image.id||'').slice(0,24)}… / config ${String(image.config||'').slice(0,18)}…`);
+          addMetric(metrics,'Bağımsız kabul',campaign.terminal_accepted?'prepared-closed kimlik + kanıt':'kapalı');
+          addMetric(metrics,'Testler',`${tests.unit_passed||0} unit / ${tests.mutation_passed||0} mutasyon / ${tests.gate_replays_passed||0} gate; P0/P1/P2 ${tests.p0||0}/${tests.p1||0}/${tests.p2||0}`);
+          addMetric(metrics,'Kanıt',`${evidence.author_files||0} dosya / ${evidence.alias||0} alias / ${evidence.retag||0} retag`);
+          addMetric(metrics,'GPU / TRT engine / DS / ürün',`${campaign.gpu_runtime_qualified?'hazır':'kapalı'} / ${campaign.tensorrt_engine_qualified?'hazır':'kapalı'} / ${campaign.deepstream_runtime_qualified?'hazır':'kapalı'} / ${campaign.production_ready?'hazır':'kapalı'}`);
+        }
+        if(campaignId==='deepstream91_full_stack_preflight_r1'&&campaign.available){
+          const severity=campaign.severity||{};
+          const tests=campaign.tests||{};
+          const matrix=campaign.matrix||{};
+          const successor=campaign.successor||{};
+          addMetric(metrics,'Bağımsız karar',campaign.decision||'REJECT');
+          addMetric(metrics,'P0 / P1 / P2',`${severity.p0||0} / ${severity.p1||0} / ${severity.p2||0}`);
+          addMetric(metrics,'Salt-okunur tekrar',`${tests.subject_passed||0} subject / ${tests.independent_passed||0} bağımsız; ${tests.failed||0} başarısız`);
+          addMetric(metrics,'Plan matrisi',`${matrix.sources||0} kaynak / ${matrix.distinct_video_types||0} tip / ${(matrix.profiles||[]).join('+')} / ${matrix.simulated_streams||0} akış / profil başı ${matrix.measurement_seconds_per_profile||0} sn`);
+          addMetric(metrics,'GPU / engine / benchmark / endurance',`${campaign.gpu_workload_authorized?'açık':'kapalı'} / ${campaign.engine_build_authorized?'açık':'kapalı'} / ${campaign.benchmark_authorized?'açık':'kapalı'} / ${campaign.endurance_authorized?'açık':'kapalı'}`);
+          addMetric(metrics,'Successor',`${successor.revision||'R2'} ${successor.state||'bekliyor'}; ${successor.findings_to_close||0} bulgu`);
+        }
+        if(campaignId==='deepstream91_full_stack_preflight_r2'&&campaign.available){
+          const severity=campaign.severity||{};
+          const tests=campaign.tests||{};
+          const matrix=campaign.matrix||{};
+          addMetric(metrics,'Bağımsız karar',`${campaign.decision||'ACCEPT'} — yalnız CPU ön-uçuş tanımı`);
+          addMetric(metrics,'P0 / P1 / P2',`${severity.p0||0} / ${severity.p1||0} / ${severity.p2||0}`);
+          addMetric(metrics,'Testler',`${tests.author_passed||0} author / ${tests.independent_passed||0} bağımsız; ${tests.failed||0} başarısız`);
+          addMetric(metrics,'R1 kapanışı',`${campaign.r1_findings_fixed||0}/5 bulgu kapalı`);
+          addMetric(metrics,'Plan matrisi',`${matrix.sources||0} kaynak / ${matrix.distinct_video_types||0} tip / ${(matrix.profiles||[]).join('+')} / ${matrix.simulated_streams||0} akış / profil başı ${matrix.measurement_seconds_per_profile||0} sn`);
+          addMetric(metrics,'GPU / engine / benchmark / endurance',`${campaign.gpu_workload_authorized?'açık':'kapalı'} / ${campaign.engine_build_authorized?'açık':'kapalı'} / ${campaign.benchmark_authorized?'açık':'kapalı'} / ${campaign.endurance_authorized?'açık':'kapalı'}`);
+          addMetric(metrics,'Kalan kapı',campaign.remaining_blockers??0);
+        }
+        if(campaignId==='driver595_maintenance_r4'&&campaign.available){
+          const severity=campaign.severity||{};
+          const cache=campaign.cache||{};
+          const successor=campaign.successor||{};
+          addMetric(metrics,'Bağımsız karar',campaign.decision||'REJECT');
+          addMetric(metrics,'P0 / P1 / P2',`${severity.p0||0} / ${severity.p1||0} / ${severity.p2||0}`);
+          addMetric(metrics,'Paket cache',`${cache.exact_present||0}/${cache.required||0} exact; ${cache.missing||0} eksik; dedicated ${cache.dedicated_present?'var':'yok'}`);
+          addMetric(metrics,'Kurulum / reboot',`${campaign.install_authorized?'yetkili':'kapalı'} / ${campaign.reboot_authorized?'yetkili':'kapalı'}`);
+          addMetric(metrics,'Successor',`${successor.revision||'R5'} ${successor.state||'bekliyor'}; ${successor.required_acceptance_criteria||0} kabul kriteri`);
+        }
+        if(campaignId==='driver595_live_qualification_r7'&&campaign.available){
+          const severity=campaign.severity||{};
+          const tests=campaign.tests||{};
+          const gpu=campaign.gpu||{};
+          addMetric(metrics,'Bağımsız karar',`${campaign.decision||'ACCEPT'} — yalnız mevcut boot önkoşulu`);
+          addMetric(metrics,'P0 / P1 / P2',`${severity.p0||0} / ${severity.p1||0} / ${severity.p2||0}`);
+          addMetric(metrics,'Host',`${campaign.kernel||'?'} / sürücü ${campaign.driver?.version||'?'} / CUDA driver ${campaign.driver?.cuda_driver||'?'}`);
+          addMetric(metrics,'GPU',`${gpu.name||'?'} / compute process ${gpu.compute_process_count??'?'}`);
+          addMetric(metrics,'Boot kimliği',campaign.current_boot_match?'receipt ile aynı':'değişmiş');
+          addMetric(metrics,'Testler',`${tests.author_passed||0} author / ${tests.independent_passed||0} bağımsız; ${tests.failed||0} başarısız`);
+          addMetric(metrics,'GPU / DeepStream / ürün',`${campaign.gpu_workload_authorized?'açık':'kapalı'} / ${campaign.deepstream_runtime_authorized?'açık':'kapalı'} / ${campaign.production_ready?'hazır':'kapalı'}`);
+          addMetric(metrics,'Sonraki kapı',campaign.next_gate||'DeepStream 9.1 GPU/runtime smoke');
+        }
+        if(campaignId==='person_rtdetrv4_tensorrt_r14i'&&campaign.available){
+          const severity=campaign.severity||{};
+          const tests=campaign.tests||{};
+          const batch=campaign.batch||{};
+          addMetric(metrics,'Bağımsız karar',`${campaign.decision||'ACCEPT'} — yalnız statik controller tanımı`);
+          addMetric(metrics,'P0 / P1 / P2',`${severity.p0||0} / ${severity.p1||0} / ${severity.p2||0}`);
+          addMetric(metrics,'Profil / batch / precision',`${(campaign.profiles||[]).join('+')} / ${batch.min||'?'}-${batch.opt||'?'}-${batch.max||'?'} / ${campaign.precision||'?'}`);
+          addMetric(metrics,'Testler',`${tests.author_passed||0} author / ${tests.independent_passed||0} bağımsız; ${tests.failed||0} başarısız`);
+          addMetric(metrics,'Planlanan / mevcut çıktı',`${campaign.planned_outputs||0} / ${campaign.outputs_present||0}`);
+          addMetric(metrics,'Engine / GPU / DS / parity / ürün',`${campaign.engine_build_authorized?'açık':'kapalı'} / ${campaign.gpu_workload_authorized?'açık':'kapalı'} / ${campaign.deepstream_runtime_authorized?'açık':'kapalı'} / ${campaign.parity_authorized?'açık':'kapalı'} / ${campaign.production_ready?'hazır':'kapalı'}`);
+          addMetric(metrics,'Sonraki kapı',campaign.next_gate);
+        }
+        if(campaignId==='pose_mmpose_yoloxpose_tensorrt_r13i'&&campaign.available){
+          const severity=campaign.severity||{};
+          const tests=campaign.tests||{};
+          const batch=campaign.batch||{};
+          const keypoints=campaign.keypoints||{};
+          addMetric(metrics,'Bağımsız karar',`${campaign.decision||'ACCEPT'} — yalnız statik controller tanımı`);
+          addMetric(metrics,'P0 / P1 / P2',`${severity.p0||0} / ${severity.p1||0} / ${severity.p2||0}`);
+          addMetric(metrics,'Profil / batch / precision',`${(campaign.profiles||[]).join('+')} / ${batch.min||'?'}-${batch.opt||'?'}-${batch.max||'?'} / ${campaign.precision||'?'}`);
+          addMetric(metrics,'İskelet sözleşmesi',`${keypoints.layout||'?'} ${keypoints.count||'?'} nokta / same-index ${keypoints.same_index_contract?'evet':'hayır'}`);
+          addMetric(metrics,'Testler',`${tests.author_passed||0} author / ${tests.independent_passed||0} bağımsız; ${tests.failed||0} başarısız`);
+          addMetric(metrics,'Planlanan / mevcut çıktı',`${campaign.planned_outputs||0} / ${campaign.outputs_present||0}`);
+          addMetric(metrics,'V5 host kapısı',campaign.v5_host_realization_eligible?'uygun':'P1 fail-closed');
+          addMetric(metrics,'Engine / GPU / DS / parity / ürün',`${campaign.engine_build_authorized?'açık':'kapalı'} / ${campaign.gpu_workload_authorized?'açık':'kapalı'} / ${campaign.deepstream_runtime_authorized?'açık':'kapalı'} / ${campaign.parity_authorized?'açık':'kapalı'} / ${campaign.production_ready?'hazır':'kapalı'}`);
+          addMetric(metrics,'Sonraki kapı',campaign.next_gate);
+        }
+        if(campaignId==='ppe_construction_ppe_quarantine'&&campaign.available){
+          const dataset=campaign.dataset||{};
+          const leakage=campaign.split_leakage||{};
+          const model=campaign.model_readiness||{};
+          addMetric(metrics,'Tanısal kaynak',`${dataset.images||0} görüntü / ${dataset.paired_boxes||0} kutu / ${dataset.license||'lisans ?'}`);
+          addMetric(metrics,'Hedef sınıfları',`helmet ${dataset.target_class_mapping?.helmet??'yok'} / no_helmet ${dataset.target_class_mapping?.no_helmet??'yok'} / hi_vis ${dataset.target_class_mapping?.hi_vis??'yok'} / no_hi_vis ${dataset.target_class_mapping?.no_hi_vis??'yok'}`);
+          addMetric(metrics,'Cross-split yakın kopya',Object.entries(leakage.cross_split_pairs_by_max_hamming||{}).map(([key,value])=>`h≤${key}: ${value}`).join(' / '));
+          addMetric(metrics,'PPE ONNX / TRT 640 / TRT 960',`${model.onnx_export_present?'var':'yok'} / ${model.tensorrt_640_present?'var':'yok'} / ${model.tensorrt_960_present?'var':'yok'}`);
+          addMetric(metrics,'Eğitim / final GT',`${campaign.training_authorized?'açık':'kapalı'} / ${campaign.independent_final_ground_truth_authorized?'açık':'kapalı'}`);
+        }
+        if(campaignId==='ppe_safetyvision_challenger'&&campaign.available){
+          const model=campaign.model||{};
+          const artifacts=campaign.artifacts||{};
+          const reported=campaign.reported_metrics||{};
+          const mapping=model.runtime_class_mapping||{};
+          addMetric(metrics,'Model',`${model.family||'?'} / ${String(model.commit||'').slice(0,12)} / ${model.license||'lisans ?'}`);
+          addMetric(metrics,'Dört PPE sınıfı',`helmet ${mapping.helmet??'yok'} / no_helmet ${mapping.no_helmet??'yok'} / hi_vis ${mapping.hi_vis??'yok'} / no_hi_vis ${mapping.no_hi_vis??'yok'}`);
+          addMetric(metrics,'ONNX profilleri',`640 ${artifacts['640']?.present?'var, b1':'yok'} / 896 ${artifacts['896']?.present?'var, b1':'yok'} / 960 ${artifacts['960']?.present?'var':'yok'}`);
+          addMetric(metrics,'Yazar metriği',`640 ONNX mAP50 ${reported.onnx_640_map50??'?'}; no-vest ${reported.no_safety_vest_map50??'?'}; yerel replay ${reported.locally_reproduced?'var':'yok'}`);
+          addMetric(metrics,'Model kabulü',campaign.accepted_model?'kabul edildi':'challenger; kabul edilmedi');
+        }
+        if(campaignId==='ppe_safetyvision_phase_b_a32'&&campaign.available){
+          const severity=campaign.severity||{};
+          const tests=campaign.tests||{};
+          const integrity=campaign.integrity||{};
+          addMetric(metrics,'Bağımsız karar',`${campaign.decision||'ACCEPT'} — yalnız build-context bütünlüğü`);
+          addMetric(metrics,'P0 / P1 / P2',`${severity.p0||0} / ${severity.p1||0} / ${severity.p2||0}`);
+          addMetric(metrics,'Testler',`${tests.author_runs||0}×${tests.author_passed_each||0} author / ${tests.independent_passed||0} bağımsız; ${tests.failed||0} başarısız`);
+          addMetric(metrics,'Bütünlük',`${integrity.source_pins||0} pin / ${integrity.strict_receipts||0} receipt / ${integrity.symlinks||0} symlink; writable-special ${integrity.writable_or_special_entries??'?'}`);
+          addMetric(metrics,'Symlink kapanışı',`cycle ${integrity.cycles??'?'} / dangling ${integrity.dangling??'?'} / root escape ${integrity.root_escapes??'?'}`);
+          addMetric(metrics,'Build / model yükleme / GPU / TRT-DS / ürün',`${campaign.cpu_image_build_authorized?'açık':'kapalı'} / ${campaign.model_or_onnx_load_authorized?'açık':'kapalı'} / ${campaign.gpu_workload_authorized?'açık':'kapalı'} / ${campaign.tensorrt_or_deepstream_authorized?'açık':'kapalı'} / ${campaign.production_ready?'hazır':'kapalı'}`);
+          addMetric(metrics,'Sonraki kapı',campaign.next_gate);
+        }
+        if(campaignId==='gpu_lease_v5'&&campaign.available){
+          const policy=campaign.policy||{};
+          const tests=campaign.tests||{};
+          const dockerTool=campaign.host_tools?.docker_cli||{};
+          const smiTool=campaign.host_tools?.nvidia_smi||{};
+          addMetric(metrics,'Contract',`${String(campaign.contract_fingerprint_sha256||'').slice(0,16)}… / bağımsız ${tests.independent_review||'?'}`);
+          addMetric(metrics,'Frozen kabul testleri',`${tests.focused_passed||0} odak / ${tests.regression_passed||0} regresyon / ${tests.failed||0} başarısız; güncel host replay değildir`);
+          addMetric(metrics,'Host tool pinleri',campaign.host_tools_current?'güncel':`STALE — docker ${dockerTool.current_bytes||'?'} B, nvidia-smi ${smiTool.current_bytes||'?'} B`);
+          addMetric(metrics,'Güncel host replay',campaign.current_host_replay_eligible?'başlatılabilir':`fail-closed: ${campaign.current_host_replay_blocker||'tool pin drift'}`);
+          addMetric(metrics,'Canlı plan / receipt',`${campaign.live_plan_published?'var':'yok'} / ${campaign.activation_receipt_published?'var':'yok'}`);
+          addMetric(metrics,'Yürütme',campaign.execution_authorized?'yetkili':'kapalı');
+          addMetric(metrics,'Plan kapısı',policy.plan_required?'exact dış plan ve semantic pin zorunlu':'beklenmeyen açık kapı');
+        }
+        for(const gate of campaign.required_gates||[]){
+          const reasonCount=(gate.reasons||[]).length;
+          const detail=reasonCount?`; ${reasonCount} açık neden`:'';
+          addMetric(metrics,gate.title||gate.id,`${stateLabels[gate.state]||gate.state}${detail}`);
+        }
+        for(const caveat of campaign.caveats||[]){
+          addMetric(metrics,'Sınır',caveat);
+        }
+        const scope=campaign.scope||{};
+        addMetric(metrics,'Video tipi',scope.scene_types);
+        addMetric(metrics,'Model girişleri',(scope.model_input_sizes||[]).join(' / '));
+        addMetric(metrics,'Simüle akış',scope.simulated_streams);
+        addMetric(metrics,'Run süresi',scope.duration_seconds_per_run?scope.duration_seconds_per_run+' sn':null);
+        addMetric(metrics,'Dizi',scope.sequences);
+        addMetric(metrics,'Kare',scope.frames);
+        addMetric(metrics,'Hedef',scope.targets);
+        addMetric(metrics,'İş',scope.jobs);
+        addMetric(metrics,'Konum',scope.locations);
+        if(scope.distance_m){
+          addMetric(metrics,'Mesafe',`${scope.distance_m.minimum_inclusive??'?'}–${scope.distance_m.maximum_exclusive??'?'} m`);
+        }
+        if(campaign.bin_target_counts){
+          addMetric(metrics,'Dilim hedefleri',Object.entries(campaign.bin_target_counts).map(([key,value])=>`${key}: ${value}`).join(' / '));
+        }
+        if(campaign.dry_run===true)addMetric(metrics,'Kampanya','dry-run kanıtı');
+        if(campaign.safety?.dry_run===true)addMetric(metrics,'Mesafe dilimleri','dry-run kanıtı');
+        if(campaign.gpu_execution_requested===false)addMetric(metrics,'GPU batch','henüz istenmedi');
+        if(campaign.accelerated_execution_occurred===false)addMetric(metrics,'Hızlandırılmış inference','henüz çalışmadı');
+        if(campaign.accelerated_execution_occurred===true)addMetric(metrics,'Hızlandırılmış inference','çalıştı');
+        if(campaign.accelerated_execution_occurred===null&&campaign.metric_context?.dataset_id==='R-LiViT_RGB-T_v1.0')addMetric(metrics,'Hızlandırılmış inference','kanıt yok; bilinmiyor');
+        if(campaign.sustained_load_authorized===false)addMetric(metrics,'Sürekli GPU yükü','yetkilendirilmedi');
+        if(campaign.collection_policy?.read_only===true)addMetric(metrics,'GPU kanıt toplama','salt okunur');
+        if(campaign.current_run){
+          const current=campaign.current_run;
+          if(current.run_id)addMetric(metrics,'Güncel GPU koşusu',`${current.run_id}; ${current.gpu_name}; sürücü ${current.driver_version}`);
+          if(current.tensor_sync_passed!==undefined)addMetric(metrics,'CUDA tensor smoke',current.tensor_sync_passed?`geçti; CUDA ${current.cuda}, Torch ${current.torch}, compute ${String(current.compute_capability||[]).replace(',','.')}`:'geçmedi');
+          if(current.deepstream_smoke_executed===false)addMetric(metrics,'DeepStream 9 motor smoke','bu receipt’te çalıştırılmadı');
+          if(current.endurance_executed===false)addMetric(metrics,'7 günlük dayanıklılık','bu receipt’te çalıştırılmadı');
+        }
+        if(campaign.deepstream_runtime_qualification){
+          const ds9=campaign.deepstream_runtime_qualification;
+          addMetric(metrics,'Ayrı DS9 çalışma zamanı yeterliliği',stateLabels[ds9.state]||ds9.state);
+          addMetric(metrics,'DS9 640/960 smoke',ds9.runtime_qualification_passed?`${ds9.checks?.passed??0}/${ds9.checks?.total??5} geçti; parser parity + kernel + iki engine deserialize`:'kapalı; güncel yeterlilik yok');
+          if(ds9.runtime)addMetric(metrics,'DS9 runtime',`DeepStream ${ds9.runtime.deepstream}, CUDA ${ds9.runtime.cuda}, TensorRT ${ds9.runtime.tensorrt}, ${ds9.runtime.architecture}`);
+          addMetric(metrics,'DS9 yeterlilik penceresi',ds9.expires_at_utc?`bitiş ${ds9.expires_at_utc}; sonra fail-closed stale/pending`:null);
+          const dsIntegrity=ds9.integrity||{};
+          const dsVerified=Object.values(dsIntegrity).filter(Boolean).length;
+          const dsTotal=Object.keys(dsIntegrity).length;
+          if(dsTotal)addMetric(metrics,'DS9 exact-pin / şema / replay',`${dsVerified}/${dsTotal}`);
+          if(ds9.does_not_imply_product_readiness)addMetric(metrics,'DS9 kanıt kapsamı','yalnız runtime yeterliliği; model kalitesi ve ürün kabulü değildir');
+        }
+        if(campaign.historical_failed_run?.run_id){
+          const historical=campaign.historical_failed_run;
+          addMetric(metrics,'Korunan başarısız tarihçe',`${historical.run_id}; exit ${historical.exit_status}; ENTRYPOINT yakalaması; GPU sonucu geçersiz`);
+          addMetric(metrics,'live-001 düzeltmesi','explicit Python entrypoint; live-002 yeni immutable koşu olarak yayımlandı');
+        }
+        if((campaign.pending_gate_ids||[]).length)addMetric(metrics,'Açık GPU takip kapıları',campaign.pending_gate_ids.join(' / '));
+        if(campaign.integrity){
+          const verified=Object.values(campaign.integrity).filter(Boolean).length;
+          addMetric(metrics,'GPU exact-pin / replay bütünlüğü',`${verified}/${Object.keys(campaign.integrity).length}`);
+        }
+        addMetric(metrics,'Birleştirme',campaign.aggregation_status);
+        if(campaign.profiles_ready!==undefined)addMetric(metrics,'Hazır profil',campaign.profiles_ready+'/2');
+        if(campaign.input_readiness)addMetric(metrics,'Saha girdileri',`${campaign.input_readiness.ready}/${campaign.input_readiness.required}`);
+        if(campaign.final_evaluation_present!==undefined)addMetric(metrics,'Final saha değerlendirmesi',campaign.final_evaluation_present?'mevcut':'yok');
+        if(campaign.calibration_verified!==undefined)addMetric(metrics,'Saha kamera kalibrasyonu',campaign.calibration_verified?'doğrulandı':'kanıtlanmadı');
+        addMetric(metrics,'Saha kabul kriteri',campaign.criterion_id);
+        if(campaign.final_claim_allowed===false)addMetric(metrics,'Final kabul','izin verilmiyor');
+        if(campaign.final_claim_allowed===true)addMetric(metrics,'Final kabul','kanıtlandı');
+        if(campaign.policy){
+          addMetric(metrics,'Kalite politikası',`${campaign.policy.policy_id||'—'} (${campaign.policy.status||'bilinmiyor'})`);
+          addMetric(metrics,'Politika yürürlük zamanı',campaign.policy.effective_at_utc);
+          addMetric(metrics,'Politika parmak izi',campaign.policy.pre_run_fingerprint_sha256);
+          if(campaign.policy.policy_alone_can_pass_any_gate===false)addMetric(metrics,'Politika tek başına kabul','hayır');
+          if(campaign.policy.approval_strictly_before_campaign!==null&&campaign.policy.approval_strictly_before_campaign!==undefined){
+            addMetric(metrics,'Run öncesi onay',campaign.policy.approval_strictly_before_campaign?'doğrulandı':'doğrulanmadı');
+          }
+        }
+        if(campaign.quality_thresholds){
+          const quality=campaign.quality_thresholds;
+          const person=quality.person||{};
+          const ppe=quality.ppe||{};
+          if(Object.keys(person).length)addMetric(metrics,'Kişi eşikleri',`P ≥ ${person.precision}, R ≥ ${person.recall}, F1 ≥ ${person.f1}, büyük insan R ≥ ${person.large_person_recall}`);
+          addMetric(metrics,'Kalibre tam 25 m recall',quality.exact_25m_person_recall!==undefined?`≥ ${quality.exact_25m_person_recall}`:null);
+          addMetric(metrics,'Pose PCK@0.2',quality.pose_pck_at_0_2!==undefined?`≥ ${quality.pose_pck_at_0_2}`:null);
+          if(Object.keys(ppe).length)addMetric(metrics,'PPE eşikleri',`P ≥ ${ppe.precision}, ihlal R ≥ ${ppe.violation_recall}, alarm ≤ ${ppe.maximum_alert_latency_seconds} sn, yanlış alarm ≤ ${ppe.maximum_false_alarms_per_camera_hour}/kamera-saat`);
+        }
+        if(campaign.capacity){
+          const capacity=campaign.capacity;
+          addMetric(metrics,'Kapasite eşiği',`${capacity.camera_count} kameranın her biri ≥ ${capacity.minimum_output_fps_per_camera} FPS / ${capacity.measurement_seconds} sn`);
+          if(capacity.cross_camera_average_substitution_allowed===false)addMetric(metrics,'Kameralar arası ortalama ikamesi','yasak');
+        }
+        if(campaign.cadence){
+          addMetric(metrics,'Maksimum atlanan kare',`kişi ${campaign.cadence.person_maximum_skipped_frames}; pose ${campaign.cadence.pose_maximum_skipped_frames}; PPE ${campaign.cadence.ppe_maximum_skipped_frames}`);
+        }
+        if(campaign.endurance){
+          addMetric(metrics,'Dayanıklılık',`${campaign.endurance.segments} × ${campaign.endurance.segment_seconds} sn = ${campaign.endurance.total_seconds} sn; p05 ≥ %${100*campaign.endurance.minimum_p05_baseline_fraction}`);
+        }
+        if(campaign.caviar_evidence_complete!==undefined)addMetric(metrics,'CAVIAR kanıt bütünlüğü',campaign.caviar_evidence_complete?'tam':'eksik');
+        if(campaign.live_cpu_recomputed!==undefined)addMetric(metrics,'Canlı CPU yeniden hesaplama',campaign.live_cpu_recomputed?'tamamlandı':'yapılmadı');
+        if(campaign.ppe_model_ready!==undefined){
+          addMetric(metrics,'PPE model durumu',campaign.ppe_model_ready?'kanıt hatası':'hazır değil — yalnız kaynak planı');
+          addMetric(metrics,'Nicel PPE benchmarkı',campaign.quantitative_benchmark_ready?'kanıt hatası':'hazır değil');
+          addMetric(metrics,'PPE kaynak adayı',campaign.candidate_count!==null&&campaign.candidate_count!==undefined?`${campaign.candidate_count}/12`:'güvenilir sayı saklandı');
+          const eligible=campaign.eligibility_counts?.quantitative_commercial_video_benchmark;
+          addMetric(metrics,'Nicel kullanıma uygun aday',eligible!==undefined?`${eligible}/12`:'kanıt yok');
+          addMetric(metrics,'Birincil PPE kaynak planı',campaign.primary_plan);
+          const groups=campaign.candidate_groups||{};
+          if((groups.written_license_contact_ids||[]).length)addMetric(metrics,'Yazılı lisans teması',(groups.written_license_contact_ids||[]).join(' / '));
+          if((groups.qualitative_video_ids||[]).length)addMetric(metrics,'Nitel video tanısı',(groups.qualitative_video_ids||[]).join(' / '));
+          if((groups.static_diagnostic_ids||[]).length)addMetric(metrics,'Statik tanı kaynakları',(groups.static_diagnostic_ids||[]).join(' / '));
+          if((groups.ml_restricted_ids||[]).length)addMetric(metrics,'ML kısıtlı adaylar',(groups.ml_restricted_ids||[]).join(' / '));
+          if(campaign.media_or_annotations_downloaded===false)addMetric(metrics,'Medya/anotasyon','indirilmedi');
+          addMetric(metrics,'Kayıt SHA-256',campaign.registry_sha256);
+          addMetric(metrics,'Kabul etkisi','yalnız kaynak planlama; PPE model kabulü değil');
+        }
+        if(campaign.metrics_by_profile){
+          for(const [profile,values] of Object.entries(campaign.metrics_by_profile)){
+            addMetric(metrics,profile+' kalite',`precision ${values.micro_precision??'n/a'}, recall ${values.micro_recall??'n/a'}, F1 ${values.micro_f1??'n/a'}, macro AP50 ${values.macro_ap50??'n/a'}`);
+          }
+        }
+        for(const rule of campaign.rules||[]){
+          const scope=rule.scope?.kind==='each_profile'?(rule.scope.profiles||[]).join('/'):(rule.scope?.profile??'?');
+          addMetric(metrics,`Eşik ${rule.rule_id||rule.metric}`,`${rule.metric} ${rule.operator} ${rule.threshold} (${scope}): ${stateLabels[rule.status]||rule.status}`);
+        }
+        if(campaign.loaf_preparation){
+          const loaf=campaign.loaf_preparation;
+          const val=loaf.splits?.val||{};
+          const test=loaf.splits?.test_unseen||{};
+          addMetric(metrics,'LOAF hazırlık',`${loaf.state||'bilinmiyor'}; kabul etkisi yok`);
+          addMetric(metrics,'LOAF val',`${val.target_people??0} kişi / ${val.frames??0} kare / ${val.sequences??0} dizi`);
+          addMetric(metrics,'LOAF test-unseen',`${test.target_people??0} kişi / ${test.frames??0} kare / ${test.sequences??0} dizi`);
+          const rights=loaf.dataset_rights;
+          if(rights){
+            const rightsLabel=rights.license_status==='verified'?'doğrulandı':'doğrulanmadı';
+            addMetric(metrics,'LOAF kullanım hakları',`${rightsLabel}; ${rights.internal_research_validation_only?'yalnız iç araştırma/doğrulama':'kapsam belirsiz'}; eğitim ${rights.model_training_allowed?'izinli':'yasak'}; dağıtım ${rights.redistribution_allowed?'izinli':'yasak'}; ${rights.written_rights_clearance_required?'yazılı izin gerekli':'yazılı izin kapısı yok'}`);
+          }
+        }
+        if(campaign.metric_context?.qualitative_review_only){
+          addMetric(metrics,'Metrik kapsamı','nitel görsel inceleme; GT metriği değil');
+        }
+        if(campaign.automatic_candidate_generation){
+          const automatic=campaign.automatic_candidate_generation;
+          const autoProgress=automatic.progress||{};
+          addMetric(metrics,'Otomatik aday üretimi',`${stateLabels[automatic.state]||automatic.state}; ${autoProgress.completed??0}/${autoProgress.total??0} iş`);
+          addMetric(metrics,'Render / withheld',`${automatic.rendered_jobs??'n/a'} / ${automatic.withheld_jobs??'n/a'}; withheld görsel audit veya insan QA sayılmaz`);
+          const candidateAssets=automatic.candidate_assets||{};
+          const decisions=candidateAssets.decisions||{};
+          const assets=candidateAssets.assets||{};
+          addMetric(metrics,'Aday karar kaydı',`${decisions.completed??0}/${decisions.total??0}`);
+          addMetric(metrics,'Canlı hash-doğrulanmış varlık',`${assets.completed??0}/${assets.total??0}`);
+        }
+        if(campaign.ai_qualitative_visual_audit){
+          const audit=campaign.ai_qualitative_visual_audit;
+          const frames=audit.source_frames||{};
+          const decisions=audit.profile_decisions||{};
+          addMetric(metrics,'Hash-bağlı AI görsel audit',`${stateLabels[audit.state]||audit.state}; ${decisions.completed??0}/${decisions.total??0} profil kararı, ${frames.completed??0}/${frames.total??0} kaynak kare`);
+          addMetric(metrics,'AI-audit video tipi',`${audit.distinct_video_types??'n/a'}/${audit.minimum_distinct_video_types??'n/a'} minimum`);
+          const coverage=audit.coverage||{};
+          addMetric(metrics,'AI-audit kamera kapsamı',`orta-yakın ${coverage.medium_close_source_frames??'n/a'} / üst ${coverage.overhead_top_view_source_frames??'n/a'} / yüksek-oblik ${coverage.high_oblique_source_frames??'n/a'}`);
+          addMetric(metrics,'Withheld ayrımı',audit.withheld_scenes_excluded?'AI audit dışında doğrulandı':'doğrulanmadı');
+          addMetric(metrics,'AI audit insan QA mı','hayır');
+        }
+        if(campaign.human_terminal_qa){
+          const human=campaign.human_terminal_qa;
+          const humanProgress=human.progress||{};
+          addMetric(metrics,'Terminal insan QA',`${stateLabels[human.state]||human.state}; ${humanProgress.completed??0}/${humanProgress.total??0} terminal, ${human.pending_decisions??'n/a'} bekliyor`);
+          if(human.required_for_ai_audit_acceptance===false)addMetric(metrics,'İnsan QA kabul etkisi','AI audit kabulünden ayrı; insan tamamlanmışlığı iddia edilmiyor');
+        }
+        if(campaign.paired_profile_comparison){
+          const paired=campaign.paired_profile_comparison;
+          addMetric(metrics,'640/960 nitel eşleştirme',`${paired.paired_scene_count??'n/a'} video tipi / ${paired.paired_source_frame_count??'n/a'} kaynak kare`);
+        }
+        if(campaign.ground_truth){
+          addMetric(metrics,'Ground truth',campaign.ground_truth.valid?`${campaign.ground_truth.person_boxes_per_profile??'n/a'} insan kutusu / profil; ${campaign.ground_truth.live_sources_verified?'kaynak hashleri canlı doğrulandı':'canlı kaynak doğrulaması eksik'}`:'geçersiz');
+        }
+        if(campaign.input_materialization){
+          const input=campaign.input_materialization;
+          addMetric(metrics,'R-LiViT MP4 girdileri',input.complete_sequences!==undefined?`${input.complete_sequences}/${input.expected_sequences} video; ${input.codec}; ${input.fps} FPS`:(stateLabels[input.status]||input.status));
+          if(input.minimum_psnr_db!==undefined)addMetric(metrics,'MP4 kalite/ısı',`min PSNR ${input.minimum_psnr_db} dB; min SSIM ${input.minimum_ssim}; max CPU ${input.maximum_cpu_platform_temperature_c}°C`);
+          if(input.cross_bound_to_campaign!==undefined)addMetric(metrics,'MP4–kampanya pini',input.cross_bound_to_campaign?'birebir doğrulandı':'doğrulanmadı');
+        }
+        if(campaign.evidence_readiness){
+          const ready=Object.values(campaign.evidence_readiness).filter(Boolean).length;
+          addMetric(metrics,'R-LiViT kanıt bağı',`${ready}/${Object.keys(campaign.evidence_readiness).length}`);
+        }
+        if(campaign.proof_binding){
+          const proof=campaign.proof_binding;
+          addMetric(metrics,'Status parmak izi','yalnız bozulma/bütünlük kontrolü; yetki kanıtı değil');
+          addMetric(metrics,'Final çapraz kanıt',proof.complete_claim_verified?'canlı receipt/aggregate ile doğrulandı':'doğrulanmadı');
+          addMetric(metrics,'Canlı job receipt pinleri',proof.job_receipts_live_pins_verified?'80/80 doğrulandı':'doğrulanmadı');
+        }
+        if((campaign.blocker_codes||[]).length){
+          addMetric(metrics,'Blokaj kodları',campaign.blocker_codes.join(' / '));
+        }
+        if(campaign.profiles){
+          for(const [profile,values] of Object.entries(campaign.profiles)){
+            if(campaign.metric_context?.site_calibrated){
+              const metric=values.metrics||{};
+              addMetric(metrics,profile+' saha 20–25 m',`GT ${values.ground_truth_instances??'n/a'}, TP/FP/FN ${metric.tp??'n/a'}/${metric.fp??'n/a'}/${metric.fn??'n/a'}, recall ${metric.recall??'n/a'}, AP101 ${metric.ap_101_point??'n/a'}`);
+            }else if(campaign.metric_context?.dataset_id==='R-LiViT_RGB-T_v1.0'){
+              const overall=values.overall;
+              addMetric(metrics,profile+' R-LiViT',overall?`GT ${overall.ground_truth}, TP/FP/FN ${overall.tp}/${overall.fp}/${overall.fn}, precision/recall/F1 @ conf 0.25, IoU 0.5: ${overall.precision??'n/a'} / ${overall.recall??'n/a'} / ${overall.f1??'n/a'}, AP101@IoU0.5 ${overall.ap_101_point??'n/a'}`:`${values.completed_jobs??0}/${values.planned_jobs??40} iş; ${stateLabels[values.status]||values.status}`);
+            }else if(values.ground_truth!==undefined){
+              addMetric(metrics,profile+' LOAF',`GT ${values.ground_truth??'n/a'}, TP/FP/FN ${values.tp??'n/a'}/${values.fp??'n/a'}/${values.fn??'n/a'}, recall ${values.recall??'n/a'}, AP101 ${values.ap_101_point??'n/a'}`);
+            }else{
+              addMetric(metrics,profile+' CAVIAR',`${values.complete_sequences??0}/${values.expected_sequences??0} dizi, recall ${values.recall??'n/a'}, AP ${values.ap_101_point_macro??'n/a'}`);
+            }
+          }
+        }
+        for(const row of campaign.results||[]){
+          addMetric(metrics,`${row.model_input} / ${row.distance_bin_id}`,`GT ${row.ground_truth}, TP/FP/FN ${row.tp}/${row.fp}/${row.fn}, recall ${row.recall}, AP101 ${row.ap101_iou_0_5}`);
+        }
+        if(campaign.health){
+          addMetric(metrics,'Beklenmeyen yeniden başlatma',campaign.health.unexpected_restarts);
+          addMetric(metrics,'Sağlık kapısı',campaign.health.health_gate_count);
+        }
+        if(campaign.throughput_floor){
+          const floor=campaign.throughput_floor;
+          addMetric(metrics,'Throughput floor',stateLabels[floor.status]||floor.status||'bilinmiyor');
+          if(floor.acceptance_safe===false)addMetric(metrics,'Floor kabul kapısı','kapalı');
+          if(floor.status==='verified'){
+            addMetric(metrics,'Floor parmak izi',floor.artifact_fingerprint_short);
+            addMetric(metrics,'Doğrulanmış güvenli run',floor.verified_safe_runs);
+            const runtime=floor.source_runtime||{};
+            addMetric(metrics,'Floor kaynak GPU',runtime.gpu_name);
+            addMetric(metrics,'Floor kaynak sürücü',runtime.driver_version);
+            for(const profile of ['640','960']){
+              const values=(floor.profiles||{})[profile];
+              if(values){
+                addMetric(metrics,profile+' FPS floor',`aggregate ${values.aggregate_fps_floor} / akış başı ${values.per_stream_fps_floor}`);
+              }
+            }
+          }
+        }
+        if(campaign.heartbeat?.throughput_floor_evaluation){
+          const evaluation=campaign.heartbeat.throughput_floor_evaluation;
+          addMetric(metrics,'Canlı segment floor',stateLabels[evaluation.status]||evaluation.status||'bilinmiyor');
+          if(evaluation.profile)addMetric(metrics,'Canlı floor profili',evaluation.profile);
+          if(evaluation.observed_aggregate_fps_p05!==null&&evaluation.observed_aggregate_fps_p05!==undefined){
+            addMetric(metrics,'Canlı aggregate p05',`${evaluation.observed_aggregate_fps_p05} FPS (floor ${evaluation.aggregate_fps_floor})`);
+          }
+        }
+        card.appendChild(metrics);
+
+        const evidence=document.createElement('div');
+        evidence.className='evidence';
+        for(const item of campaign.evidence||[]){
+          if(item.available&&item.href){
+            const link=document.createElement('a');
+            link.href=item.href;
+            link.target='_blank';
+            link.rel='noopener';
+            link.textContent=item.label;
+            evidence.appendChild(link);
+          }else if(item.available&&item.raw_download_allowed===false){
+            const projected=document.createElement('span');
+            projected.textContent=`${item.label} — güvenli özet panelde`;
+            evidence.appendChild(projected);
+          }else{
+            const missing=document.createElement('span');
+            missing.textContent=`${item.label} — ${stateLabels[item.artifact_state]||item.artifact_state}`;
+            evidence.appendChild(missing);
+          }
+        }
+        card.appendChild(evidence);
+        grid.appendChild(card);
+      }
+      if(!grid.children.length){
+        const empty=document.createElement('p');
+        empty.className='muted';
+        empty.textContent='Doğrulama kampanyası bulunamadı.';
+        grid.appendChild(empty);
+      }
+    }
+
+    async function loadValidation(){
+      const grid=document.getElementById('validationGrid');
+      try{
+        const response=await fetch('/api/validation');
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        const payload=await response.json();
+        renderFinalizationBundle(payload.finalization_bundle);
+        renderProductFinalizationV2(payload.product_finalization_v2);
+        renderProductReadiness(payload.campaigns?.product_readiness);
+        renderFullStackBenchmark(payload.campaigns?.full_stack_benchmark);
+        renderPersonUpgrade(payload.campaigns?.person_model_upgrade);
+        renderPoseModelReadiness(payload.campaigns?.pose_model_readiness);
+        renderPpeSeedReadiness(payload.campaigns?.ppe_seed_readiness);
+        renderPpeFiveClassQuarantine(payload.campaigns?.ppe_five_class_quarantine);
+        renderPpePublicSourceQuarantine(payload.campaigns?.ppe_public_source_quarantine);
+        renderValidation(payload);
+      }catch(error){
+        renderFinalizationBundle(null);
+        renderProductFinalizationV2(null);
+        renderProductReadiness(null);
+        renderFullStackBenchmark(null);
+        renderPersonUpgrade(null);
+        renderPoseModelReadiness(null);
+        renderPpeSeedReadiness(null);
+        renderPpeFiveClassQuarantine(null);
+        renderPpePublicSourceQuarantine(null);
+        grid.replaceChildren();
+        const warning=document.createElement('p');
+        warning.className='muted';
+        warning.textContent='Doğrulama durumu okunamadı: '+error.message;
+        grid.appendChild(warning);
+      }
+    }
+
+    function manualHeaders(extra={}){
+      return Object.assign({},extra);
+    }
+
+    function clearManualImages(){
+      for(const url of manualObjectUrls)URL.revokeObjectURL(url);
+      manualObjectUrls=[];
+    }
+
+    async function loadProtectedImage(img,asset){
+      try{
+        const response=await fetch(asset.href,{headers:manualHeaders()});
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        const blob=await response.blob();
+        if(blob.type!=='image/png'&&blob.type!=='image/jpeg')throw new Error('geçersiz medya');
+        const url=URL.createObjectURL(blob);
+        manualObjectUrls.push(url);
+        img.src=url;
+        img.alt=asset.kind==='overlay_image'?'Model tespit overlay görüntüsü':'Kaynak kare görüntüsü';
+      }catch(error){
+        img.removeAttribute('src');
+        img.alt='Görüntü kullanılamıyor: '+error.message;
+      }
+    }
+
+    function setManualForm(decision){
+      activeManualDecision=decision;
+      manualDecisionTitle.textContent=`Karar formu — ${decision.model_input}px — revizyon ${decision.revision}`;
+      manualDecisionStatus.value=['reviewed','ambiguous','excluded'].includes(decision.status)?decision.status:'reviewed';
+      const mapping={
+        countDetection:'detection_count_reviewed',countVisible:'visible_person_count_confirmed',
+        countScorable:'scorable_person_count_confirmed',countTp:'true_positive_count',
+        countFp:'false_positive_count',countFn:'false_negative_count',
+        countIgnored:'ignored_detection_count',countUnscorable:'unscorable_visible_person_count'
+      };
+      for(const [elementId,key] of Object.entries(mapping)){
+        const value=decision.decision?.[key];
+        document.getElementById(elementId).value=value===null||value===undefined?'':String(value);
+      }
+      const terminal=['reviewed','ambiguous','excluded'].includes(decision.status);
+      manualReasons.value=terminal?(decision.decision?.reasons||[]).join('\n'):'';
+      manualSaveButton.disabled=!decision.evidence_ready;
+    }
+
+    function renderManualSource(item){
+      clearManualImages();
+      manualReviewContext.textContent=`${item.scene_id} — kare ${item.frame.index} — ${item.window.segment_label}; beklenen insan: ${item.observation.person_expected}, görünür aralık: ${item.observation.visible_person_count_range.min}–${item.observation.visible_person_count_range.max??'+'}`;
+      manualReviewProfiles.replaceChildren();
+      for(const profile of item.profiles){
+        const card=document.createElement('article');
+        card.className='review-profile';
+        const title=document.createElement('h3');
+        title.textContent=profile.model_input+'px';
+        card.appendChild(title);
+        const statusLine=document.createElement('p');
+        statusLine.className='muted';
+        statusLine.textContent=`Durum: ${stateLabels[profile.status]||profile.status}; revizyon ${profile.revision}`;
+        card.appendChild(statusLine);
+        const evidencePair=document.createElement('div');
+        evidencePair.className='review-evidence-pair';
+        const evidenceKinds=[
+          ['source_image','Hash-bağlı ham kaynak kare'],
+          ['overlay_image','Hash-bağlı model overlay']
+        ];
+        for(const [kind,label] of evidenceKinds){
+          const figure=document.createElement('figure');
+          const caption=document.createElement('figcaption');
+          caption.textContent=label;
+          figure.appendChild(caption);
+          const asset=(profile.assets||[]).find(candidate=>candidate.kind===kind);
+          if(asset){
+            const img=document.createElement('img');
+            img.alt=kind==='overlay_image'?'Yetkili model overlay yükleniyor':'Yetkili ham kaynak kare yükleniyor';
+            figure.appendChild(img);
+            loadProtectedImage(img,asset);
+          }else{
+            const missing=document.createElement('div');
+            missing.className='review-evidence-missing';
+            missing.textContent=label+' henüz indekslenmedi.';
+            figure.appendChild(missing);
+          }
+          evidencePair.appendChild(figure);
+        }
+        card.appendChild(evidencePair);
+        const choose=document.createElement('button');
+        choose.type='button';
+        choose.textContent=profile.model_input+'px kararını düzenle';
+        choose.disabled=!profile.evidence_ready;
+        choose.addEventListener('click',()=>setManualForm(profile));
+        card.appendChild(choose);
+        manualReviewProfiles.appendChild(card);
+      }
+      const preferred=item.profiles.find(profile=>profile.evidence_ready)||item.profiles[0];
+      setManualForm(preferred);
+    }
+
+    function renderManualQueue(payload){
+      manualQueuePayload=payload;
+      manualReviewQueue.replaceChildren();
+      for(const [index,item] of (payload.items||[]).entries()){
+        const button=document.createElement('button');
+        button.type='button';
+        const terminal=item.profiles.filter(profile=>['reviewed','ambiguous','excluded'].includes(profile.status)).length;
+        button.textContent=`${item.scene_id} · kare ${item.frame.index} · ${terminal}/2`;
+        button.addEventListener('click',()=>{
+          for(const sibling of manualReviewQueue.querySelectorAll('button'))sibling.classList.remove('active');
+          button.classList.add('active');
+          renderManualSource(item);
+        });
+        manualReviewQueue.appendChild(button);
+        if(index===0){button.classList.add('active');renderManualSource(item)}
+      }
+      if(!(payload.items||[]).length){
+        const empty=document.createElement('p');
+        empty.className='muted';
+        empty.textContent='İncelenebilir, hassas olmayan kayıt yok.';
+        manualReviewQueue.appendChild(empty);
+        activeManualDecision=null;
+        manualSaveButton.disabled=true;
+      }
+    }
+
+    async function loadManualReview(){
+      manualReviewState.textContent='Yetkili manuel inceleme kuyruğu yükleniyor…';
+      try{
+        const response=await fetch('/api/manual-review/queue',{headers:manualHeaders()});
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        const payload=await response.json();
+        renderManualQueue(payload);
+        const counts=payload.status_counts||{};
+        manualReviewState.textContent=`${payload.decision_count||0} karar: ${counts.reviewed||0} incelendi, ${counts.ambiguous||0} belirsiz, ${counts.excluded||0} hariç, ${counts.pending_review||0} insan incelemesi bekliyor, ${counts.pending_overlay||0} overlay bekliyor.`;
+      }catch(error){
+        clearManualImages();
+        manualReviewQueue.replaceChildren();
+        manualReviewProfiles.replaceChildren();
+        activeManualDecision=null;
+        manualSaveButton.disabled=true;
+        manualReviewState.textContent='Manuel inceleme kuyruğu kapalı: '+error.message;
+      }
+    }
+
+    function optionalCount(id,required){
+      const raw=document.getElementById(id).value.trim();
+      if(!required)return null;
+      if(!/^[0-9]+$/.test(raw))throw new Error(id+' için sıfır veya pozitif tam sayı gerekli');
+      return Number(raw);
+    }
+
+    async function saveManualDecision(){
+      if(!activeManualDecision)return;
+      try{
+        const statusValue=manualDecisionStatus.value;
+        const reviewed=statusValue==='reviewed';
+        const reasons=manualReasons.value.split('\n').map(value=>value.trim()).filter(Boolean);
+        if(statusValue!=='reviewed'&&!reasons.length)throw new Error('Belirsiz/hariç kararı için neden gerekli');
+        const body={
+          status:statusValue,
+          detection_count_reviewed:optionalCount('countDetection',reviewed),
+          visible_person_count_confirmed:optionalCount('countVisible',reviewed),
+          scorable_person_count_confirmed:optionalCount('countScorable',reviewed),
+          true_positive_count:optionalCount('countTp',reviewed),
+          false_positive_count:optionalCount('countFp',reviewed),
+          false_negative_count:optionalCount('countFn',reviewed),
+          ignored_detection_count:optionalCount('countIgnored',reviewed),
+          unscorable_visible_person_count:optionalCount('countUnscorable',reviewed),
+          reasons,
+          reviewer_type:manualReviewerType.value
+        };
+        const reviewer=manualReviewerId.value.trim();
+        if(!reviewer)throw new Error('İnceleyen kimliği gerekli');
+        const response=await fetch('/api/manual-review/decisions/'+encodeURIComponent(activeManualDecision.decision_id),{
+          method:'PUT',
+          headers:manualHeaders({'Content-Type':'application/json','If-Match':activeManualDecision.etag,'X-Reviewer-ID':reviewer}),
+          body:JSON.stringify(body)
+        });
+        if(!response.ok){
+          const detail=await response.json().catch(()=>({}));
+          throw new Error(detail.detail||('HTTP '+response.status));
+        }
+        const saved=await response.json();
+        await loadManualReview();
+        manualReviewState.textContent=saved.persistence&&saved.persistence.exports_current===false
+          ?'Karar ve denetim olayı kalıcı olarak kaydedildi; türetilmiş JSONL çıktıları yeniden yayımlanmayı bekliyor.'
+          :'İnsan kararı ve değişmez denetim olayı kaydedildi.';
+      }catch(error){
+        manualReviewState.textContent='Karar kaydedilemedi: '+error.message;
+      }
+    }
+
+    const ppeQaCategoryLabels={
+      helmet_head_zone_boundary_retained:'Kask baş-bölgesi sınırı — tutuldu',
+      helmet_head_zone_boundary_quarantined_below:'Kask baş-bölgesi sınırı — karantina',
+      helmet_worn_candidate_random:'Kask takılı adayı — rastgele',
+      hi_vis_worn_candidate_random:'Hi-vis giyili adayı — rastgele',
+      quarantine_reason_stratified:'Karantina nedeni — tabakalı',
+      no_helmet_explicit_random:'Açık no-helmet — rastgele',
+      candidate_zero_label_context_all:'Sıfır-label unknown bağlam'
+    };
+    const ppeQaQuestionLabels={
+      is_helmet_visibly_worn_on_the_associated_person_head:'Kask ilişkili kişinin başında görünür biçimde takılı mı?',
+      is_hi_vis_visibly_worn_and_not_only_a_harness_or_ordinary_garment:'Hi-vis gerçekten giyili mi; yalnız harness/sıradan giysi değil mi?',
+      is_the_quarantine_semantically_correct:'Karantina semantik olarak doğru mu?',
+      is_no_helmet_box_explicitly_a_bare_or_unprotected_head:'No-helmet kutusu açıkça çıplak/korumasız bir baş mı?',
+      does_zero_label_context_remain_unknown_instead_of_absence_ground_truth:'Sıfır-label bağlam, yokluk ground truth yerine unknown kalmalı mı?'
+    };
+    const ppeQaPolicyLabels={
+      head_zone_helmet_worn_candidate_policy:'Baş bölgesi / takılı kask aday politikası',
+      retained_helmet_false_worn_risk:'Tutulan kasklarda yanlış “takılı” riski',
+      hi_vis_quarantine_and_retained_semantics:'Hi-vis tutma ve karantina semantiği',
+      runtime_no_hi_vis_class_absent:'Runtime no-hi-vis sınıfının yokluğu',
+      unresolved_person_ppe_absence_unknown:'Çözülmemiş kişi PPE yokluğunun unknown kalması',
+      dataset_rights_and_ultralytics_license_basis:'Veri hakları ve Ultralytics lisans temeli'
+    };
+
+    function clearPpeQaTile(){
+      if(ppeQaTileUrl)URL.revokeObjectURL(ppeQaTileUrl);
+      ppeQaTileUrl=null;
+    }
+
+    function ppeQaReviewer(){
+      const value=document.getElementById('ppeQaReviewer').value.trim();
+      if(!value)throw new Error('İnceleyen kimliği gerekli');
+      sessionStorage.setItem('deepsafePpeQaReviewer',value);
+      return value;
+    }
+
+    function syncPpeQaReason(){
+      const decision=document.getElementById('ppeQaSampleDecision').value;
+      const reason=document.getElementById('ppeQaReason');
+      if(decision==='approve_sample_semantics'){
+        if(!['visually_correct','unknown_must_not_be_negative_ground_truth'].includes(reason.value)){
+          reason.value=activePpeQaSample?.candidate_state==='zero_label_unknown_context'
+            ?'unknown_must_not_be_negative_ground_truth':'visually_correct';
+        }
+      }else if(reason.value==='visually_correct'||reason.value==='unknown_must_not_be_negative_ground_truth'){
+        reason.value='image_too_ambiguous';
+      }
+    }
+
+    async function loadPpeQaTile(img,sample){
+      clearPpeQaTile();
+      try{
+        const response=await fetch(sample.tile_href,{headers:manualHeaders()});
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        const blob=await response.blob();
+        if(blob.type!=='image/png')throw new Error('geçersiz medya');
+        ppeQaTileUrl=URL.createObjectURL(blob);
+        img.src=ppeQaTileUrl;
+        img.alt='Exact-pinli PPE R6 inceleme tile görüntüsü';
+      }catch(error){
+        img.removeAttribute('src');
+        img.alt='PPE tile kullanılamıyor: '+error.message;
+      }
+    }
+
+    function renderPpeQaSample(sample){
+      activePpeQaSample=sample;
+      clearPpeQaTile();
+      const card=document.getElementById('ppeQaSample');
+      card.replaceChildren();
+      const title=document.createElement('h3');
+      title.textContent=sample.sample_id;
+      card.appendChild(title);
+      const question=document.createElement('p');
+      question.textContent=ppeQaQuestionLabels[sample.question]||sample.question;
+      card.appendChild(question);
+      const context=document.createElement('div');
+      context.className='metric-list';
+      addMetric(context,'Kategori',ppeQaCategoryLabels[sample.category]||sample.category);
+      addMetric(context,'Rol',sample.role);
+      addMetric(context,'Aday durumu',sample.candidate_state);
+      addMetric(context,'Semantik sınıf',sample.semantic_class);
+      addMetric(context,'Karantina nedeni',sample.quarantine_reason);
+      addMetric(context,'Dikey baş bölgesi oranı',sample.association?.vertical_fraction);
+      addMetric(context,'Baş bölgesi eşiği',sample.association?.head_zone_threshold);
+      addMetric(context,'Karar revizyonu',sample.revision);
+      card.appendChild(context);
+      const img=document.createElement('img');
+      img.className='ppe-tile';
+      img.alt='PPE R6 tile yükleniyor';
+      card.appendChild(img);
+      loadPpeQaTile(img,sample);
+
+      const existing=sample.decision;
+      document.getElementById('ppeQaSampleDecision').value=existing?.decision||'approve_sample_semantics';
+      document.getElementById('ppeQaReason').value=existing?.reason_code||(
+        sample.candidate_state==='zero_label_unknown_context'
+          ?'unknown_must_not_be_negative_ground_truth':'visually_correct'
+      );
+      document.getElementById('ppeQaSampleNotes').value=existing?.notes||'';
+      syncPpeQaReason();
+      document.getElementById('ppeQaSampleSave').disabled=Boolean(ppeQaPayload?.progress?.state==='complete');
+    }
+
+    async function openPpeQaSample(sampleId,button){
+      try{
+        const response=await fetch('/api/ppe-human-qa-r6/samples/'+encodeURIComponent(sampleId),{headers:manualHeaders()});
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        const payload=await response.json();
+        for(const sibling of document.querySelectorAll('#ppeQaQueue button'))sibling.classList.remove('active');
+        if(button)button.classList.add('active');
+        renderPpeQaSample(payload.sample);
+      }catch(error){
+        document.getElementById('ppeQaState').textContent='PPE örneği açılamadı: '+error.message;
+      }
+    }
+
+    function renderPpeQaPolicies(policies){
+      const target=document.getElementById('ppeQaPolicies');
+      target.replaceChildren();
+      for(const policy of policies||[]){
+        const card=document.createElement('article');
+        card.className='ppe-policy-card';
+        const title=document.createElement('h4');
+        title.textContent=ppeQaPolicyLabels[policy.policy]||policy.policy;
+        card.appendChild(title);
+        const revision=document.createElement('p');
+        revision.className='muted';
+        revision.textContent=`Durum: ${policy.decision.decision}; revizyon ${policy.revision}`;
+        card.appendChild(revision);
+        const selectLabel=document.createElement('label');
+        selectLabel.textContent='Karar';
+        const select=document.createElement('select');
+        for(const [value,label] of [['approve','Onayla'],['reject','Reddet']]){
+          const option=document.createElement('option');
+          option.value=value;option.textContent=label;
+          option.selected=policy.decision.decision===value;
+          select.appendChild(option);
+        }
+        selectLabel.appendChild(select);
+        card.appendChild(selectLabel);
+        const notesLabel=document.createElement('label');
+        notesLabel.textContent='Gerekçe (zorunlu)';
+        const notes=document.createElement('textarea');
+        notes.maxLength=4000;
+        notes.value=policy.decision.notes||'';
+        notesLabel.appendChild(notes);
+        card.appendChild(notesLabel);
+        const save=document.createElement('button');
+        save.type='button';
+        save.textContent='Politika kararını kaydet';
+        save.disabled=Boolean(ppeQaPayload?.progress?.state==='complete');
+        save.addEventListener('click',()=>savePpeHumanQaPolicy(policy,select.value,notes.value));
+        card.appendChild(save);
+        target.appendChild(card);
+      }
+    }
+
+    function renderPpeQaQueue(payload){
+      ppeQaPayload=payload;
+      const reviewer=document.getElementById('ppeQaReviewer');
+      if(payload.reviewer_identity_locked){
+        reviewer.value=payload.reviewer_identity||'';
+        reviewer.readOnly=true;
+      }else{
+        reviewer.readOnly=false;
+        if(!reviewer.value)reviewer.value=sessionStorage.getItem('deepsafePpeQaReviewer')||'';
+      }
+      const category=document.getElementById('ppeQaCategory');
+      if(category.options.length===1){
+        for(const value of payload.filters?.categories||[]){
+          const option=document.createElement('option');
+          option.value=value;
+          option.textContent=ppeQaCategoryLabels[value]||value;
+          category.appendChild(option);
+        }
+      }
+      const queue=document.getElementById('ppeQaQueue');
+      queue.replaceChildren();
+      let activeButton=null;
+      for(const item of payload.items||[]){
+        const button=document.createElement('button');
+        button.type='button';
+        button.textContent=`${item.sample_id} · ${item.role} · ${item.decision?.decision||'bekliyor'}`;
+        button.addEventListener('click',()=>openPpeQaSample(item.sample_id,button));
+        queue.appendChild(button);
+        if(activePpeQaSample?.sample_id===item.sample_id)activeButton=button;
+      }
+      if(!(payload.items||[]).length){
+        const empty=document.createElement('p');
+        empty.className='muted';
+        empty.textContent='Bu filtrelerde PPE örneği yok.';
+        queue.appendChild(empty);
+        clearPpeQaTile();
+        activePpeQaSample=null;
+        document.getElementById('ppeQaSample').replaceChildren();
+        const message=document.createElement('p');
+        message.className='muted';message.textContent='İncelenecek bir örnek seçin.';
+        document.getElementById('ppeQaSample').appendChild(message);
+        document.getElementById('ppeQaSampleSave').disabled=true;
+      }else{
+        const button=activeButton||queue.querySelector('button');
+        const item=(payload.items||[]).find(candidate=>candidate.sample_id===activePpeQaSample?.sample_id)||payload.items[0];
+        button.classList.add('active');
+        renderPpeQaSample(item);
+      }
+      renderPpeQaPolicies(payload.policies);
+      const page=payload.pagination||{};
+      document.getElementById('ppeQaPrevious').disabled=page.previous_offset===null||page.previous_offset===undefined;
+      document.getElementById('ppeQaNext').disabled=page.next_offset===null||page.next_offset===undefined;
+      document.getElementById('ppeQaPage').textContent=`${page.filtered_total||0} eşleşme; ${page.filtered_total?`${page.offset+1}–${Math.min(page.offset+page.limit,page.filtered_total)}`:'0'} gösteriliyor`;
+      const progress=payload.progress||{};
+      document.getElementById('ppeQaState').textContent=`${progress.decided_samples||0}/${progress.expected_samples||718} örnek, ${progress.decided_policies||0}/${progress.expected_policies||6} politika kararı; audit ${payload.audit?.event_count||0} olay ve hash zinciri doğrulandı. Eğitim yetkisi: kapalı; üretim hazır: hayır; yeni exact eğitim yetkilendirmesi zorunlu.`;
+    }
+
+    function ppeQaParams(){
+      const params=new URLSearchParams({offset:String(ppeQaOffset),limit:'24'});
+      const mapping={status:'ppeQaStatus',role:'ppeQaRole',category:'ppeQaCategory',decision:'ppeQaDecisionFilter',query:'ppeQaQuery'};
+      for(const [key,id] of Object.entries(mapping)){
+        const value=document.getElementById(id).value.trim();
+        if(value)params.set(key,value);
+      }
+      return params;
+    }
+
+    async function loadPpeHumanQa(reset=false){
+      if(reset)ppeQaOffset=0;
+      document.getElementById('ppeQaState').textContent='Exact-pinli PPE R6 kuyruğu ve append-only audit zinciri doğrulanıyor…';
+      try{
+        const response=await fetch('/api/ppe-human-qa-r6/queue?'+ppeQaParams().toString(),{headers:manualHeaders()});
+        if(!response.ok){
+          const detail=await response.json().catch(()=>({}));
+          throw new Error(detail.detail||('HTTP '+response.status));
+        }
+        renderPpeQaQueue(await response.json());
+      }catch(error){
+        clearPpeQaTile();
+        activePpeQaSample=null;
+        document.getElementById('ppeQaQueue').replaceChildren();
+        document.getElementById('ppeQaPolicies').replaceChildren();
+        document.getElementById('ppeQaSampleSave').disabled=true;
+        document.getElementById('ppeQaState').textContent='PPE R6 insan QA kapalı: '+error.message;
+      }
+    }
+
+    function applyPpeHumanQaFilters(){loadPpeHumanQa(true)}
+
+    function pagePpeHumanQa(direction){
+      const page=ppeQaPayload?.pagination||{};
+      const target=direction==='next'?page.next_offset:page.previous_offset;
+      if(target===null||target===undefined)return;
+      ppeQaOffset=target;
+      loadPpeHumanQa(false);
+    }
+
+    async function savePpeHumanQaSample(){
+      if(!activePpeQaSample)return;
+      try{
+        syncPpeQaReason();
+        const body={
+          decision:document.getElementById('ppeQaSampleDecision').value,
+          reason_code:document.getElementById('ppeQaReason').value,
+          notes:document.getElementById('ppeQaSampleNotes').value
+        };
+        if(body.reason_code==='other'&&!body.notes.trim())throw new Error('Diğer nedeni için not gerekli');
+        const response=await fetch('/api/ppe-human-qa-r6/samples/'+encodeURIComponent(activePpeQaSample.sample_id),{
+          method:'PUT',
+          headers:manualHeaders({'Content-Type':'application/json','If-Match':activePpeQaSample.etag,'X-Reviewer-ID':ppeQaReviewer()}),
+          body:JSON.stringify(body)
+        });
+        if(!response.ok){
+          const detail=await response.json().catch(()=>({}));
+          throw new Error(detail.detail||('HTTP '+response.status));
+        }
+        await response.json();
+        await loadPpeHumanQa(false);
+      }catch(error){
+        document.getElementById('ppeQaState').textContent='PPE örnek kararı kaydedilemedi: '+error.message;
+      }
+    }
+
+    async function savePpeHumanQaPolicy(policy,decision,notes){
+      try{
+        if(!notes.trim())throw new Error('Politika gerekçesi zorunlu');
+        const response=await fetch('/api/ppe-human-qa-r6/policies/'+encodeURIComponent(policy.policy),{
+          method:'PUT',
+          headers:manualHeaders({'Content-Type':'application/json','If-Match':policy.etag,'X-Reviewer-ID':ppeQaReviewer()}),
+          body:JSON.stringify({decision,notes})
+        });
+        if(!response.ok){
+          const detail=await response.json().catch(()=>({}));
+          throw new Error(detail.detail||('HTTP '+response.status));
+        }
+        await response.json();
+        await loadPpeHumanQa(false);
+      }catch(error){
+        document.getElementById('ppeQaState').textContent='PPE politika kararı kaydedilemedi: '+error.message;
+      }
+    }
+
+    async function exportPpeHumanQa(){
+      try{
+        const response=await fetch('/api/ppe-human-qa-r6/export',{headers:manualHeaders()});
+        if(!response.ok){
+          const detail=await response.json().catch(()=>({}));
+          throw new Error(detail.detail||('HTTP '+response.status));
+        }
+        const blob=await response.blob();
+        const url=URL.createObjectURL(blob);
+        const link=document.createElement('a');
+        link.href=url;link.download='ppe-human-qa-adjudication-r6.json';
+        document.body.appendChild(link);link.click();link.remove();
+        URL.revokeObjectURL(url);
+        document.getElementById('ppeQaState').textContent='Strict R6 adjudication export hazırlandı. Bu kayıt eğitim veya üretim yetkisi vermez.';
+      }catch(error){
+        document.getElementById('ppeQaState').textContent='PPE adjudication export hazırlanamadı: '+error.message;
+      }
+    }
+
+    async function load(){
+      let s=await (await fetch('/api/status')).json();
+      let view={running:s.running,dry_run:s.dry_run,pid:s.pid,config:s.config,person_profile:s.person_profile,source_plan:s.source_plan,endurance_campaign:s.endurance_campaign,module_readiness:s.module_readiness};
+      status.textContent=JSON.stringify(view,null,2);
+      sources.replaceChildren();
+      for(const source of s.state.sources){
+        const line=document.createElement('p');
+        const label=document.createElement('span');
+        label.textContent=source.name+' — '+source.uri+' ';
+        const remove=document.createElement('button');
+        remove.type='button';
+        remove.className='danger';
+        remove.textContent='Sil';
+        remove.addEventListener('click',()=>del(source.id));
+        line.append(label,remove);
+        sources.appendChild(line);
+      }
+      if(!s.state.sources.length)sources.textContent='Kaynak yok';
+      let inf=await (await fetch('/api/inference')).json();
+      profileSelect.replaceChildren();
+      for(const profile of inf.available){
+        const option=document.createElement('option');
+        option.value=profile.id;
+        option.textContent=profile.label;
+        option.selected=profile.id===inf.selected.id;
+        profileSelect.appendChild(option);
+      }
+      profileInfo.textContent=`Model girişi ${inf.selected.input_width}x${inf.selected.input_height}, ${inf.selected.precision}, motor batch kapasitesi ${inf.selected.max_batch_size}; benchmark planı ${inf.selected.benchmark_sources} kaynak / ${inf.selected.benchmark_duration_seconds/60} dakika.`;
+      analytics.replaceChildren();
+      for(const [key,value] of Object.entries(s.state.analytics)){
+        const ready=s.module_readiness[key]?.artifacts_configured;
+        const label=document.createElement('label');
+        const input=document.createElement('input');
+        input.type='checkbox';
+        input.checked=value.enabled;
+        input.disabled=!ready;
+        input.addEventListener('change',()=>toggle(key,input.checked));
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(`${key} (eşik ${value.confidence}, interval ${value.interval}) ${ready?'':'— model bekleniyor'}`));
+        analytics.append(label,document.createElement('br'));
+      }
+      window.state=s.state;
+      loadValidation();
+      loadPpeHumanQa(true);
+      loadManualReview();
+    }
+
+    async function add(){await fetch('/api/sources',{method:'POST',headers,body:JSON.stringify({name:name.value,uri:uri.value})});load()}
+    async function del(id){await fetch('/api/sources/'+id,{method:'DELETE',headers});load()}
+    async function act(x){let r=await fetch('/api/pipeline/'+x,{method:'POST',headers});status.textContent=JSON.stringify(await r.json(),null,2);load()}
+    async function saveProfile(){await fetch('/api/inference',{method:'PUT',headers,body:JSON.stringify({person_profile:profileSelect.value})});load()}
+    async function toggle(k,v){state.analytics[k].enabled=v;await fetch('/api/analytics',{method:'PUT',headers,body:JSON.stringify(state.analytics)});load()}
+    roiInitEditor();
+    load();
+  </script>
+</body>
+</html>

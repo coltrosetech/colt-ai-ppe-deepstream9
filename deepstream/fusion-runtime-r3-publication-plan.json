@@ -1,0 +1,70 @@
+{
+  "plan_id": "deepsafe-ds9-canonical-fusion-inode-bound-publication-r3",
+  "publication": {
+    "config_mode": "0440",
+    "destination": "models/runtime/deepsafe-fusion-ds9-9946965e-r3",
+    "directory_mode": "0550",
+    "executable_mode": "0550",
+    "json_mode": "0440",
+    "no_overwrite": true,
+    "primitive": "renameat2(RENAME_NOREPLACE)+post_rename_fd_identity+descriptor_relative_replay",
+    "receipt_name": "publication-receipt.json"
+  },
+  "publisher": {
+    "canonical_path_reopened": true,
+    "descriptor_relative_artifact_replay": true,
+    "directory_identity_bound": true,
+    "exact_file_set_verified": true,
+    "post_rename_inode_verified": true,
+    "receipt_schema_version": "deepsafe.deepstream-fusion-publication-receipt/v1"
+  },
+  "safety": {
+    "artifact_rebuild": false,
+    "container_started": false,
+    "endurance_executed": false,
+    "gpu_device_injected": false,
+    "gpu_queried": false,
+    "inference_executed": false,
+    "model_or_engine_loaded": false,
+    "network_used": false
+  },
+  "schema_version": "deepsafe.deepstream-fusion-publication-plan/v1",
+  "source_publication": {
+    "build_plan_sha256": "d84fae28b35514c86c3536c693174e9083f5ea35d27aaa1ef28109bb6ca2ed39",
+    "capability_manifest_sha256": "b2fa1f1bd9e1f96e7e60cffe1eb957755442715d427e8d1a4569f1c09075d3c8",
+    "files": [
+      {
+        "bytes": 25714,
+        "mode": "0440",
+        "name": "build-provenance.json",
+        "sha256": "98b2f787032c664a2d81afaed4f4173f17d5cc27072f9075e7704aaa1f2e7fc4"
+      },
+      {
+        "bytes": 2961,
+        "mode": "0440",
+        "name": "capability-manifest.json",
+        "sha256": "b2fa1f1bd9e1f96e7e60cffe1eb957755442715d427e8d1a4569f1c09075d3c8"
+      },
+      {
+        "bytes": 4743024,
+        "mode": "0550",
+        "name": "deepstream-parallel-infer",
+        "sha256": "4ac5b69208580aec730d3f7da38466b6d89b99c5afb31dcd08911f0d316b62f2"
+      },
+      {
+        "bytes": 903,
+        "mode": "0440",
+        "name": "fusion-runtime.conf",
+        "sha256": "613964a87835ab97ebf2cc8d8864854cd94659966cee37599b4ba619afb4ac54"
+      },
+      {
+        "bytes": 326400,
+        "mode": "0550",
+        "name": "libdeepsafe_fusion.so.1",
+        "sha256": "8997dac4fd12d205f25e64ceed2102ddad6a5f9b475d5592a58e638cd40333ae"
+      }
+    ],
+    "path": "models/runtime/deepsafe-fusion-ds9-9946965e-r2",
+    "provenance_sha256": "98b2f787032c664a2d81afaed4f4173f17d5cc27072f9075e7704aaa1f2e7fc4"
+  }
+}

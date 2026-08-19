@@ -1,0 +1,113 @@
+{
+  "schema_version": "deepsafe.deepstream-fusion-runtime-build-plan/v1",
+  "plan_id": "deepsafe-ds9-canonical-fusion-static-build-r1",
+  "upstream": {
+    "plan_path": "deepstream/parallel-runtime-build-plan.json",
+    "plan_sha256": "ea22142ac35a10c84f89f5d452153b95379495f258a8533ff432bd267f4310d1",
+    "commit": "9946965e8adb1aa93b1b66983ec4196351c9190c",
+    "tree": "4c4382ed32fad08767d01cd7bfbf464bd6be0e37"
+  },
+  "local_inputs": [
+    {"path": "deepstream/fusion/CMakeLists.txt", "sha256": "e6488c0c5aab6d9b8a54af9157ec5fab9b3cc74a93c0bd2553680cf5f076b1f5", "bytes": 4234},
+    {"path": "deepstream/fusion/app-hook/deepstream_fusion_hook.cpp", "sha256": "b30382d0923fe0b9fe4cad6f22c0e5e75c533e84d3306bbc7c957805155ffd49", "bytes": 4441},
+    {"path": "deepstream/fusion/app-hook/deepstream_fusion_hook.hpp", "sha256": "d87ead0b851bb20eb5d49ad56b193545d0041de65f31db3bedadaac8e098bc1d", "bytes": 775},
+    {"path": "deepstream/fusion/build-runtime.sh", "sha256": "340b00de1ccc032b6778a32320c233f4330699fb127ead6f69afdfdf1dbc16b4", "bytes": 1443},
+    {"path": "deepstream/fusion/default-runtime.conf", "sha256": "613964a87835ab97ebf2cc8d8864854cd94659966cee37599b4ba619afb4ac54", "bytes": 903},
+    {"path": "deepstream/fusion/exports.map", "sha256": "105852b4265119f384072765e4238088358fb280bab55c1647bd9f972453eaae", "bytes": 77},
+    {"path": "deepstream/fusion/include/deepsafe_fusion/c_api.h", "sha256": "187332c22cef2a7443ac1ac7405b10d9724c6e629f01c88dd33ff33145b762c3", "bytes": 4332},
+    {"path": "deepstream/fusion/include/deepsafe_fusion/config.hpp", "sha256": "96977e41cfd4f8837b706a81da03a58040e3026fd1e9bc9eaba9b8a28032f50f", "bytes": 761},
+    {"path": "deepstream/fusion/include/deepsafe_fusion/core.hpp", "sha256": "d5ac88e3d67d2fc1ef9d97724718722cf455aebee55077b4afa286e288b3688a", "bytes": 4692},
+    {"path": "deepstream/fusion/src/config.cpp", "sha256": "4cfc8b000971cb078e84227eda5e502bd2dff9429f1f16a94826ad5116288f7f", "bytes": 13653},
+    {"path": "deepstream/fusion/src/core.cpp", "sha256": "405f4056fea408fe95c831a32db15cf32ec43b13501d83a4cc2594420d420a3d", "bytes": 13417},
+    {"path": "deepstream/fusion/src/deepstream_adapter.cpp", "sha256": "89d0a3280654169a1ecb5d5c267099d4059326a2a487ef11c02e7bf56b51b8f0", "bytes": 16961},
+    {"path": "deepstream/fusion/tests/test_ds9_metadata.cpp", "sha256": "fa66804cce134c99c34d34e4c07631e0aac98c7f9350bd6a1f4eeb9dd932db9c", "bytes": 11841},
+    {"path": "deepstream/fusion/tests/test_fusion_core.cpp", "sha256": "d7f2ff8589c56e083b2f1706610c4a097c305a48b335c57f3fb89f0bfc071a0e", "bytes": 9365},
+    {"path": "deepstream/patches/deepsafe-fusion-ds9-app.patch", "sha256": "354567deebd07702a85fff4cdf30ceafb4ee27e0ccc8e9ed4ceee311821918e8", "bytes": 3776},
+    {"path": "models/pose/postprocess/CMakeLists.txt", "sha256": "2e88c9f28016e1dd4aec185835c13b45d80e2f6d052706107b7982215539b5b2", "bytes": 3484},
+    {"path": "models/pose/postprocess/include/deepsafe_pose/association.hpp", "sha256": "e9e203f1300adc57cccc415b35235e5c16d79c077c61bc85525c09cf323ccdb4", "bytes": 1871},
+    {"path": "models/pose/postprocess/include/deepsafe_pose/decoder.hpp", "sha256": "baa23c8f59ccd2b0f511ccdf35c3ae8631e0c9e29d3f962a8754eb1c968a8268", "bytes": 2145},
+    {"path": "models/pose/postprocess/include/deepsafe_pose/deepstream_tensor_adapter.hpp", "sha256": "db8f640719b1af747cbe343b380664594a137027ec03f380984b03acb9ca4d2b", "bytes": 929},
+    {"path": "models/pose/postprocess/include/deepsafe_pose/types.hpp", "sha256": "48babb6d7188445caca9d18d172db8ec703443afaad5be3de0fb856201d80e55", "bytes": 3105},
+    {"path": "models/pose/postprocess/src/association.cpp", "sha256": "0ea9744278129cc40589b13d058a24bf3f1ba3fecea82a5352c8a2d6d0481ea2", "bytes": 7611},
+    {"path": "models/pose/postprocess/src/decoder.cpp", "sha256": "200ce54edfdcf231ea419cbcdd9cdf74bbf5a3891768d7e692934fc160f1c978", "bytes": 12767},
+    {"path": "models/pose/postprocess/src/deepstream_tensor_adapter.cpp", "sha256": "e51bdde1e36e58ad9e6bb18d984e902d9560b7ebcb5ddb18a9a4dd4b3af6050c", "bytes": 2675},
+    {"path": "models/pose/postprocess/tests/test_deepstream_adapter.cpp", "sha256": "4f69843bd04e2fa6af3004f9468bcdd6e2117f3148746234d4e945e4e612e965", "bytes": 2861},
+    {"path": "models/pose/postprocess/tests/test_pose_postprocess.cpp", "sha256": "ffb8a6542a2b16079723dcf67e566178c56fb10e3e87ae65662b94d805726d47", "bytes": 13946},
+    {"path": "models/pose/postprocess/tests/test_support.hpp", "sha256": "7a73d2abdb2127d553adec10f596494fc93c7cf337256fdaf13a28a84f6916d9", "bytes": 3457},
+    {"path": "models/ppe/postprocess/CMakeLists.txt", "sha256": "46061a6b9d130e970152de9b8629af7911b5995f736beb180c7f781049df8750", "bytes": 2193},
+    {"path": "models/ppe/postprocess/include/deepsafe_ppe/association.hpp", "sha256": "22e8e39bdbe2c52acc3c358b787a0ccd6794301db772b517fdf3d66e9c9ff91c", "bytes": 1535},
+    {"path": "models/ppe/postprocess/include/deepsafe_ppe/processor.hpp", "sha256": "ea13555c7cabef0c53c1c85d345ed7c95d0b9da7558c4c098c9752d2f78908f7", "bytes": 2451},
+    {"path": "models/ppe/postprocess/include/deepsafe_ppe/types.hpp", "sha256": "37a23436b81278f1e7e80601d0be19ced0ea0e32cc4f9c50d5627140ad9c4163", "bytes": 8137},
+    {"path": "models/ppe/postprocess/postprocess-contract-v1.json", "sha256": "0127a5abcf8140a49d31af2ec5177bb7fbc5ac04e314be0cab0482339dcad7aa", "bytes": 4552},
+    {"path": "models/ppe/postprocess/schemas/frame-input-v1.schema.json", "sha256": "2c7adccdb6c4dc3383e3d1952a915140e54565e9b77380ec0ecaafea11500814", "bytes": 3286},
+    {"path": "models/ppe/postprocess/schemas/frame-output-v1.schema.json", "sha256": "c65b66c439b152d9b98387612bc63bb11d16f467047df8215895e98e9adadcc3", "bytes": 7296},
+    {"path": "models/ppe/postprocess/src/association.cpp", "sha256": "d85bfdf14783b1d330e4d8eb0b1b6eef59c9bbb68e318f8a35e1d878ca616081", "bytes": 15454},
+    {"path": "models/ppe/postprocess/src/processor.cpp", "sha256": "bac6f9f7e4b0a1e7f8b06761f811d6be3ee48d438071130c013f880b16b092d0", "bytes": 20946},
+    {"path": "models/ppe/postprocess/src/types.cpp", "sha256": "eb15d62ee287a3049c403d320a10d568f33c7042346c62eef079c9dbdf30c9e5", "bytes": 938},
+    {"path": "models/ppe/postprocess/tests/test_ppe_postprocess.cpp", "sha256": "e50152cccf2bba73c66f5200a27f2e0b869e70817792f0fa4ac9a46e6dff5667", "bytes": 41469},
+    {"path": "models/ppe/postprocess/tests/test_support.hpp", "sha256": "8ed76a4193544e31638ba95a284dfa29e00020ac51938d40fafd94c1a9c9df57", "bytes": 3313},
+    {"path": "models/ppe/postprocess/tests/validate_contract.py", "sha256": "27e77555270f0bcc7f1c844225a845849d51e06d7843e812553e1394df288482", "bytes": 6919}
+  ],
+  "container": {
+    "image_reference": "deepsafe-deepstream@sha256:96aedaba7ebb8d50359a7f73db251d46a81fd23e42c7c7ae215542795f88d663",
+    "image_id": "sha256:96aedaba7ebb8d50359a7f73db251d46a81fd23e42c7c7ae215542795f88d663",
+    "architecture": "amd64",
+    "operating_system": "linux"
+  },
+  "build": {
+    "docker_argv_template": [
+      "docker", "run", "--rm", "--pull=never", "--network=none",
+      "--runtime=runc", "--cap-drop=ALL", "--cap-add=DAC_OVERRIDE",
+      "--security-opt=no-new-privileges", "--pids-limit=512", "--user=0:0",
+      "--env=NVIDIA_VISIBLE_DEVICES=void",
+      "--env=NVIDIA_DRIVER_CAPABILITIES=none",
+      "--env=CUDA_VISIBLE_DEVICES=-1", "--env=SOURCE_DATE_EPOCH=0",
+      "--tmpfs=/tmp:rw,nosuid,nodev,noexec,size=512m",
+      "--mount=type=bind,src={source_dir},dst=/build/src",
+      "--mount=type=bind,src={output_dir},dst=/build/out",
+      "--workdir=/build/src", "--entrypoint=/bin/bash",
+      "deepsafe-deepstream@sha256:96aedaba7ebb8d50359a7f73db251d46a81fd23e42c7c7ae215542795f88d663",
+      "/build/src/deepstream/fusion/build-runtime.sh"
+    ],
+    "network": "none",
+    "container_runtime": "runc",
+    "uses_gpu": false,
+    "runs_inference": false,
+    "test_count": 6,
+    "outputs": [
+      "deepstream-parallel-infer",
+      "fusion-runtime.conf",
+      "libdeepsafe_fusion.so.1"
+    ]
+  },
+  "probes": {
+    "docker_common_argv_template": [
+      "docker", "run", "--rm", "--pull=never", "--network=none",
+      "--runtime=runc", "--read-only", "--cap-drop=ALL",
+      "--security-opt=no-new-privileges", "--pids-limit=64", "--user=1000:1000",
+      "--env=NVIDIA_VISIBLE_DEVICES=void",
+      "--env=NVIDIA_DRIVER_CAPABILITIES=none",
+      "--env=CUDA_VISIBLE_DEVICES=-1",
+      "--env=LD_LIBRARY_PATH=/probe:/opt/nvidia/deepstream/deepstream/lib",
+      "--mount=type=bind,src={artifact_dir},dst=/probe,readonly"
+    ],
+    "tools": {
+      "app_ldd": ["/usr/bin/ldd", "/probe/deepstream-parallel-infer"],
+      "app_readelf": ["/usr/bin/readelf", "--file-header", "--program-headers", "--dynamic", "--notes", "/probe/deepstream-parallel-infer"],
+      "app_strings": ["/usr/bin/strings", "-a", "/probe/deepstream-parallel-infer"],
+      "plugin_ldd": ["/usr/bin/ldd", "/probe/libdeepsafe_fusion.so.1"],
+      "plugin_nm": ["/usr/bin/nm", "-D", "--defined-only", "/probe/libdeepsafe_fusion.so.1"],
+      "plugin_readelf": ["/usr/bin/readelf", "--file-header", "--dynamic", "--notes", "/probe/libdeepsafe_fusion.so.1"],
+      "plugin_strings": ["/usr/bin/strings", "-a", "/probe/libdeepsafe_fusion.so.1"]
+    }
+  },
+  "publication": {
+    "destination": "models/runtime/deepsafe-fusion-ds9-9946965e-r1",
+    "no_overwrite": true,
+    "primitive": "renameat2(RENAME_NOREPLACE)",
+    "directory_mode": "0550",
+    "executable_mode": "0550",
+    "config_mode": "0440",
+    "json_mode": "0440"
+  }
+}

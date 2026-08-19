@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://deepsafe.local/schemas/ds9-cuda-kernel-proof-v1.schema.json",
+  "title": "DeepSafe DS9 CUDA bbox parser kernel launch marker",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "binary_version",
+    "campaign_nonce",
+    "cuda_device_synchronize",
+    "cuda_func_get_attributes",
+    "cuda_get_last_error",
+    "kernel",
+    "launch_count_at_marker",
+    "marker_path",
+    "marker_write_count",
+    "number_of_blocks",
+    "output_size",
+    "pid",
+    "ptx_version",
+    "run_id",
+    "schema_version",
+    "threads_per_block"
+  ],
+  "properties": {
+    "binary_version": {"const": 86},
+    "campaign_nonce": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "cuda_device_synchronize": {"const": 0},
+    "cuda_func_get_attributes": {"const": 0},
+    "cuda_get_last_error": {"const": 0},
+    "kernel": {"const": "decodeTensorYoloCuda"},
+    "launch_count_at_marker": {"const": 1},
+    "marker_path": {
+      "enum": [
+        "/evidence/640-cuda/cuda-parser-kernel.json",
+        "/evidence/960-cuda/cuda-parser-kernel.json"
+      ]
+    },
+    "marker_write_count": {"const": 1},
+    "number_of_blocks": {"type": "integer", "minimum": 1},
+    "output_size": {"type": "integer", "minimum": 1},
+    "pid": {"type": "integer", "minimum": 1},
+    "ptx_version": {"const": 86},
+    "run_id": {"enum": ["640-cuda", "960-cuda"]},
+    "schema_version": {"const": "deepsafe.ds9-cuda-kernel-proof/v1"},
+    "threads_per_block": {"const": 1024}
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "run_id": {"const": "640-cuda"},
+        "marker_path": {"const": "/evidence/640-cuda/cuda-parser-kernel.json"}
+      }
+    },
+    {
+      "properties": {
+        "run_id": {"const": "960-cuda"},
+        "marker_path": {"const": "/evidence/960-cuda/cuda-parser-kernel.json"}
+      }
+    }
+  ]
+}

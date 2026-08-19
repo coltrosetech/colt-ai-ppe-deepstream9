@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://deepsafe.local/schemas/distance-validation-v1.schema.json",
+  "title": "DeepSafe accepted deployment-site calibrated distance validation v1",
+  "description": "Final evidence only. Planning, invalid input, incomplete profile, and failed acceptance attempts must not be written under this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "evidence_kind",
+    "generated_at",
+    "implementation",
+    "calibration",
+    "ground_truth",
+    "distance_unit",
+    "distance_bin_m",
+    "boundary",
+    "evaluation_config",
+    "profiles",
+    "acceptance",
+    "integrity",
+    "loaf_evidence",
+    "gpu_or_docker_executed_by_evaluator"
+  ],
+  "properties": {
+    "schema_version": {"const": "deepsafe.distance-validation/v1"},
+    "status": {"const": "complete"},
+    "evidence_kind": {"const": "deployment_site_calibrated_ground_plane_person_detection"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "implementation": {"$ref": "#/$defs/file_pin"},
+    "calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "model", "calibration_id", "site_id", "camera_id",
+        "camera_configuration_id", "artifact", "verification_document"
+      ],
+      "properties": {
+        "status": {"const": "verified"},
+        "model": {"const": "planar_homography_image_to_ground"},
+        "calibration_id": {"type": "string", "minLength": 1},
+        "site_id": {"type": "string", "minLength": 1},
+        "camera_id": {"type": "string", "minLength": 1},
+        "camera_configuration_id": {"type": "string", "minLength": 1},
+        "artifact": {"$ref": "#/$defs/file_pin"},
+        "verification_document": {"$ref": "#/$defs/file_pin"}
+      }
+    },
+    "ground_truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "evidence_kind", "dataset_id", "sequence_id", "artifact",
+        "source_asset", "frames", "all_person_instances", "ground_truth_instances_20_25m",
+        "annotation_document"
+      ],
+      "properties": {
+        "status": {"const": "complete"},
+        "evidence_kind": {"const": "deployment_site_calibrated_person_ground_truth"},
+        "dataset_id": {"type": "string", "minLength": 1},
+        "sequence_id": {"type": "string", "minLength": 1},
+        "artifact": {"$ref": "#/$defs/file_pin"},
+        "source_asset": {"$ref": "#/$defs/file_pin"},
+        "frames": {"type": "integer", "minimum": 1},
+        "all_person_instances": {"type": "integer", "minimum": 1},
+        "ground_truth_instances_20_25m": {"type": "integer", "minimum": 1},
+        "annotation_document": {"$ref": "#/$defs/file_pin"}
+      }
+    },
+    "distance_unit": {"const": "m"},
+    "distance_bin_m": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [{"const": 20}, {"const": 25}],
+      "items": false
+    },
+    "boundary": {"const": "lower_inclusive_upper_exclusive"},
+    "evaluation_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "iou_threshold", "confidence_threshold", "distance_point",
+        "metric_geometry", "out_of_band_policy"
+      ],
+      "properties": {
+        "iou_threshold": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "confidence_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "distance_point": {"const": "bbox_bottom_center_ground_contact"},
+        "metric_geometry": {"const": "axis_aligned_bbox_iou"},
+        "out_of_band_policy": {
+          "const": "GT outside 20<=d<25m is ignore; predictions outside the calibrated 20<=d<25m ROI are excluded"
+        }
+      }
+    },
+    "profiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["640", "960"],
+      "properties": {
+        "640": {"allOf": [{"$ref": "#/$defs/profile"}, {"properties": {"model_input": {"const": 640}}}]},
+        "960": {"allOf": [{"$ref": "#/$defs/profile"}, {"properties": {"model_input": {"const": 960}}}]}
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "criterion", "criterion_id", "minimum_ground_truth_instances_per_profile",
+        "minimum_ground_truth_status", "artifact", "approval_document", "rules"
+      ],
+      "properties": {
+        "status": {"const": "pass"},
+        "criterion": {"type": "string", "minLength": 1},
+        "criterion_id": {"type": "string", "minLength": 1},
+        "minimum_ground_truth_instances_per_profile": {"type": "integer", "minimum": 1},
+        "minimum_ground_truth_status": {"const": "pass"},
+        "artifact": {"$ref": "#/$defs/file_pin"},
+        "approval_document": {"$ref": "#/$defs/file_pin"},
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/rule_result"}
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "frame_set_status", "frame_key_sha256", "profile_pair_status",
+        "input_fingerprint_sha256", "input_artifacts"
+      ],
+      "properties": {
+        "frame_set_status": {"const": "exact_for_ground_truth_and_both_profiles"},
+        "frame_key_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "profile_pair_status": {"const": "complete_640_and_960"},
+        "input_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "input_artifacts": {
+          "type": "array",
+          "minItems": 7,
+          "items": {"$ref": "#/$defs/file_pin"}
+        }
+      }
+    },
+    "loaf_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["used", "role", "can_substitute_for_site_calibration"],
+      "properties": {
+        "used": {"const": false},
+        "role": {"const": "auxiliary_only_not_deployment_site_calibration"},
+        "can_substitute_for_site_calibration": {"const": false}
+      }
+    },
+    "gpu_or_docker_executed_by_evaluator": {"const": false}
+  },
+  "$defs": {
+    "file_pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tp", "fp", "fn", "precision", "recall", "f1", "ap_101_point",
+        "ignored_predictions", "predictions_excluded_outside_calibrated_band"
+      ],
+      "properties": {
+        "tp": {"type": "integer", "minimum": 0},
+        "fp": {"type": "integer", "minimum": 0},
+        "fn": {"type": "integer", "minimum": 0},
+        "precision": {"type": "number", "minimum": 0, "maximum": 1},
+        "recall": {"type": "number", "minimum": 0, "maximum": 1},
+        "f1": {"type": "number", "minimum": 0, "maximum": 1},
+        "ap_101_point": {"type": "number", "minimum": 0, "maximum": 1},
+        "ignored_predictions": {"type": "integer", "minimum": 0},
+        "predictions_excluded_outside_calibrated_band": {"type": "integer", "minimum": 0}
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "model_input", "model_id", "completion_manifest", "predictions",
+        "frame_records", "ground_truth_instances", "metrics"
+      ],
+      "properties": {
+        "status": {"const": "complete"},
+        "model_input": {"enum": [640, 960]},
+        "model_id": {"type": "string", "minLength": 1},
+        "completion_manifest": {"$ref": "#/$defs/file_pin"},
+        "predictions": {"$ref": "#/$defs/file_pin"},
+        "frame_records": {"type": "integer", "minimum": 1},
+        "ground_truth_instances": {"type": "integer", "minimum": 1},
+        "metrics": {"$ref": "#/$defs/metrics"}
+      }
+    },
+    "rule_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "operator", "threshold", "applies_to", "profile_values", "status"],
+      "properties": {
+        "metric": {"enum": ["recall", "precision", "f1", "ap_101_point"]},
+        "operator": {"const": "gte"},
+        "threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "applies_to": {"const": "each_profile"},
+        "profile_values": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["640", "960"],
+          "properties": {
+            "640": {"type": "number", "minimum": 0, "maximum": 1},
+            "960": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        },
+        "status": {"const": "pass"}
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://deepsafe.local/schemas/site-distance-evaluation-plan-v1.schema.json",
+  "title": "DeepSafe site-calibrated distance evaluation dry plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "dry_run", "gpu_or_docker_executed",
+    "final_evaluation_written", "required_profiles", "distance_bin_m",
+    "boundary", "inputs", "output", "acceptance_policy", "loaf_policy"
+  ],
+  "properties": {
+    "schema_version": {"const": "deepsafe.site-distance-evaluation-plan/v1"},
+    "status": {"enum": ["waiting_for_inputs", "ready_for_cpu_evaluation"]},
+    "dry_run": {"const": true},
+    "gpu_or_docker_executed": {"const": false},
+    "final_evaluation_written": {"const": false},
+    "required_profiles": {
+      "type": "array", "prefixItems": [{"const": 640}, {"const": 960}],
+      "items": false, "minItems": 2, "maxItems": 2
+    },
+    "distance_bin_m": {
+      "type": "array", "prefixItems": [{"const": 20}, {"const": 25}],
+      "items": false, "minItems": 2, "maxItems": 2
+    },
+    "boundary": {"const": "lower_inclusive_upper_exclusive"},
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["calibration", "ground_truth", "acceptance", "profile_640", "profile_960"],
+      "properties": {
+        "calibration": {"$ref": "#/$defs/input"},
+        "ground_truth": {"$ref": "#/$defs/input"},
+        "acceptance": {"$ref": "#/$defs/input"},
+        "profile_640": {"$ref": "#/$defs/input"},
+        "profile_960": {"$ref": "#/$defs/input"}
+      }
+    },
+    "output": {"type": "string", "minLength": 1},
+    "acceptance_policy": {
+      "const": "no default threshold; final evaluation is written only when the owner-approved artifact and both completed profiles pass"
+    },
+    "loaf_policy": {
+      "const": "LOAF is auxiliary evidence and cannot substitute for deployment-camera calibration"
+    }
+  },
+  "$defs": {
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "present"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "present": {"type": "boolean"}
+      }
+    }
+  }
+}

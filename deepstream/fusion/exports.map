@@ -1,0 +1,6 @@
+DEEPSAFE_FUSION_1.0 {
+  global:
+    deepsafe_fusion_*_v1;
+  local:
+    *;
+};

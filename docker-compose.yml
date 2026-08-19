@@ -1,0 +1,63 @@
+services:
+  video-selector:
+    build:
+      context: .
+      dockerfile: video_selector/Dockerfile
+    environment:
+      VIDEO_SELECTOR_MEDIA_ROOT: /content
+      VIDEO_SELECTOR_PPE_MEDIA_ROOT: /ppe-content
+      VIDEO_SELECTOR_STATE_ROOT: /state
+    volumes:
+      - ./content/video-selector:/content:ro
+      - ./content/ppe-video-selector:/ppe-content:ro
+      - ./content/video-selector/state:/state
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+
+  deepstream:
+    profiles: [gpu]
+    build:
+      context: .
+      dockerfile: deepstream/Dockerfile
+      args:
+        # Empty defaults keep the unrelated, profile-disabled GPU service from
+        # blocking `docker compose up --build video-selector`. The DeepStream Dockerfile
+        # remains fail-closed and rejects every missing or invalid pin when the
+        # `gpu` profile is actually built.
+        DEEPSTREAM_BASE_REF: ${DEEPSTREAM_BASE_REF:-}
+        DEEPSTREAM_BASE_DIGEST: ${DEEPSTREAM_BASE_DIGEST:-}
+        DEEPSTREAM_YOLO_PARSER_SHA256: ${DEEPSTREAM_YOLO_PARSER_SHA256:-}
+        DEEPSAFE_RUNTIME_CONTROLLER_SHA256: ${DEEPSAFE_RUNTIME_CONTROLLER_SHA256:-}
+        DEEPSAFE_RUNTIME_CONTROL_MANIFEST_SHA256: ${DEEPSAFE_RUNTIME_CONTROL_MANIFEST_SHA256:-}
+        DEEPSAFE_DOCKERIGNORE_SHA256: ${DEEPSAFE_DOCKERIGNORE_SHA256:-}
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility,video
+      DEEPSAFE_DATA: /data
+      DEEPSAFE_DRY_RUN: "false"
+      DEEPSAFE_ADMIN_TOKEN: ${DEEPSAFE_ADMIN_TOKEN:-change-me}
+      DEEPSAFE_VALIDATION_ROOT: /workspace/validation-results
+      DEEPSAFE_VALIDATION_WORKSPACE_ROOT: /workspace
+      DEEPSAFE_VALIDATION_SCHEMA_ROOT: /app/validation/schemas
+      DEEPSAFE_VALIDATION_MAX_ARTIFACT_BYTES: "524288"
+      DEEPSAFE_ENDURANCE_STATUS: /workspace/validation-results/endurance/current/status.json
+      DEEPSAFE_MANUAL_REVIEW_SOURCE: /workspace/manual-review-source/source-frame-reviews-v1.jsonl
+      DEEPSAFE_MANUAL_REVIEW_ASSET_INDEX: /workspace/validation-results/open-video-review/manual-assets/index.json
+      DEEPSAFE_MANUAL_REVIEW_ASSET_ROOT: /workspace/validation-results
+      DEEPSAFE_MANUAL_REVIEW_MAX_ASSET_BYTES: "8388608"
+    volumes:
+      - deepsafe-data:/data
+      - ./models:/models:ro
+      - ./models:/workspace/models:ro
+      - ./data:/workspace/data:ro
+      - ./validation/results:/workspace/validation-results:ro
+      - ./validation:/workspace/validation:ro
+      - ./validation/open_video_review:/workspace/manual-review-source:ro
+      - ./validation/contact-sheets:/workspace/contact-sheets:ro
+    network_mode: host
+    restart: unless-stopped
+
+volumes:
+  deepsafe-data:

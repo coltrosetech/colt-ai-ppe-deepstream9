@@ -1,0 +1,89 @@
+{
+  "schema_version": "deepsafe.ds91-native-build-receipt/v1",
+  "generated_at_utc": "2026-07-18T15:21:34Z",
+  "status": "passed_cpu_only",
+  "contract": {
+    "path": "deepstream/ds91-native/native-build-contract-v1.json",
+    "sha256": "5d7178a5471359f73587eb55520e91f6187f880f388e8a9e669fd90c4e567d92"
+  },
+  "base": {
+    "reference": "nvcr.io/nvidia/deepstream@sha256:f6fa0247da9290979cbb05749e7da9435d089c93db7c4dcfe85ba2488b5f4994",
+    "digest": "sha256:f6fa0247da9290979cbb05749e7da9435d089c93db7c4dcfe85ba2488b5f4994",
+    "platform": "linux/amd64",
+    "deepstream": "9.1.0",
+    "cuda": "13.2.0.046",
+    "tensorrt": "10.16.0.72",
+    "gstreamer": "1.24.2"
+  },
+  "image": {
+    "tag": "deepsafe-deepstream:9.1-native-r1",
+    "id": "sha256:c4a7870f5e8e2cf06ed115a511aec2e92ac29d7c1452038accbdecca332d1215",
+    "size_bytes": 9771024037,
+    "architecture": "amd64",
+    "os": "linux"
+  },
+  "execution_boundary": {
+    "network_for_run_layers": "none",
+    "gpu_device_requested": false,
+    "gpu_inference_executed": false,
+    "deepstream_pipeline_executed": false,
+    "tensorrt_engine_built": false,
+    "parallel_infer_binary_executed": false
+  },
+  "tests": {
+    "static_policy": {
+      "passed": 2,
+      "failed": 0
+    },
+    "person_parser_ctest": {
+      "passed": 1,
+      "failed": 0
+    },
+    "fusion_pose_ppe_ctest": {
+      "passed": 6,
+      "failed": 0
+    },
+    "artifact_integrity": {
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "source_manifest": {
+    "path_in_image": "/opt/deepsafe/ds91-native/audit/input-source-files.sha256",
+    "entries": 65,
+    "sha256": "f0dd2705424fa2bcf07988141362d0e769418c0ea0035cf30977eb13e1dd421f"
+  },
+  "artifact_manifest": {
+    "path_in_image": "/opt/deepsafe/ds91-native/SHA256SUMS",
+    "entries": 7,
+    "sha256": "78dc0b0b42ecd4766343e6005d1285c28f8a6ec45ab1ba6e3e1e7aa9f86d67a3"
+  },
+  "artifacts": {
+    "deepstream-parallel-infer": "39d33bf6e5d0bad4de1841b5acbfb27eda451f4834e078a9d245be47693063ca",
+    "fusion-runtime.conf": "613964a87835ab97ebf2cc8d8864854cd94659966cee37599b4ba619afb4ac54",
+    "libdeepsafe_fusion.so.1": "a07caadcd8702bc8e5c09ac63e318259c5fde3fb9ad772cbf057b1bb020c33a1",
+    "libdeepsafe_pose_deepstream_adapter.a": "f4d58a43fc775ed26e43f0e655cc577d40a26c53d7dcf203fd483c947eddc664",
+    "libdeepsafe_pose_postprocess.a": "03777dab27b6a405a46daf487429c0a49a16718578a2223a401aa9e35fa6725b",
+    "libdeepsafe_ppe_postprocess.a": "8c6a76954f469f7482690abfb40ddf2437fe158326945b9a255acad63385cb03",
+    "libdeepsafe_rtdetrv4_parser.so": "e645f4ce352ddc643595fd5b17e6d3940c7d612642c5212caa3799d028953d56"
+  },
+  "legacy_files_unchanged": {
+    "deepstream/Dockerfile": "96fc6ad951b663055e2c1b794dd5ded23f134669f74dd1cdcb08dbb522619b35",
+    ".dockerignore": "8dee0f2a959735b8772d3a76fc5500f601d8ad3200b2fec5ae66d643e10593fc"
+  },
+  "qualification": {
+    "native_cpu_build_accepted": true,
+    "gpu_runtime_qualified": false,
+    "production_ready": false,
+    "remaining_gates": [
+      "approved host driver maintenance",
+      "GPU lease-authorized engine generation",
+      "DeepStream 9.1 pipeline smoke test",
+      "12-stream 640 and 960 endurance/FPS runs",
+      "accuracy and semantic release gates"
+    ]
+  },
+  "warnings": [
+    "The upstream NVIDIA sample emits non-fatal GLib/C++ deprecation warnings during compilation."
+  ]
+}

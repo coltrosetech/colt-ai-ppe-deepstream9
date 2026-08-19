@@ -1,0 +1,101 @@
+{
+  "schema_version": "deepsafe.ds91-native-build/v1",
+  "release": "r1",
+  "purpose": "CPU-only compilation and static verification of DeepSafe native DeepStream 9.1 components",
+  "base": {
+    "reference": "nvcr.io/nvidia/deepstream@sha256:f6fa0247da9290979cbb05749e7da9435d089c93db7c4dcfe85ba2488b5f4994",
+    "digest": "sha256:f6fa0247da9290979cbb05749e7da9435d089c93db7c4dcfe85ba2488b5f4994",
+    "platform": "linux/amd64",
+    "deepstream": "9.1.0",
+    "cuda": "13.2.0.046",
+    "tensorrt": "10.16.0.72",
+    "gstreamer": "1.24.2"
+  },
+  "build_policy": {
+    "network": "none",
+    "gpu_devices": false,
+    "inference": false,
+    "remote_fetch": false,
+    "package_install": false,
+    "runtime_execution": false,
+    "max_parallel_compile_jobs": 2
+  },
+  "named_contexts": {
+    "person": "models/person/postprocess/rtdetrv4_ds9",
+    "pose": "models/pose/postprocess",
+    "ppe": "models/ppe/postprocess",
+    "fusion": "deepstream/fusion",
+    "fusion_runner": "deepstream/fusion-r2",
+    "patches": "deepstream/patches",
+    "upstream_app": "third_party/deepstream_reference_apps/deepstream_parallel_inference_app/tritonclient/sample/apps/deepstream-parallel-infer"
+  },
+  "components": [
+    {
+      "name": "person-rtdetrv4-parser",
+      "output": "libdeepsafe_rtdetrv4_parser.so",
+      "tests": [
+        "rtdetrv4_parser_contract",
+        "versioned-export-symbols",
+        "no-unresolved-symbols"
+      ]
+    },
+    {
+      "name": "pose-postprocess",
+      "outputs": [
+        "libdeepsafe_pose_postprocess.a",
+        "libdeepsafe_pose_deepstream_adapter.a"
+      ],
+      "tests": [
+        "pose_postprocess_tests",
+        "pose_deepstream_adapter_tests"
+      ]
+    },
+    {
+      "name": "ppe-postprocess",
+      "output": "libdeepsafe_ppe_postprocess.a",
+      "tests": [
+        "ppe_postprocess_tests",
+        "ppe_postprocess_json_contract"
+      ]
+    },
+    {
+      "name": "metadata-fusion",
+      "output": "libdeepsafe_fusion.so.1",
+      "tests": [
+        "fusion_core_tests",
+        "fusion_ds9_metadata_tests",
+        "versioned-export-symbols"
+      ]
+    },
+    {
+      "name": "patched-parallel-infer-app",
+      "output": "deepstream-parallel-infer",
+      "tests": [
+        "r2-patch-applies",
+        "legacy-pose-probe-removed",
+        "single-fusion-hook-install",
+        "fusion-soname-linked"
+      ]
+    }
+  ],
+  "legacy_files_not_modified": {
+    "deepstream/Dockerfile": "96fc6ad951b663055e2c1b794dd5ded23f134669f74dd1cdcb08dbb522619b35",
+    ".dockerignore": "8dee0f2a959735b8772d3a76fc5500f601d8ad3200b2fec5ae66d643e10593fc"
+  },
+  "qualification_boundary": {
+    "cpu_build_proves": [
+      "source compilation",
+      "CPU unit tests",
+      "DeepStream 9.1 header and ABI linkage",
+      "artifact integrity"
+    ],
+    "cpu_build_does_not_prove": [
+      "GPU engine generation",
+      "TensorRT inference",
+      "DeepStream pipeline execution",
+      "throughput or accuracy",
+      "production readiness"
+    ]
+  }
+}
+

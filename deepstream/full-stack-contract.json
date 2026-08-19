@@ -1,0 +1,267 @@
+{
+  "limits": {
+    "max_batch_size": 12,
+    "max_sources": 12
+  },
+  "profiles": {
+    "640": {
+      "input_height": 640,
+      "input_width": 640,
+      "models": {
+        "person": {
+          "artifacts": {
+            "engine": {
+              "container_path": "/models/person/640/yolo11s_b12_gpu0_fp16.engine",
+              "host_path": "models/person/640/yolo11s_b12_gpu0_fp16.engine",
+              "json_requirements": null,
+              "sha256": "b47d6d8392d412bfdfdf2ddabe62a6407aaa23e6f7b83f86f8a4f3971cb26295"
+            },
+            "infer_config": {
+              "container_path": "/models/person/640/config_infer_primary.txt",
+              "host_path": "models/person/640/config_infer_primary.txt",
+              "json_requirements": null,
+              "sha256": "b250995b806042fd0602474945f82f7cfa42b96a493fabda07e1fb0e2dc596b6"
+            }
+          },
+          "association_target_gie": null,
+          "batch_semantics": "camera_batch",
+          "gie_unique_id": 1,
+          "inference_mode": "full_frame_primary",
+          "metadata_output": "nvds_object_meta",
+          "role": "person",
+          "tracker": "nvdcf"
+        },
+        "pose": {
+          "artifacts": {
+            "association_contract": {
+              "container_path": "/models/pose/postprocess/postprocess-contract-v1.json",
+              "host_path": "models/pose/postprocess/postprocess-contract-v1.json",
+              "json_requirements": {
+                "schema_version": "deepsafe.pose.postprocess-contract/v1",
+                "status": "runtime_ready"
+              },
+              "sha256": "72219b63a5e4c679821359aec162f74538a102c526a81f6fbcaee24e0effd198"
+            },
+            "engine": {
+              "container_path": null,
+              "host_path": null,
+              "json_requirements": null,
+              "sha256": null
+            },
+            "infer_config": {
+              "container_path": null,
+              "host_path": null,
+              "json_requirements": null,
+              "sha256": null
+            },
+            "postprocess_library": {
+              "container_path": "/models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+              "host_path": "models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+              "json_requirements": null,
+              "sha256": "8997dac4fd12d205f25e64ceed2102ddad6a5f9b475d5592a58e638cd40333ae"
+            }
+          },
+          "association_target_gie": 1,
+          "batch_semantics": "camera_batch",
+          "gie_unique_id": 2,
+          "inference_mode": "full_frame_primary",
+          "metadata_output": "nvds_infer_tensor_meta",
+          "role": "pose",
+          "tracker": "none"
+        },
+        "ppe": {
+          "artifacts": {
+            "association_contract": {
+              "container_path": "/models/ppe/postprocess/postprocess-contract-v1.json",
+              "host_path": "models/ppe/postprocess/postprocess-contract-v1.json",
+              "json_requirements": {
+                "schema_version": "deepsafe.ppe.postprocess-contract/v1",
+                "status": "runtime_ready"
+              },
+              "sha256": "0127a5abcf8140a49d31af2ec5177bb7fbc5ac04e314be0cab0482339dcad7aa"
+            },
+            "engine": {
+              "container_path": null,
+              "host_path": null,
+              "json_requirements": null,
+              "sha256": null
+            },
+            "infer_config": {
+              "container_path": null,
+              "host_path": null,
+              "json_requirements": null,
+              "sha256": null
+            },
+            "postprocess_library": {
+              "container_path": "/models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+              "host_path": "models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+              "json_requirements": null,
+              "sha256": "8997dac4fd12d205f25e64ceed2102ddad6a5f9b475d5592a58e638cd40333ae"
+            }
+          },
+          "association_target_gie": 1,
+          "batch_semantics": "camera_batch",
+          "gie_unique_id": 3,
+          "inference_mode": "full_frame_primary",
+          "metadata_output": "nvds_object_meta",
+          "role": "ppe",
+          "tracker": "none"
+        }
+      }
+    },
+    "960": {
+      "input_height": 960,
+      "input_width": 960,
+      "models": {
+        "person": {
+          "artifacts": {
+            "engine": {
+              "container_path": "/models/person/960/yolo11s_b12_gpu0_fp16.engine",
+              "host_path": "models/person/960/yolo11s_b12_gpu0_fp16.engine",
+              "json_requirements": null,
+              "sha256": "6348db3ed95a8af60f58d576cf563696a449612f0f25ed4ff8e2a7c9c61aaab3"
+            },
+            "infer_config": {
+              "container_path": "/models/person/960/config_infer_primary.txt",
+              "host_path": "models/person/960/config_infer_primary.txt",
+              "json_requirements": null,
+              "sha256": "4f27f6bd523c37fc2375433186ff039419d517212a7873e9b19bee9ae228caeb"
+            }
+          },
+          "association_target_gie": null,
+          "batch_semantics": "camera_batch",
+          "gie_unique_id": 1,
+          "inference_mode": "full_frame_primary",
+          "metadata_output": "nvds_object_meta",
+          "role": "person",
+          "tracker": "nvdcf"
+        },
+        "pose": {
+          "artifacts": {
+            "association_contract": {
+              "container_path": "/models/pose/postprocess/postprocess-contract-v1.json",
+              "host_path": "models/pose/postprocess/postprocess-contract-v1.json",
+              "json_requirements": {
+                "schema_version": "deepsafe.pose.postprocess-contract/v1",
+                "status": "runtime_ready"
+              },
+              "sha256": "72219b63a5e4c679821359aec162f74538a102c526a81f6fbcaee24e0effd198"
+            },
+            "engine": {
+              "container_path": null,
+              "host_path": null,
+              "json_requirements": null,
+              "sha256": null
+            },
+            "infer_config": {
+              "container_path": null,
+              "host_path": null,
+              "json_requirements": null,
+              "sha256": null
+            },
+            "postprocess_library": {
+              "container_path": "/models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+              "host_path": "models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+              "json_requirements": null,
+              "sha256": "8997dac4fd12d205f25e64ceed2102ddad6a5f9b475d5592a58e638cd40333ae"
+            }
+          },
+          "association_target_gie": 1,
+          "batch_semantics": "camera_batch",
+          "gie_unique_id": 2,
+          "inference_mode": "full_frame_primary",
+          "metadata_output": "nvds_infer_tensor_meta",
+          "role": "pose",
+          "tracker": "none"
+        },
+        "ppe": {
+          "artifacts": {
+            "association_contract": {
+              "container_path": "/models/ppe/postprocess/postprocess-contract-v1.json",
+              "host_path": "models/ppe/postprocess/postprocess-contract-v1.json",
+              "json_requirements": {
+                "schema_version": "deepsafe.ppe.postprocess-contract/v1",
+                "status": "runtime_ready"
+              },
+              "sha256": "0127a5abcf8140a49d31af2ec5177bb7fbc5ac04e314be0cab0482339dcad7aa"
+            },
+            "engine": {
+              "container_path": null,
+              "host_path": null,
+              "json_requirements": null,
+              "sha256": null
+            },
+            "infer_config": {
+              "container_path": null,
+              "host_path": null,
+              "json_requirements": null,
+              "sha256": null
+            },
+            "postprocess_library": {
+              "container_path": "/models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+              "host_path": "models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+              "json_requirements": null,
+              "sha256": "8997dac4fd12d205f25e64ceed2102ddad6a5f9b475d5592a58e638cd40333ae"
+            }
+          },
+          "association_target_gie": 1,
+          "batch_semantics": "camera_batch",
+          "gie_unique_id": 3,
+          "inference_mode": "full_frame_primary",
+          "metadata_output": "nvds_object_meta",
+          "role": "ppe",
+          "tracker": "none"
+        }
+      }
+    }
+  },
+  "runtime": {
+    "active_deepstream_version": "9.0.0",
+    "capability_manifest": {
+      "container_path": "/models/runtime/deepsafe-fusion-ds9-9946965e-r3/capability-manifest.json",
+      "host_path": "models/runtime/deepsafe-fusion-ds9-9946965e-r3/capability-manifest.json",
+      "json_requirements": {
+        "schema_version": "deepsafe.deepstream-full-stack-runtime-capabilities/v1",
+        "status": "runtime_ready"
+      },
+      "sha256": "4ce3163678f5f3a8a730b5b8e3a9ace6c4f6b4171858a476b2ad77d4c59ae841"
+    },
+    "fusion_plugin": {
+      "container_path": "/models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+      "host_path": "models/runtime/deepsafe-fusion-ds9-9946965e-r3/libdeepsafe_fusion.so.1",
+      "json_requirements": null,
+      "sha256": "8997dac4fd12d205f25e64ceed2102ddad6a5f9b475d5592a58e638cd40333ae"
+    },
+    "migration_deepstream_version": "9.1",
+    "migration_status": "separate_post_campaign_qualification_required",
+    "parallel_app_binary": {
+      "container_path": "/models/runtime/deepsafe-fusion-ds9-9946965e-r3/deepstream-parallel-infer",
+      "host_path": "models/runtime/deepsafe-fusion-ds9-9946965e-r3/deepstream-parallel-infer",
+      "json_requirements": null,
+      "sha256": "4ac5b69208580aec730d3f7da38466b6d89b99c5afb31dcd08911f0d316b62f2"
+    },
+    "publication_receipt": {
+      "container_path": "/models/runtime/deepsafe-fusion-ds9-9946965e-r3/publication-receipt.json",
+      "host_path": "models/runtime/deepsafe-fusion-ds9-9946965e-r3/publication-receipt.json",
+      "json_requirements": {
+        "schema_version": "deepsafe.deepstream-fusion-publication-receipt/v1",
+        "status": "published"
+      },
+      "sha256": "af2a9731886674cd33141d7577c40d47c511f4d595ee1c1595435a7c80c22f7f"
+    }
+  },
+  "schema_version": "deepsafe.deepstream-full-stack-contract/v1",
+  "topology": {
+    "component_latency_measurement": true,
+    "headless": true,
+    "metamux_active_pad": "sink_0",
+    "metamux_pts_tolerance_us": 60000,
+    "nvdsmetamux_required": true,
+    "pattern": "nvidia_parallel_inference_nvdsmetamux",
+    "perf_measurement_interval_seconds": 5,
+    "streammux_height": 1080,
+    "streammux_width": 1920,
+    "tracker_config": "/opt/nvidia/deepstream/deepstream/samples/configs/deepstream-app/config_tracker_NvDCF_perf.yml",
+    "tracker_library": "/opt/nvidia/deepstream/deepstream/lib/libnvds_nvmultiobjecttracker.so"
+  }
+}

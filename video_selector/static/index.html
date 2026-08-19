@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="COLT AI - COLLBRAI video seçimi ve güvenlik alanı düzenleyicisi."
+    />
+    <title>Video ve Alan Seçimi — COLT AI - COLLBRAI</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">Düzenleyiciye geç</a>
+
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <div>
+          <p class="brand-name">COLT AI - COLLBRAI</p>
+          <h1>Güvenlik video ve alan seçimi</h1>
+        </div>
+      </div>
+      <div class="header-progress" aria-label="Hazırlık durumu">
+        <span id="readyCount">0 / 0 hazır</span>
+        <span class="progress-track" aria-hidden="true">
+          <span id="progressFill"></span>
+        </span>
+      </div>
+    </header>
+
+    <main class="app-layout">
+      <aside class="catalog-panel" aria-labelledby="catalogTitle">
+        <div class="catalog-head">
+          <div>
+            <p class="step-label">1 · Videolar</p>
+            <h2 id="catalogTitle">İşlenecek videoları seç</h2>
+          </div>
+          <span id="selectionCount" class="count-badge">0 seçili</span>
+        </div>
+        <p class="catalog-help">
+          Kutuyu işaretle, ardından güvenlik kuralını tanımlamak için videoyu aç.
+        </p>
+        <div
+          id="categoryFilters"
+          class="category-filters"
+          role="tablist"
+          aria-label="Video türü"
+        >
+          <button
+            class="category-filter active"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            data-category-filter="person_office"
+          >
+            <span>Çit Güvenliği</span>
+            <span id="personCategoryCount" class="category-count">0</span>
+          </button>
+          <button
+            class="category-filter"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-category-filter="ppe_safety"
+          >
+            <span>İSG / PPE</span>
+            <span id="ppeCategoryCount" class="category-count">0</span>
+          </button>
+        </div>
+        <div id="catalogStatus" class="inline-status" role="status">
+          Videolar yükleniyor…
+        </div>
+        <div id="videoCatalog" class="video-catalog" hidden></div>
+      </aside>
+
+      <section id="workspace" class="workspace" aria-labelledby="workspaceTitle">
+        <div id="emptyWorkspace" class="empty-workspace">
+          <div class="empty-icon" aria-hidden="true">◇</div>
+          <p class="step-label">2 · Alanları tanımla</p>
+          <h2 id="workspaceTitle">Düzenlemek için bir video seç</h2>
+          <p>
+            Soldaki karttan videoyu aç. Çit güvenliği için yasak alanı çiz;
+            İSG / PPE videolarında yürüyüş yolu isteğe bağlıdır.
+          </p>
+        </div>
+
+        <div id="editor" class="editor" hidden>
+          <header class="editor-head">
+            <div>
+              <p class="step-label">2 · Alanları tanımla</p>
+              <h2 id="activeVideoTitle">Video</h2>
+              <p id="activeVideoMeta" class="editor-meta"></p>
+            </div>
+            <span id="activeVideoState" class="state-pill">Alan bekliyor</span>
+          </header>
+
+          <section
+            id="scenarioRuleCard"
+            class="scenario-rule-card"
+            data-scenario="fence_security"
+            aria-labelledby="scenarioRuleTitle"
+          >
+            <span id="scenarioRuleBadge" class="scenario-rule-badge">ÇİT GÜVENLİĞİ</span>
+            <div>
+              <h3 id="scenarioRuleTitle">Yasak alana giriş kuralı</h3>
+              <p id="scenarioRuleText">
+                Seçilen iskelet noktalarının belirlenen yüzdesi kırmızı alana
+                girdiğinde uyarı oluşturulur.
+              </p>
+            </div>
+          </section>
+
+          <section
+            id="analysisOptionsPanel"
+            class="analysis-options-panel"
+            data-scenario="fence_security"
+            aria-labelledby="analysisOptionsTitle"
+          >
+            <div class="analysis-options-head">
+              <div>
+                <p class="step-label">Alarm mantığı</p>
+                <h3 id="analysisOptionsTitle">Akıllı kişi değerlendirmesi</h3>
+              </div>
+              <span class="analysis-options-badge">VİDEOYA ÖZEL</span>
+            </div>
+
+            <div id="fenceAnalysisOptions" class="analysis-scenario-options">
+              <label class="option-toggle" for="fenceCrossingEnabled">
+                <span>
+                  <strong>Aşamalı çit geçişi</strong>
+                  <small>
+                    Yaklaşmayı bilgi olarak gösterir; tırmanma veya kalça
+                    merkezinin yasak tarafa geçişi doğrulanınca alarm üretir.
+                  </small>
+                </span>
+                <input id="fenceCrossingEnabled" type="checkbox" checked />
+              </label>
+              <div
+                id="fenceCrossingControls"
+                class="analysis-option-controls fence-crossing-controls"
+              >
+                <div class="analysis-summary-row">
+                  <span id="fenceLineSummary">Çit hattı henüz çizilmedi</span>
+                  <span>İki noktaya tıkla · uçları sürükleyebilirsin</span>
+                </div>
+                <div class="fence-line-toolbar">
+                  <button id="drawFenceLineButton" type="button">
+                    <span aria-hidden="true">╱</span>
+                    Çit hattı çiz
+                  </button>
+                  <button
+                    id="deleteFenceLineButton"
+                    class="danger-button"
+                    type="button"
+                    disabled
+                  >
+                    Hattı sil
+                  </button>
+                </div>
+                <fieldset
+                  id="fenceForbiddenSide"
+                  class="fence-side-fieldset"
+                >
+                  <legend>
+                    Çizginin başlangıcından bitişine bakarken yasak taraf
+                  </legend>
+                  <label>
+                    <input
+                      id="fenceForbiddenLeft"
+                      type="radio"
+                      name="fenceForbiddenSide"
+                      value="left"
+                      checked
+                    />
+                    <span><strong>Sol taraf</strong><small>Mor taralı taraf</small></span>
+                  </label>
+                  <label>
+                    <input
+                      id="fenceForbiddenRight"
+                      type="radio"
+                      name="fenceForbiddenSide"
+                      value="right"
+                    />
+                    <span><strong>Sağ taraf</strong><small>Mor taralı taraf</small></span>
+                  </label>
+                </fieldset>
+              </div>
+
+              <label class="option-toggle" for="poseZoneEnabled">
+                <span>
+                  <strong>Pose yaklaşma hassasiyeti</strong>
+                  <small>
+                    Seçtiğin vücut noktalarının ROI içindeki oranı yaklaşma
+                    aşamasını destekler; tek başına kritik alarm oluşturmaz.
+                  </small>
+                </span>
+                <input id="poseZoneEnabled" type="checkbox" checked />
+              </label>
+              <div id="poseControls" class="analysis-option-controls">
+                <div class="analysis-summary-row">
+                  <span id="poseRuleSummary">
+                    8 noktadan en az 4'ü yasak alanların birleşimi içinde
+                  </span>
+                  <span id="poseEvidenceSummary">
+                    Keypoint güveni ≥ %25 · en az 4 görünür nokta
+                  </span>
+                </div>
+                <div class="threshold-control">
+                  <label for="poseInsidePercent">
+                    <span>Yaklaşma için ROI içi keypoint eşiği</span>
+                    <input
+                      id="poseInsidePercentNumber"
+                      type="number"
+                      min="10"
+                      max="100"
+                      step="5"
+                      value="50"
+                      inputmode="numeric"
+                      aria-label="ROI içi keypoint eşiği yüzde"
+                    />
+                  </label>
+                  <input
+                    id="poseInsidePercent"
+                    type="range"
+                    min="10"
+                    max="100"
+                    step="5"
+                    value="50"
+                  />
+                </div>
+                <fieldset class="keypoint-fieldset">
+                  <legend>Alarmda kullanılacak vücut noktaları</legend>
+                  <div id="poseKeypointGrid" class="keypoint-grid"></div>
+                </fieldset>
+              </div>
+            </div>
+
+            <div
+              id="ppeAnalysisOptions"
+              class="analysis-scenario-options"
+              hidden
+            >
+              <label
+                class="option-toggle"
+                for="forkliftSuppressionEnabled"
+              >
+                <span>
+                  <strong>Forklift sürücüsünü alarmdan hariç tut</strong>
+                  <small>
+                    Kişi ve forklift kutuları görünür kalır; doğrulanmış sürücü
+                    için seçilen alarmlar bastırılır.
+                  </small>
+                </span>
+                <input
+                  id="forkliftSuppressionEnabled"
+                  type="checkbox"
+                  checked
+                />
+              </label>
+              <div id="forkliftControls" class="analysis-option-controls">
+                <div class="analysis-summary-row">
+                  <span id="forkliftRuleSummary">
+                    PPE ve yürüyüş yolu alarmı bastırılır
+                  </span>
+                  <span>Kanıt yoksa normal alarm devam eder</span>
+                </div>
+                <fieldset class="suppression-fieldset">
+                  <legend>Bastırılacak alarm türleri</legend>
+                  <label>
+                    <input
+                      id="forkliftPpeViolation"
+                      type="checkbox"
+                      checked
+                    />
+                    PPE eksikliği
+                  </label>
+                  <label>
+                    <input
+                      id="forkliftWalkwayViolation"
+                      type="checkbox"
+                      checked
+                    />
+                    Yürüyüş yolu ihlali
+                  </label>
+                </fieldset>
+                <details class="analysis-advanced">
+                  <summary>Gelişmiş forklift eşleştirme ayarları</summary>
+                  <div class="advanced-grid">
+                    <label for="forkliftConfidence">
+                      <span>Forklift güven eşiği</span>
+                      <input
+                        id="forkliftConfidence"
+                        type="number"
+                        min="0.05"
+                        max="1"
+                        step="0.05"
+                        value="0.35"
+                      />
+                    </label>
+                    <label for="forkliftPersonIoa">
+                      <span>Kişi örtüşme (IoA) eşiği</span>
+                      <input
+                        id="forkliftPersonIoa"
+                        type="number"
+                        min="0.05"
+                        max="1"
+                        step="0.05"
+                        value="0.55"
+                      />
+                    </label>
+                    <label for="forkliftEnterFrames">
+                      <span>Doğrulama kare sayısı</span>
+                      <input
+                        id="forkliftEnterFrames"
+                        type="number"
+                        min="1"
+                        max="30"
+                        step="1"
+                        value="4"
+                      />
+                    </label>
+                    <label for="forkliftExitFrames">
+                      <span>Bırakma kare sayısı</span>
+                      <input
+                        id="forkliftExitFrames"
+                        type="number"
+                        min="1"
+                        max="60"
+                        step="1"
+                        value="8"
+                      />
+                    </label>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </section>
+
+          <div class="video-stage-shell">
+            <div id="videoStage" class="video-stage">
+              <video
+                id="previewVideo"
+                preload="metadata"
+                playsinline
+                aria-label="Alan çizilecek video önizlemesi"
+              ></video>
+              <canvas
+                id="roiCanvas"
+                tabindex="0"
+                role="application"
+                aria-label="Çokgen güvenlik alanı çizim yüzeyi"
+                aria-describedby="canvasInstructions canvasStatus"
+              ></canvas>
+              <div id="stageMessage" class="stage-message" role="status">
+                Video hazırlanıyor…
+              </div>
+            </div>
+
+            <div class="transport" aria-label="Video oynatma kontrolleri">
+              <button id="playButton" class="icon-button" type="button">
+                <span aria-hidden="true">▶</span>
+                <span>Oynat</span>
+              </button>
+              <button id="backButton" class="icon-button subtle" type="button">
+                <span aria-hidden="true">−1</span>
+                <span>sn</span>
+              </button>
+              <button id="forwardButton" class="icon-button subtle" type="button">
+                <span aria-hidden="true">+1</span>
+                <span>sn</span>
+              </button>
+              <label class="playhead-control" for="playhead">
+                <span class="sr-only">Video oynatma konumu</span>
+                <input id="playhead" type="range" min="0" max="0" value="0" step="0.033333" />
+              </label>
+              <output id="timeReadout" class="time-readout" for="playhead">
+                00:00 / 00:00
+              </output>
+            </div>
+          </div>
+
+          <p id="canvasInstructions" class="canvas-instructions">
+            Yasak alanın köşelerine tıkla. Noktaları sürükleyerek düzeltebilir,
+            <kbd>Enter</kbd> ile alanı kapatabilirsin.
+          </p>
+
+          <div class="drawing-toolbar" aria-label="Alan çizim araçları">
+            <button id="addRoiButton" class="primary-button" type="button">
+              <span aria-hidden="true">＋</span>
+              <span id="addRoiLabel">Yasak alan çiz</span>
+            </button>
+            <button id="finishRoiButton" type="button" disabled>
+              <span aria-hidden="true">◇</span> Alanı tamamla
+            </button>
+            <button id="undoButton" type="button" disabled>
+              <span aria-hidden="true">↶</span> Geri al
+            </button>
+            <button id="fullFrameButton" type="button">
+              <span aria-hidden="true">▣</span>
+              <span id="fullFrameLabel">Tüm kareyi yasak alan yap</span>
+            </button>
+            <button id="deleteRoiButton" class="danger-button" type="button" disabled>
+              <span aria-hidden="true">×</span> Alanı sil
+            </button>
+          </div>
+
+          <div id="canvasStatus" class="canvas-status" role="status" aria-live="polite">
+            Güvenlik kuralını seçerek çizime başla.
+          </div>
+
+          <div class="configuration-grid">
+            <section class="roi-panel" aria-labelledby="roiListTitle">
+              <div class="panel-head">
+                <div>
+                  <p class="step-label">Alan listesi</p>
+                  <h3 id="roiListTitle">Yasak alanlar</h3>
+                </div>
+                <span id="roiCount" class="count-badge">0 alan</span>
+              </div>
+              <div id="roiList" class="roi-list">
+                <p class="empty-list">Henüz alan çizilmedi.</p>
+              </div>
+
+              <details id="vertexDetails" class="vertex-details">
+                <summary>
+                  <span>Köşe koordinatları</span>
+                  <span id="vertexSummary">0 nokta</span>
+                </summary>
+                <p class="vertex-help">
+                  Fare kullanmadan düzenlemek için X ve Y değerlerini 0–1
+                  arasında değiştirebilirsin.
+                </p>
+                <div id="vertexEditor" class="vertex-editor"></div>
+              </details>
+            </section>
+
+            <details class="clip-panel">
+              <summary>
+                <span>
+                  <span class="step-label">İsteğe bağlı</span>
+                  <strong>İşlenecek video bölümü</strong>
+                </span>
+                <span id="clipSummary">Tam video</span>
+              </summary>
+              <div class="clip-content">
+                <p>
+                  Varsayılan olarak videonun tamamı seçilidir. Yalnızca belirli
+                  bir kısmı gerekiyorsa başlangıç ve bitişi değiştir.
+                </p>
+                <div class="clip-row">
+                  <label for="clipStart">
+                    <span>Başlangıç</span>
+                    <input id="clipStart" type="number" min="0" value="0" step="0.001" />
+                  </label>
+                  <button id="useCurrentStart" type="button">Oynatma konumunu al</button>
+                </div>
+                <input
+                  id="clipStartRange"
+                  class="clip-range"
+                  type="range"
+                  min="0"
+                  max="0"
+                  value="0"
+                  step="0.033333"
+                  aria-label="İşlenecek bölüm başlangıcı"
+                />
+                <div class="clip-row">
+                  <label for="clipEnd">
+                    <span>Bitiş</span>
+                    <input id="clipEnd" type="number" min="0" value="0" step="0.001" />
+                  </label>
+                  <button id="useCurrentEnd" type="button">Oynatma konumunu al</button>
+                </div>
+                <input
+                  id="clipEndRange"
+                  class="clip-range"
+                  type="range"
+                  min="0"
+                  max="0"
+                  value="0"
+                  step="0.033333"
+                  aria-label="İşlenecek bölüm bitişi"
+                />
+                <div class="clip-footer">
+                  <span id="clipDuration">00:00 işlenecek</span>
+                  <button id="resetClipButton" class="text-button" type="button">
+                    Tam videoya dön
+                  </button>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="save-bar">
+      <div>
+        <p class="step-label">3 · Son kayıt</p>
+        <p id="saveHint">
+          Videoları seç; çit güvenliği videolarındaki yasak alanları tamamla.
+        </p>
+      </div>
+      <button id="saveButton" class="save-button" type="button" disabled>
+        Seçimleri ve alanları kaydet
+      </button>
+    </footer>
+
+    <div id="globalMessage" class="global-message" role="status" aria-live="polite" hidden></div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,135 @@
+{
+  "schema_version": "deepsafe.scene-benchmark/v1",
+  "source_catalog": "data/manifests/open-video-sources.json",
+  "campaign": {
+    "description": "Twelve simulated cameras, one looped H.264 scene per performance run, YOLO11s person-only PGIE.",
+    "streams": 12,
+    "model_input_sizes": [640, 960],
+    "duration_seconds": 300,
+    "warmup_seconds": 15,
+    "perf_interval_seconds": 5,
+    "startup_timeout_seconds": 60,
+    "gpu_sample_interval_seconds": 1,
+    "smoke_scene_id": "fr_paris_snow_umbrellas",
+    "smoke_model_input_size": 640,
+    "smoke_duration_seconds": 15,
+    "smoke_warmup_seconds": 4,
+    "smoke_perf_interval_seconds": 2
+  },
+  "accuracy_policy": {
+    "performance_runs": "Repeated frames are allowed only to sustain the requested five-minute load. They are not accuracy samples.",
+    "accuracy_runs": "Decode every source frame once, keep frame indices unique and evaluate only an annotated or manually reviewed window.",
+    "ground_truth": "None of these open-video scenes has frame-level ground truth. Quantitative person accuracy is run separately on CAVIAR/COCO/MOT material.",
+    "prohibition": "Never report looped detections, repeated frames or clip-level descriptions as precision, recall, AP or distance ground truth."
+  },
+  "scenes": [
+    {
+      "id": "fr_paris_snow_umbrellas",
+      "source_manifest_id": "fr_paris_snow_umbrellas",
+      "video_path": "data/derived/open-h264/fr_paris_snow_umbrellas.mp4",
+      "benchmark_type": "fixed_high_oblique_adverse_weather",
+      "security_camera_relevance": "primary",
+      "accuracy_window_seconds": [2.0, 18.0],
+      "notes": "Fixed high-oblique, surveillance-like view; umbrella occlusion and an empty-tail negative segment."
+    },
+    {
+      "id": "people_waiting_crosswalk",
+      "source_manifest_id": "people_waiting_crosswalk",
+      "video_path": "data/derived/open-h264/people_waiting_crosswalk.mp4",
+      "benchmark_type": "medium_close_static_group_occlusion",
+      "security_camera_relevance": "primary_medium_close",
+      "accuracy_window_seconds": [0.0, 15.448767],
+      "notes": "Medium-close waiting group, foreground passers and person-to-person occlusion."
+    },
+    {
+      "id": "jp_shibuya_elevated_crowd",
+      "source_manifest_id": "jp_shibuya_elevated_crowd",
+      "video_path": "data/derived/open-h264/jp_shibuya_elevated_crowd.mp4",
+      "benchmark_type": "elevated_dense_bidirectional_crowd",
+      "security_camera_relevance": "high_angle_stress",
+      "accuracy_window_seconds": [0.0, 58.56],
+      "notes": "Elevated crowd view with zoom/reframing and severe occlusion."
+    },
+    {
+      "id": "ee_swimmers_overhead",
+      "source_manifest_id": "ee_swimmers_overhead",
+      "video_path": "data/derived/open-h264/ee_swimmers_overhead.mp4",
+      "benchmark_type": "near_vertical_overhead_partial_people",
+      "security_camera_relevance": "top_view_stress",
+      "accuracy_window_seconds": [0.0, 38.0],
+      "notes": "Near-vertical aerial view; small, partially submerged people and unusual background."
+    },
+    {
+      "id": "mx_metro_ermita_corridor",
+      "source_manifest_id": "mx_metro_ermita_corridor",
+      "video_path": "data/derived/open-h264/metro-ermita-corridor-cc-by-sa-4.0.mp4",
+      "benchmark_type": "indoor_corridor_scale_transition",
+      "security_camera_relevance": "corridor_stress",
+      "accuracy_window_seconds": [0.0, 12.245567],
+      "notes": "People transition from far/small to medium range in a reflective metro corridor."
+    },
+    {
+      "id": "wiki_wedding_aisle",
+      "source_manifest_id": "wiki_wedding_aisle",
+      "video_path": "data/derived/open-h264/wiki_wedding_aisle.mp4",
+      "benchmark_type": "indoor_medium_close_backlit_group",
+      "security_camera_relevance": "medium_close_stress",
+      "accuracy_window_seconds": [0.0, 59.592867],
+      "notes": "Medium-close full bodies, strong backlight and foreground phone/spectator occlusion."
+    },
+    {
+      "id": "us_inmate_full_body_walk",
+      "source_manifest_id": "us_inmate_full_body_walk",
+      "video_path": "data/derived/open-h264/us_inmate_full_body_walk.mp4",
+      "benchmark_type": "extreme_partial_body_lower_leg_crop",
+      "security_camera_relevance": "negative_stress",
+      "accuracy_window_seconds": [0.0, 25.3],
+      "notes": "Despite the source title, only lower legs/feet are visible; useful as an extreme crop negative."
+    },
+    {
+      "id": "ng_construction_portrait",
+      "source_manifest_id": "ng_construction_portrait",
+      "video_path": "data/derived/open-h264/ng_construction_portrait.mp4",
+      "benchmark_type": "close_portrait_bent_worker",
+      "security_camera_relevance": "close_partial_stress",
+      "accuracy_window_seconds": [0.0, 5.24],
+      "notes": "Very close portrait clip of a bent, partially cropped worker; qualitative PPE-negative case."
+    },
+    {
+      "id": "roof_workers_distant",
+      "source_manifest_id": "roof_workers_distant",
+      "video_path": "data/derived/open-h264/roof_workers_distant.mp4",
+      "benchmark_type": "distant_roof_small_workers",
+      "security_camera_relevance": "long_range_stress",
+      "accuracy_window_seconds": [0.0, 14.0],
+      "notes": "Small distant workers on a roof followed by a city-pan negative section."
+    },
+    {
+      "id": "us_boston_moving_crowd",
+      "source_manifest_id": "us_boston_moving_crowd",
+      "video_path": "data/derived/open-h264/us_boston_moving_crowd.mp4",
+      "benchmark_type": "moving_near_crowd_heavy_occlusion",
+      "security_camera_relevance": "non_cctv_stress",
+      "accuracy_window_seconds": [18.0, 105.071633],
+      "notes": "Handheld near-crowd stress case with camera shake and heavy occlusion."
+    },
+    {
+      "id": "pk_fall_event_distant",
+      "source_manifest_id": "pk_fall_event_distant",
+      "video_path": "data/derived/open-h264/falling-man-cc0.mp4",
+      "benchmark_type": "tiny_people_rapid_vertical_motion",
+      "security_camera_relevance": "distant_event_stress",
+      "accuracy_window_seconds": [0.0, 21.066667],
+      "notes": "Low-resolution, long-distance incident clip; sensitive material and not a fall-action ground truth source."
+    },
+    {
+      "id": "situp_unusual_pose",
+      "source_manifest_id": "situp_unusual_pose",
+      "video_path": "data/derived/open-h264/situp_unusual_pose.mp4",
+      "benchmark_type": "horizontal_person_pose_transition",
+      "security_camera_relevance": "unusual_pose_stress",
+      "accuracy_window_seconds": [0.0, 18.0],
+      "notes": "Lying/sit-up geometry, foreshortening and partial-body/camera occlusion."
+    }
+  ]
+}
